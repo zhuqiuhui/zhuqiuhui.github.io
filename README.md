@@ -1,115 +1,84 @@
-# LessOrMore
+# leopard
+
+[leopard](http://baixin.io) 是一个简洁的博客模板，如果你也喜欢请 Star ，你的 Star 是我持续更新的动力, 谢谢 😄.
+
+### 使用手册
+
+[Jekyll搭建个人博客](http://baixin.io/2016/10/jekyll_tutorials1/)  :  使用Jekyll搭建个人博客的教程，以及如果把博客模板修改成你自己的博客，里面也有大量的评论，及 Jekyll 搭建博客出现过的问题。
+
+[HEXO搭建个人博客](http://baixin.io/2015/08/HEXO%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/) : 使用 HEXO 基于 Github Page 搭建个人博客， 教程里面累计了大量提问和评论，如果你在搭建博客时遇到问题，可以看看这个教程。 
 
 
-致谢
-====================================
-+ 感谢[Less官网](http://lesscss.cn/)的样式，本Jekyll框架的样式都是基于Less官网的样式直接拷贝过来的。只是重构了JS，并且加入了Jekyll语法而已。
-+ 感谢[Github](https://github.com/)提供的代码维护和发布平台
-+ 感谢[Jekyll](https://jekyllrb.com/)团队做出如此优秀的产品
-+ 感谢[Solar](https://github.com/mattvh/solar-theme-jekyll)的原作者[Matt Harzewski](http://www.webmaster-source.com/)，在`2014.11`-`2016.09`的两年间，我的博客选用了此样式模版
+### 使用条件
+
+Jekyll 支持 Mac 、Windows、ubuntu 、Linux 操作系统                     
+Jekyll 需要依赖：Ruby、bundler
 
 
-使用
-====================================
+#### 安装Jekyll
 
-下载
-------------------------------------
+[Jekyll中文官方文档](http://jekyll.bootcss.com/) ， 如果你已经安装过了 Jekyll，可以忽略此处。
 
-使用git从[LessOrMore](https://github.com/luoyan35714/LessOrMore.git)主页下载项目
+> $ gem install jekyll
 
-``` bash
-git clone https://github.com/luoyan35714/LessOrMore.git
-```
+#### 获取博客模板
 
-配置
-------------------------------------
+> $ git clone https://github.com/leopardpan/leopardpan.github.io.git
 
-`LessOrMore`项目需要配置的只有一个文件`_config.yml`，打开之后按照如下进行配置。
+或者直接[下载博客](https://github.com/leopardpan/leopardpan.github.io/archive/master.zip)   
 
-> 特别注意`baseurl`的配置。如果是`***.github.io`项目，不修改为空''的话，会导致JS,CSS等静态资源无法找到的错误
+进leopardpan.github.io/ 目录下， 开启本地服务 
 
-``` bash
-name: 博客名称
-email: 邮箱地址
-author: 作者名
-url: 个人网站
-### baseurl修改为项目名，如果项目是'***.github.io'，则设置为空''
-baseurl: 
-resume_site: 个人简历网站
-github: github地址
-github_username: github用户名称
-FB:
-  comments :
-    provider : duoshuo
-    duoshuo:
-        short_name : 多说账户
-    disqus :
-        short_name : Disqus账户
-```
+> $ jekyll server
 
-如何写文章
-------------------------------------
-
-在`LessOrMore/_posts`目录下新建一个文件，可以创建文件夹并在文件夹中添加文件，方便维护。在新建文件中粘贴如下信息，并修改以下的`titile`,`date`,`categories`,`tag`的相关信息，添加`* content {:toc}`为目录相关信息，在进行正文书写前需要在目录和正文之间输入至少2行空行。然后按照正常的Markdown语法书写正文。
-
-``` bash
----
-layout: post
-#标题配置
-title:  标题
-#时间配置
-date:   2016-08-27 01:08:00 +0800
-#大类配置
-categories: document
-#小类配置
-tag: 教程
----
-
-* content
-{:toc}
+在浏览器输入 [127.0.0.1:4000](127.0.0.1:4000) ， 就可以看到博客效果了。
 
 
-我是正文。我是正文。我是正文。我是正文。我是正文。我是正文。
-```
+### 提示
 
-执行
-------------------------------------
+>* 如果你想使用我的模板，请把 _posts/ 目录下的文章都去掉。
+>* 修改 _config.yml 文件里面的内容为你自己的个人信息。
 
-``` bash
-jekyll server
-```
-
-效果
-------------------------------------
-打开浏览器并输入URL`http://localhost:4000/`,回车。
+如果在部署博客的时候发现问题，可以直接在[Issues](https://github.com/leopardpan/leopardpan.github.io/issues)里面提问。        
 
 
-为什么重复造轮子
-====================================
+### 把这个博客变成你自己的博客
 
-很明显，我在重复造轮子。在13年接触到GIT，14年末接触到Jekyll，然后搭建了自己的博客，当时是选用了[JekyllThemes](http://jekyllthemes.org/)上的[Solar](https://github.com/mattvh/solar-theme-jekyll)主题，一直到现在。不过中间一直感觉页面风格还是偏暗，阅读不方便。并且有一些小的细节做的不是很好。在页面的跨平台浏览上有一些瑕疵。并且不区分一级标题和二级标题，导致没有重点强调。诸如此类，用了2年，用的越多，越发吃力，中间就一直在寻找新的能够让我一眼认定的主题。
+根据上面【提示】修改过后，在你的github里创建一个username.github.io的仓库，username指的值你的github的用户名。      
+创建完成后，把我的这个模板使用git push到你的username.github.io仓库下就行了。
+搭建博客如果遇到问题可以看看我教程[Jekyll搭建个人博客](http://baixin.io/2016/10/jekyll_tutorials1/)。
 
-虽然设计好看的主题很多。但是真正适合拿来做博客的却不多。中间一直没有找到合适的主题。直到有一天看到Less官网的主题之后，豁然觉得这就是我的博客想要的样子。简单而又不平凡。所以就决定了要把博客迁移到这个主题，然后拿了两天晚上来把这个主题做出来。
 
-重复造了轮子，但是这个是迄今为止自己觉得最适合我的博客的轮子，所以是值得的！
+### 效果预览
 
-关于作者
-====================================
+#### 头像效果
 
-热爱开源，热爱折腾的Java程序猿。更多个人信息和联系方式可以参照[我的简介](http://www.hifreud.com/Resume.io/)。
+![](/images/readme//icon.gif)
 
-关于打赏
-====================================
+如果你只想要我博客里的头像效果，你只需要拿 leopardpan.github.io/_includes/side-panel.html 文件里面 `头像效果` 和 leopardpan.github.io/css/main.css 里面最后面 `头像效果` 部分就行了。
 
-如果你也像我一样在寻觅一个简洁的博客主题。不妨试下LessOrMore。
 
-当然你也可以为了我的工作打赏！以激励我做出更好的东西。
+***
 
-支付宝
-----------------
+#### 博客首页   
 
-<img src="/styles/images/zhifubao.PNG" alt="支付宝二维码付款给Freud" width="310" />
+![](/images/readme//img4.png)   
 
-微信
-----------------
-![微信二维码付款给Freud](/styles/images/weixin.png)
+***  
+
+#### 文章详情   
+
+
+
+![](/images/readme//img3.png)
+
+
+![](/images/readme//img2.png)
+
+
+![](/images/readme//img1.png)
+
+
+#### 感谢   
+
+本博客在[Vno Jekyll](https://github.com/onevcat/vno-jekyll)基础上修改的。  
