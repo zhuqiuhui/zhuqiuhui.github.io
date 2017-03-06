@@ -18,8 +18,8 @@ group: navigation
   <ul>
     {% assign pages_list = tag[1] %}  
     {% include JB/pages_list %}
+    {% include pagination.html %}
   </ul>
-  {% include pagination.html %}
 
 
 {% endfor %}
