@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>基于memcached原理实现的单机轻量级通用缓存库 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一、前言　　之前拜读过淘宝子柳的《淘宝技术这十年》之大作，深知缓存技术在系统优化中起着一个举足轻重的作用。无论是文件系统静态文件，数据库的访问，乃至网络数据的请求，只要是与内存访问速度相差较大的，都能显著减少IO操作，提高系统的响应速度和吞吐量。　　在企业环境中，memcached和Redis算是最成熟的缓存解决方案，而国内外大型企业将其修改扩展成分布式结构的案例也是相当之很多，memcached">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于memcached原理实现的单机轻量级通用缓存库">
+<meta property="og:url" content="https://taozj.org/201607/design-and-impl-of-minicached-base-on-memcached.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="一、前言　　之前拜读过淘宝子柳的《淘宝技术这十年》之大作，深知缓存技术在系统优化中起着一个举足轻重的作用。无论是文件系统静态文件，数据库的访问，乃至网络数据的请求，只要是与内存访问速度相差较大的，都能显著减少IO操作，提高系统的响应速度和吞吐量。　　在企业环境中，memcached和Redis算是最成熟的缓存解决方案，而国内外大型企业将其修改扩展成分布式结构的案例也是相当之很多，memcached">
+<meta property="og:image" content="https://taozj.org/post_images/images/201607/e02d73dcff1fe8f2afdbeae75a8eacbf.jpg">
+<meta property="og:updated_time" content="2016-12-18T13:27:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于memcached原理实现的单机轻量级通用缓存库">
+<meta name="twitter:description" content="一、前言　　之前拜读过淘宝子柳的《淘宝技术这十年》之大作，深知缓存技术在系统优化中起着一个举足轻重的作用。无论是文件系统静态文件，数据库的访问，乃至网络数据的请求，只要是与内存访问速度相差较大的，都能显著减少IO操作，提高系统的响应速度和吞吐量。　　在企业环境中，memcached和Redis算是最成熟的缓存解决方案，而国内外大型企业将其修改扩展成分布式结构的案例也是相当之很多，memcached">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201607/e02d73dcff1fe8f2afdbeae75a8eacbf.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-design-and-impl-of-minicached-base-on-memcached" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201607/design-and-impl-of-minicached-base-on-memcached.html" class="article-date">
+      <time datetime="2016-07-07T10:57:57.000Z" itemprop="datePublished">2016-07-07</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      基于memcached原理实现的单机轻量级通用缓存库
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/软件/">软件</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h1 id="一、前言">一、前言</h1><p>　　之前拜读过淘宝子柳的《淘宝技术这十年》之大作，深知缓存技术在系统优化中起着一个举足轻重的作用。无论是文件系统静态文件，数据库的访问，乃至网络数据的请求，只要是与内存访问速度相差较大的，都能显著减少IO操作，提高系统的响应速度和吞吐量。<br>　　在企业环境中，memcached和Redis算是最成熟的缓存解决方案，而国内外大型企业将其修改扩展成分布式结构的案例也是相当之很多，memcached出现的事件比较早，相对简单但是方案成熟，而Redis算是在memcached之后开发的后起之秀，改进优化了很多方面。</p>
+<h1 id="二、memcached工作原理">二、memcached工作原理</h1><p>　　目前Redis还没有涉及了解过，memcached之前涉及过一点。memcached通常是作为一个单独服务进程启动的，监听来自TCP/UDP/Socket的请求，一般采用ascii协议进行通信。无可厚非，采用网络的方式进行进程间通信，其扩充简单灵活，但是总感觉相对于一般的单机小型程序来说，还是有点杀鸡用牛刀的感觉。如果能有一个微小型的通用缓存库，就可以联合编译链接到应用程序内部，进程间的通信效率提高了，部分数据都可以做到零拷贝了，数据通信协议、同步问题也都很好解决，岂不乐哉？<br><img src="/post_images/images/201607/e02d73dcff1fe8f2afdbeae75a8eacbf.jpg" alt="minicached"><br>　　当然，自己在一个小项目中，用的是libmicrohttpd接收POST请求数据，在不用默认的posthandler的时候，就需要自己手动申请内存，然后供接收数据使用。于是就通过建立一个postbuff的对象池，每当请求来的时候，就阻塞申请对象，用完之后在request_complete回调函数中标记为空闲，供下次使用，这样应该可以大大降低内存的碎片化。不过这个不通用，也没有缓存对象的生命周期、淘汰等特性，这也是本项目的实现目的。<br><a id="more"></a><br>　　如果使用set/get命令追踪一下memcached的执行流程，就会对memcached的内部工作流程清晰很多。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">➜  ~ telnet localhost 11211</div><div class="line">Trying 127.0.0.1...</div><div class="line">Connected to localhost.</div><div class="line">Escape character is <span class="string">'^]'</span>.</div><div class="line"><span class="built_in">set</span> keyname 0 3600 5</div><div class="line">taozj</div><div class="line">STORED</div><div class="line">get keyname</div><div class="line">VALUE keyname 0 5</div><div class="line">taozj</div><div class="line">END</div></pre></td></tr></table></figure></p>
+<p>　　之前说过，由于memcached是用Libevent来侦听网络请求的事件的，整个项目很多的代码都是处理网络方面，以及用户命令行交互输入方面的。上面两条数据存取，追踪代码，可以归纳出如下的函数调用路径：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// set keyname 0 3600 5</span></div><div class="line">(<span class="number">1</span>)<span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">try_read_command</span><span class="params">(conn *c)</span></span>;</div><div class="line">(<span class="number">2</span>)<span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">process_command</span><span class="params">(conn *c, <span class="keyword">char</span> *command)</span></span>;</div><div class="line">(<span class="number">3</span>)<span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">process_update_command</span><span class="params">(conn *c, <span class="keyword">token_t</span> *tokens, <span class="keyword">const</span> <span class="keyword">size_t</span> ntokens, <span class="keyword">int</span> comm, <span class="keyword">bool</span> handle_cas)</span></span>;</div><div class="line">(<span class="number">4</span>)<span class="function">item *<span class="title">item_alloc</span><span class="params">(<span class="keyword">char</span> *key, <span class="keyword">size_t</span> nkey, <span class="keyword">int</span> flags, <span class="keyword">rel_time_t</span> exptime, <span class="keyword">int</span> nbytes)</span></span>;</div><div class="line">(<span class="number">5</span>)<span class="function">item *<span class="title">do_item_alloc</span><span class="params">(<span class="keyword">char</span> *key, <span class="keyword">const</span> <span class="keyword">size_t</span> nkey, <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">int</span> flags, <span class="keyword">const</span> <span class="keyword">rel_time_t</span> exptime, <span class="keyword">const</span> <span class="keyword">int</span> nbytes, <span class="keyword">const</span> <span class="keyword">uint32_t</span> cur_hv)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">// taozj</span></div><div class="line">(<span class="number">1</span>)<span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">complete_nread</span><span class="params">(conn *c)</span></span>;</div><div class="line">(<span class="number">2</span>)<span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">complete_nread_ascii</span><span class="params">(conn *c)</span></span>;</div><div class="line">(<span class="number">3</span>)<span class="function"><span class="keyword">enum</span> store_item_type <span class="title">do_store_item</span><span class="params">(item *it, <span class="keyword">int</span> comm, conn *c, <span class="keyword">const</span> <span class="keyword">uint32_t</span> hv)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">// get keyname</span></div><div class="line">(<span class="number">1</span>)<span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">try_read_command</span><span class="params">(conn *c)</span></span>;</div><div class="line">(<span class="number">2</span>)<span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">process_command</span><span class="params">(conn *c, <span class="keyword">char</span> *command)</span></span>;</div><div class="line">(<span class="number">3</span>)<span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">process_get_command</span><span class="params">(conn *c, <span class="keyword">token_t</span> *tokens, <span class="keyword">size_t</span> ntokens, <span class="keyword">bool</span> return_cas)</span></span>;</div><div class="line">(<span class="number">4</span>)<span class="function">item *<span class="title">item_get</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *key, <span class="keyword">const</span> <span class="keyword">size_t</span> nkey, conn *c)</span></span>;</div><div class="line">(<span class="number">5</span>)<span class="function">item *<span class="title">do_item_get</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *key, <span class="keyword">const</span> <span class="keyword">size_t</span> nkey, <span class="keyword">const</span> <span class="keyword">uint32_t</span> hv, conn *c)</span></span>;</div></pre></td></tr></table></figure></p>
+<h1 id="三、minicached设计实现">三、minicached设计实现</h1><p>　　对于实现单机使用的通用内存缓存库的设计需求，上面的命令行处理方面不需要关注，其实底层就是item_alloc、do_store_item、do_item_get这几个函数的作用。缓存可以实现的很简单，也可以做的很精妙复杂。虽然不如Redis现在这么红火，但memcached屹立这么久，还是有很多值得感受和借鉴的地方，那就循着memcached的路子，先慢慢模仿吧。</p>
+<h2 id="3-1_内存分配器_slab">3.1 内存分配器 slab</h2><p>　　在Linux内核中slab/slub比较常见。查看了下资料，slab最早是Solaris开发出来的，最初产生的缘由是他们发现，在申请对象的时候，对象的初始化(构造)和销毁(析构)的时间很长，所以开发出slab分配器来缓存对象使用的。而Linux中后来移植过来，但其主要是用于防止内存碎片化，降低操作系统内存回收整理的负担的。<br>　　所以，如果在缓存直接用malloc和free，功能上是没有什么问题的，而且实现也会非常简便容易，但是不断反复malloc和free带来的内存碎片，对长久运行的服务端是很不利的。而slab分配器等于实现了一套自己的内存管理，涉及到对象的分配、回收、同步等操作，自然也大大增加了开发调试的难度了。</p>
+<h2 id="3-2_元素查找">3.2 元素查找</h2><p>　　通常快速查找方式有hash方式和二叉树方式查找。在对象比较多的时候hash有着最佳的查找性能，而二叉树在数目有限的元素中也有着很好的性能，这也是这货在当前Linux内核中被大量使用的原因。在memcached中，采用的是hash+链表的典型数据结构，在hash条目少的时候，产生碰撞的元素需要在链表中查询，效率自然会降低，所以memcached设计在一定条件下，会自动进行hash的扩容以保证hash查找的效率。暂时我只用了固定的2^10的hash容量，大多数情况应该都不会是什么严重问题吧。</p>
+<h2 id="3-3_元素生命时间">3.3 元素生命时间</h2><p>　　memcached的元素在创建后可以指定其expire生命周期，是一种lazy的模式：就是不会主动扫描查看哪些元素是否过期，而是在(1)访问元素的时候，检查该元素是否超过了生命周期，如果超过了会释放掉；(2)分配新对象而遇到空闲资源紧张的时候，会扫描对象列表，找出过期的对象删除以释放资源。<br>　　LRU是管理了一个链表，在link、store及update操作的时候，会更新对象的time参数，并将其从LRU列表中先删除后再插入到头部，表示最近访问了。当后续申请新的slab对象而不得的时候，会考虑从链表的尾部删除最没被访问的元素用以满足新对象的需求。</p>
+<h2 id="3-4_接口操作支持">3.4 接口操作支持</h2><p>　　由于是单机的操作，所以数据通信格式会灵活很多，不用考虑字节序、主机间的ascii通信协议等，而key也可以任何的数据类型，只需要在hash计算的时候传递其对应地址和长度就可以了。<br>　　主要支持的缓存操作接口有：<br>　　(1) new：   创建对象，从slab中取出ITEM_SLABBED空闲对象，对象成为ITEM_PENDING的悬垂状态；<br>　　(2) link：  将对象添加到缓存，变为ITEM_LINKED状态；<br>　　(3) unlink：从缓存中撤出，成为ITEM_PENDING的悬垂状态；<br>　　(4) store： 保存或者更新缓存中指定key对于的value，此时如果对象为ITEM_PENDING状态，则挂入链表中，否则就直接更新其值。由于新的值长度可能大于原来分配slab容量大小，所以这里可能会有slab重新分配的过程；<br>　　(5) remove：释放被unlink对象的资源，对象重新变为ITEM_SLABBED空闲状态；<br>　　(6) update：更新对象的访问时间戳，主要关系涉及到LRU淘汰计算；<br>　　(7) destroy: 删除所有的缓存，重新初始化；<br>　　算是基本覆盖满足了的缓存操作需求了。</p>
+<h2 id="3-5_新对象请求的流程">3.5 新对象请求的流程</h2><p>　　内存就是一个空间换时间的操作，理论上内存越大越好，但现实是不可能的。前面说过，缓存对象是通过slab机制管理的，所以请求新对象实际就是请求空闲(ITEM_SLABBED)的slab对象。根据当前slab状态和系统内存状态，请求机制如下：<br>　　(1) 如果请求对应的slab_class的slots上有空闲对象，那么取出后直接返回；<br>　　(2) 否则，遍历当前slab_class对应的LRU链表，查看是否有expired，如果有就释放掉它，然后返回被释放的空闲对象；<br>　　(3) 否则，如果没有超过内存使用限制，则申请一块大(perslab*size)的内存blk，然后创建perslab个空闲的对象，并加入到空闲链表中，取出一个空闲对象返回；<br>　　(4) 否则，遍历其余的slab_class，看是否可以整理已有对象，释放出blk内存供分配使用，如果释放成功就转入(3)步；<br>　　(5) 否则，查看本slab_class的LRU链表，释放最不常用的对象，然后将释放得到的空闲对象返回；<br>　　(6) 否则，返回NULL表示失败。</p>
+<h2 id="3-6_线程安全">3.6 线程安全</h2><p>　　memcached本身是线程安全的，其后端用的线程池模型工作的，所以这点是毫无疑问的，与此同时还提供了CAS机制，保证了某些修改在多个进程/主机间也类似原子操作的。缓存中某个对象同时处于hash表，LRU队列，slab队列中，正所谓加锁容易解锁难，对象的申请，释放，移动等操作交迭，很容易就会有死锁的隐患。为此，memcached为hash容器每个对象分配了一个锁，用于hash中元素的增删，修改操作，为每个slab_class生成一个锁，用于LRU队列的访问和修改操作，而对于slabs本身的操作，则用了一个全局的大颗粒锁来保护，这肯定会影响性能，但却是也没想出什么简洁优化的好办法。不过想想也是，缓存最适宜的工作状态是读多修改少才算好的么，如果程序运行一段时间后仍然频繁有slab的修改操作，是不是考虑要增加内存了。<br>　　多个锁的协同作用，其“黄金法则”就是：加锁的顺序要一致，否则就会导致死锁的发生，同时对于非关键部分(比如资源回收)，采用try_lock非阻塞的方式获取锁，增加效率的同时也降低了死锁的概率（我觉得不会死锁，谁能确信地告诉我）。</p>
+<h1 id="四、结语">四、结语</h1><p>　　虽然memcached在众多流行的开源项目中算是比较简单的，但是如果需要真正了解，还是需要一定的时间和精力。自己的minicached走着memcached的路子，目前算是简单搭建了出来，但是要稳定可靠运行，还需要大量的测试和验证。<br>　　做他的原因，是本人感觉到确实是一个很有意义的工具库，当然也可能自己重新造轮子了。希望后续能不断完善，在Redis或者其他项目中好的东西也能扩展引入进来。</p>
+<div class="github-widget" data-repo="taozhijiang/minicached"></div>
+
+<p>本文完！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="https://www.adayinthelifeof.nl/2011/02/06/memcache-internals/" target="_blank" rel="external">memcache internals</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></p>
+        <p><span>最后更新:</span>2016-12-18, 21:27:14</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201607/design-and-impl-of-minicached-base-on-memcached.html" title="基于memcached原理实现的单机轻量级通用缓存库">https://taozj.org/201607/design-and-impl-of-minicached-base-on-memcached.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201607/design-and-impl-of-minicached-base-on-memcached.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201607/construct-running-close-of-tcp.html">
+                    TCP链接的建立和关闭过程
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">
+                    Libevent学习笔记（三）：内部实现原理初探
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201607/design-and-impl-of-minicached-base-on-memcached.html" data-title="基于memcached原理实现的单机轻量级通用缓存库" data-url="https://taozj.org/201607/design-and-impl-of-minicached-base-on-memcached.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201607/construct-running-close-of-tcp.html" title="上一篇: TCP链接的建立和关闭过程">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html" title="下一篇: Libevent学习笔记（三）：内部实现原理初探">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

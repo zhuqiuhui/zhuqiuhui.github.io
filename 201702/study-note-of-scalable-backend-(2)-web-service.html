@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>后台开发那些常用技术再次小结（二）：Web服务层 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Web服务部分应当算是整个服务端开发中最重要、最复杂、同时也最具可玩性的部分了。业务逻辑的处理主要分布在Web服务层，这样一方面可以让其上层展示层不必关心业务逻辑，只专心负责展示和用户输入部分(也让其具有强大的伸缩性)，而Web服务层本身也可以通过功能分割(增加副本、功能分割和数据分片是实现伸缩性的三大利器)，以及单个服务自身的伸缩设计，最终构建一个功能强大的Web服务层。　　Web服务层采用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="后台开发那些常用技术再次小结（二）：Web服务层">
+<meta property="og:url" content="https://taozj.org/201702/study-note-of-scalable-backend-(2)-web-service.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="Web服务部分应当算是整个服务端开发中最重要、最复杂、同时也最具可玩性的部分了。业务逻辑的处理主要分布在Web服务层，这样一方面可以让其上层展示层不必关心业务逻辑，只专心负责展示和用户输入部分(也让其具有强大的伸缩性)，而Web服务层本身也可以通过功能分割(增加副本、功能分割和数据分片是实现伸缩性的三大利器)，以及单个服务自身的伸缩设计，最终构建一个功能强大的Web服务层。　　Web服务层采用">
+<meta property="og:updated_time" content="2017-02-22T01:37:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="后台开发那些常用技术再次小结（二）：Web服务层">
+<meta name="twitter:description" content="Web服务部分应当算是整个服务端开发中最重要、最复杂、同时也最具可玩性的部分了。业务逻辑的处理主要分布在Web服务层，这样一方面可以让其上层展示层不必关心业务逻辑，只专心负责展示和用户输入部分(也让其具有强大的伸缩性)，而Web服务层本身也可以通过功能分割(增加副本、功能分割和数据分片是实现伸缩性的三大利器)，以及单个服务自身的伸缩设计，最终构建一个功能强大的Web服务层。　　Web服务层采用">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-study-note-of-scalable-backend-(2)-web-service" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201702/study-note-of-scalable-backend-(2)-web-service.html" class="article-date">
+      <time datetime="2017-02-08T12:32:23.000Z" itemprop="datePublished">2017-02-08</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      后台开发那些常用技术再次小结（二）：Web服务层
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>　　Web服务部分应当算是整个服务端开发中最重要、最复杂、同时也最具可玩性的部分了。业务逻辑的处理主要分布在Web服务层，这样一方面可以让其上层展示层不必关心业务逻辑，只专心负责展示和用户输入部分(也让其具有强大的伸缩性)，而Web服务层本身也可以通过功能分割(增加副本、功能分割和数据分片是实现伸缩性的三大利器)，以及单个服务自身的伸缩设计，最终构建一个功能强大的Web服务层。<br>　　Web服务层采用一定的设计模式为上层提供调用接口，同时这些年来，跟随者移动互联网和与计算的大潮，各大厂商也喜欢将自己的服务通过接口的方式免费或者收费的形式提供给第三方使用，这也就是所谓的Web服务和前端应用平行部署的现象，在这种环境下的服务接口设计就显得会比以往更加的重要，当时那种裸socket之上自定义数据帧的时代显然是跟不上了。尤其这些年来，关于RESTful接口设计风格可谓是如日中天，无论是Google、Amazon这些互联网大佬，还是几个人组成的互联网创业公司，都号称自己开放的服务是符合RESTful风格的接口，但是正如我在V2ex论坛上看到大家所争论(《 <a href="https://www.v2ex.com/t/340607" target="_blank" rel="external">RESTful 有用吗？ HTTP 有 GET POST 就足够了？</a>》)的一样：绝对纯正的RESTful风格接口的设计和实现在当下是不可能实现的，大家开放出来的接口要么就是根据实践情况有所妥协，要么就是封装了一个简易外壳的“伪RESTful接口”而已。<br>　　这里看到一本《<a href="https://book.douban.com/subject/25786076/" target="_blank" rel="external">服务设计模式</a>》，虽然后面的内容看的不是很明白，但是前面对于服务设计的总结还是不错的，在此进行归纳总结！归咎来说，Web服务主要是为集成不同的系统提供相应地方法，并通过HTTP来输出可重用业务功能，他们或者将HTTP作为一种简单的信息传输工具来承载数据传输(比如SOAP/WSDL服务)，或者将HTTP作为一种完整的应用控制协议，将HTTP协议的内容定义服务的各种行为和语义(RESTful服务)，前者被定义为以功能为中心的服务，后者被定义为以资源为中心的服务。<br>　　<strong>以功能为中心的服务</strong>：该种风格的服务是指能够调用远程机器上的功能或者对象方法，而无需知道这些功能或者对象是如果实现的，因此这种框架技术需要处理跨编程语言、跨CPU构架、跨运行时环境的问题，同时对调用参数的约定、变量转换、错误处理还必须进行明确的规范。以功能为中心的服务现在基本是SOAP一枝独秀，其基本使用XML作为服务描述和消息编码方式，通过HTTP在客户端和服务端之间传递请求和响应。<a id="more"></a><br>　　以功能为中心的服务基本不会用在动态语言中，因为这些动态语言和SOAP服务集成会比较困难，基本都是Java、C/C++这类静态语言。此外，由于SOAP请求是通过XML进行发送的，请求参数和方法名都通过XML封装了，URL里面没有远程调用需要的全部信息，所以对于HTTP层面基于URL的缓存就没法实现，使得伸缩性变差。<br>　　<strong>以资源为中心的服务</strong>：以资源为中心的服务作为新一代的服务设计构架，已经成为Web应用集成事实上的标准，这种设计就是以资源为中心代表一类对象，在对象上只能执行有限的操作(比如创建、删除、更新、获取资源等)，将和资源(对象)之间的交互标准化了。跟上面对应，利用HTTP缓存是可伸缩RESTful Web服务的一项重要技术，当设计的方法严格准守HTTP方法语义约束的生活，重要的GET方法的响应就应该是可缓存的，如果确保所有GET方法是只读且不会导致状态变化和数据更新，那么就可以安全的缓存该HTTP GET请求。当然，具体的业务类型可能也不允许这种形式的缓存。</p>
+<h1 id="一、Web服务API设计风格">一、Web服务API设计风格</h1><p>　　Web服务API设计风格包含：RPC API、消息API、资源API三种类型。</p>
+<h2 id="1-1_RPC_API">1.1 RPC API</h2><p>　　RPC API的核心概念是远程过程调用的思想，通过RPC客户端首先向远程服务器发进程发送消息，再阻塞自己，等待接收响应，请求的消息可以标识要执行的过程，同时也包括一组固定的参数映射作为远程过程的参数；远程服务收到消息时候会进行检查，并根据消息中的过程名称及其参数调用相关过程(服务)；如果需要，服务器将对应的响应结果返回给客户端，客户端提取结果并继续执行。<br>　　这是我们所最熟悉的服务设计风格，因为其历史悠久并被广泛使用，相对容易理解而且使用简单(有大量现成的服务框架可用)。这种风格API通常使用XML定义数据类型和消息，使用WSDL(Web Service Description Language)进行服务描述，用WS-Policy/WS-Security等规范来定义对客户端的授权、加密等规则；当然也可以使用非XML的方法，比如JSON-RPC这类的规范来实现。<br>　　<strong>考虑因素</strong><br>　　(1) 因为RPC和本地方法很相像，所以通常会像声明本地方法签名的方式来创建服务签名，这样的话客户端必须严格按照参数的顺序、类型来发送参数，导致使用不灵活。所以通常建议将服务签名设计为单个参数类型，或者多个可选参数类型的服务。<br>　　(2) RPC API的特点是位置透明性，服务的真实位置应该是完全隐藏的，即客户端开发者调用本地过程和调用远程过程的代码都应该大致相同，这样服务就可以按照需要进行自由移动，然后通过其他方法通知客户端服务的具体位置，比如存储在配置文件或者数据库中供客户端查询。<br>　　(3) 除了默认的请求-响应模式，RPC API还可以使用请求-确认的交互模式。这种情况下服务端收到请求后会将消息转发到一个异步后台进程，并向客户端返回一个简单确认。通常消息首先存储在消息队列或者固化到数据库中，通过这种消息接收和消息处理时间分离，系统就可以更好的处理负荷峰值，控制消息处理速率。<br>　　(4) 使用RPC API的客户端在发送消息后，也可以不需要阻塞，而采用异步响应处理器的方式提高效率。<br>　　(5) RPC API通常使用XML或者JSON进行编码，也可以采用二进制数据编码，从而压缩网络传输、节省带宽、减少延迟，不过副作用就是二进制编码会增加客户端、服务器端的计算量。</p>
+<h2 id="1-2_消息API">1.2 消息API</h2><p>　　RPC API的服务端和客户端是强耦合的，无论调用名、调用签名、数据结构发生变化，都需要两方面的协调完成。<br>　　基于消息API(文档API)的服务，会在一个给定的URI上收到一个或者多个自描述的消息，消息体包含主要的数据，同时还可以附加一些标头用于身份验证、请求有效截止日期等信息。消息API通常手法表转化的消息格式(比如SOAP)。当客户端向一个指定URI发送消息后，客户端可以选择阻塞来等待响应，当消息到达服务器时候Web服务执行反序列化处理，检查消息并选择适当的处理器来处理请求，通过将客户端和真正的处理器(远程过程)进行隔离，Web服务提供了一个间接层的作用。<br>　　这种模式意在情调是基于消息设计的，API提供一个接收断点，而Web服务则扮演者分发器的角色，客户端的消息通常包括命令消息、事件消息、文档消息类型。<br>　　<strong>考虑因素</strong><br>　　(1) 消息API通常使用WSDL描述符，依赖框架辅助生成客户端服务连接器代码。具体的消息再通过某种特定的传输协议(比如HTTP)进行绑定，并在指定URI上输出其内容。<br>　　(2) 下次API的服务通常采用请求-确认模式，而不是请求-响应模式。</p>
+<h2 id="1-3_资源API">1.3 资源API</h2><p>　　这种方式是对所有资源(比如文本文件、媒体文件、数据库表中的数据、业务过程等)分配一个URI，使用HTTP作为一种完整的应用协议以定义标准的服务行为，采用标准化的媒体类型和可能获得的状态码来交换信息。这样资源API的服务通过使用请求的URI、客户端发起的HTTP方法、一同提交来的请求信息及媒体类型等既可以判断客户端的意图，可以将这个规则表达为表述性状态转移(Representational State Transfer, REST)原则，因为客户端和服务端之间交换消息的生活，资源的状态发生了转变。<br>　　资源API中的URI是一个逻辑意义上的地址，通过向这个URI发送请求就可以调用对应服务或获得相应地资源，而实际的资源和URI可能存在一对多的关系，但是一个URI应该只能用于引用一个逻辑资源。资源API通过如下HTTP标准方法来访问资源：</p>
+<ul>
+<li>PUT：用于创建或者更新资源；</li>
+<li>GET：用于检索资源的表述；</li>
+<li>DELETEL：用于删除一个资源；</li>
+<li>POST：该行为多样性，作为以上相对而言非标准行为，同时当服务器禁用了PUT、DELETE或者防火墙阻塞了这两种方法时候，可以用POST作为一种替代方法(隧道化执行)。很多REST的倡导者不支持使用POST隧道化的行为，因为这模糊了请求的目的，而且实现上也不利于对结果进行缓存；</li>
+<li>OPTIONS：用于发现目标URI所支持的HTTP方法；</li>
+<li>HEAD：用于获取URI上交换的与媒体类型有关的元数据，类似于GET只是不返回资源的表述。</li>
+</ul>
+<p>　　上面最常用的PUT、GET、DELETE基本可以映射为CURD(Create、Update、Retrieve、Delete)操作，而POST可以用于其他无法映射的行为。由于HTTP协议将这些行为预先定义好了，所以客户端不必学习特殊的API，而只需要知道每个URI上面可以使用的方法，以及每种方法使用时机就可以了，服务开发人员会按照标准来实现对应的功能。<br>　　HTTP规范定义了那些方法是安全的(Safe)和幂等(Idempotent)的，如果操作不会产生副作用就被认为是安全的，其不会触发创建、更新、删除操作，GET、HEAD、OPTIONS方法可以实现为安全的操作；幂等性指的无论调用同一个过程多少次，只要参数相同，那么就应该返回相同的结果(出错、超时等情况不考虑)，GET、HEAD、PUT、DELETE、OPTIONS都是幂等的，但是POST不是幂等的。POST方法也可以实现为幂等的，比如在客户端请求中插入一个唯一的标识符，服务在执行它的时候进行逻辑检查，如果已经被处理则拒绝这个请求。<br>　　资源URI会利用标准HTTP状态码，向客户端提供处理结果，通常可以返回最小量的数据表示结果因而优化了网络利用率。不过有时候响应码也会有含糊不清的意义，这也是RESTful在实现中缺陷之所在，否则那些号称符合RESTful风格的开放接口都不会另外列出一大串HTTP错误码对应的实际错误描述了。<br>　　<strong>考虑因素</strong><br>　　(1) 使用不同类型的客户端，这时候资源API是最好的选择，因为HTTP协议的广泛流行使得资源API可以得到最广泛的支持。<br>　　(2) 可寻址能力，因为资源API的设计上，URI通常是有意义的信息(比如账号ID)，那么这些信息很可能被恶意挖掘和使用。可以使用UUID映射将这些信息进行隐藏，或者采用身份验证和逻辑授权机制，确认调用者身份、限制每个调用者可执行的操作，以起到对应保护的作用。<br>　　(3) 客户端一般没有代码自动生成能力，即无法自动产生服务的客户端连接器，客户端必须采用标准的HTTP进行请求。<br>　　(4) 面向资源的服务通常使用请求-响应模式，但也可以使用请求-确认交互模式。服务可以将请求转发到异步后台进程，而向客户端立即返回一个确认消息(HTTP状态202)。<br>　　(5) 资源API通常会为同一个逻辑资源提供多种表现形式，不必为每种表现形式使用不同的URI，这通常使用媒体类型协商来满足客户端的偏好的。<br>　　(6) 资源API风格可以天生有效利用针对HTTP专门设计的缓存技术(比如反向代理缓存)，以减小队原始服务器的压力，资源API尤其适合读操作较多的场景。</p>
+<h1 id="二、客户端和服务端之间的交互风格">二、客户端和服务端之间的交互风格</h1><p>　　客户端和Web服务之间基本通信模式是点对点的链接，在连接建立后通常在多次交换数据中采用同一个连接，这样有助于最小化建立和释放连接所带来的延迟。但是在实际上，网络流量在传输的过程中总要通过各种中介，比如防火墙、反向代理等，这些中介一方面可以实现安全功能，过滤或者阻止某些请求，实现负载均衡及周边缓存的功能。</p>
+<h2 id="2-1_请求-响应模式">2.1 请求-响应模式</h2><p>　　该模式下客户端发给服务端的请求，会被立即执行处理，并通过同一个客户端链接返回处理结果，是客户端和服务端最常见、最易于理解的交互模式。这种客户端和服务端之间的交互是同步的，会按照严格的顺序发生，通常客户端提交请求后不能继续做其他的操作，直到请求的服务提供了响应，所以要求这种服务没有或者尽小的延迟。<br>　　<strong>考虑因素</strong><br>　　(1) 请求-响应模式是高时间耦合度的交互，因为客户端的请求都需要立即得到处理，所以大量并发的请求可能会耗尽系统的处理能力。服务架构师必须理解服务的典型工作负载，并依据期望的负载来调整服务器、数据库、网络资源的容量，包括“垂直扩展”和“水平扩展”提高性能。通过将服务有请求-响应模式修改为请求-确认-轮训或者请求-确认-回调的模式，在时间上将接收请求、处理请求、发送响应进行分离，前者让客户端空闲时候轮训响应，后者要求客户端提供自己的服务以便接收回调消息，可以缓解服务器峰值压力的风险，但是实现和调试的复杂度较高。<br>　　(2) 默认情况下，请求-响应服务的客户端会阻塞以等待响应，通过异步响应处理器可以改善客户端的性能。<br>　　(3) 请求-响应在客户端和服务端之间可以插入中介者，比如代理服务器可以缓存查询结果，防火墙可以阻止或者过滤网络流量，检查证书等功能。</p>
+<h2 id="2-2_请求-确认模式">2.2 请求-确认模式</h2><p>　　请求-确认模式是可以使Web服务免受负载峰值影响，虽然通过异步响应处理器器可以缓解这个问题，但是在总体处理能力有限的情况下，如果请求的处理时间过长，那么客户端连接就会超时，这种情况通常会导致丢失响应。<br>　　传统上可以采用网络可寻址的消息队列技术(面向消息的中间件)，这样无论目标系统的运行状况如何，客户端都可以随时将消息发送给远程系统，即使无法连接远程队列基础构架也可以将消息先保存在本地，然后不断尝试发送直至成功。消息到达远程队列后会慢慢发送到目标系统，中间可以通过节流或控制处理请求速率保护远程系统。<br>　　简单的队列具有发射后不管的特点，服务会接收请求、处理请求，但是不会发送响应，客户端无法感知服务是否被接收、是否被处理、处理的结果如何。解决的方法是对请求生成特定的标识符或者URI以作为唯一性的键值，将来所有参与会话的各方都可以引用这个键值，以形成一个特定请求的上下文处理逻辑。<br>　　<strong>考虑因素</strong><br>　　请求-确认模式的难点是提供更新或者最终处理结果，通常实现的方法有：<br>　　(1) 轮训：该模式实现简单，客户端定期轮训另外一个Web服务以获取更新信息或者最终处理结果。要实现这个功能客户端必须先得到一些轮训的先决条件，资源API通常返回客户端轮序的URI地址，而RPC API和消息API通常提供查询的标识符。<br>　　请求-确认-轮序的缺点是客户端效率不高，如果轮训频率不高那么得到更新、处理结果就会有明显的延时滞后，如果轮序太过频繁也会对Web服务器带来负载，浪费网络流量。<br>　　(2) 回调和转发：这种模式下客户端不会轮训另外一个服务获取结果，而由请求处理器主动将信息推送回客户端或者其他参与者(请求-确认-转发模式)，此时客户端和服务器就互相交换角色了。这种模式下Web服务端必须获得一个回调服务列表，这可以由资源API客户端在请求中包含回调URI，或者RPC API和消息API通过WS-Addressing标识头提供，也可以是通过某种标识在数据库中查询回调信息。<br>　　这种模式实现起来比轮训更具挑战性，但是如果原始客户端不能或者不愿意提供一个可以公开寻址的回调服务，那么该种方式就不能使用。</p>
+<h2 id="2-3_媒体类型协商模式">2.3 媒体类型协商模式</h2><p>　　比如在使用资源API服务的不同客户端通常可以有不同的媒体偏好，比如有的喜欢XML而有的客户端好JSON。指明客户端偏好的方法很多，比如可以将媒体类型作为最终URI的一部分或者文件资源的扩展名，这种方式简单直观而且可以被浏览器等客户端支持，但是：客户端必须知道如何对每个资源构造正确的URI，显然增加了客户端和服务端的耦合和复杂度。<br>　　解决的最好方法是使用标准HTTP协议的进行内容协商，客户端可以在HTTP请求头中指定一种或者多种媒体类型首选项，那么服务端可以参考按照预设的格式生成响应。实现的方法有：<br>　　(1) 服务器驱动的协商是最常用的一种协商方式，客户端通过Accept Request标头来提供自己的媒体偏好，可以一次提供多个偏好，也可以指明媒体类型的优先级，没有提供的话服务端可以默认选择一个，常见的媒体类型比如：application/xml、application/json、text/plain、text/html等，这些流行的类型会被自动序列化反序列化，而自定义类型可以需要自己编写对应的序列化器了。<br>　　(2) 客户端驱动的协商方式中，在客户端在发送请求的时候还是通过HTTP的Accept Request标头来携带它的媒体偏好，Web服务端收到请求后在响应中提供一组客户端可以考虑使用的URI，然后客户端根据这个响应来选择特定的URI发起真正的资源请求。<br>　　<strong>考虑因素</strong><br>　　(1) 服务器与客户端驱动的协商中，当服务拥有者期望为客户端提供选择，同时又需要维持对类型选择过程的控制时候，采用服务器驱动的协商比较合适，这有助于简化客户端逻辑，减少往返协商的流量，只是此时如果客户端没有提供明确偏好时，服务器的响应就可能不合适客户端；当期望客户端可以更多控制接收到的类型可以选择客户端驱动的协商，缺点是客户端必须发起两次请求-响应的数据交换，依次用于查询服务地址列表，另一次用于获得最终响应。<br>　　两种方法比较而言，服务端驱动协商因为是同一个URI返回多种类型的资源，不利于中介缓存，而客户端驱动的协商可以最好的利用中介缓存，因为URI和特定的媒体资源存在一对一的关系。<br>　　(2) 请求处理器中的代码应该可能会被复制，这时候应该考虑使用设计模式中的命令模式，可以降低复制代码维护的痛点。</p>
+<h2 id="2-4_链接服务">2.4 链接服务</h2><p>　　通过Web服务可以将其他的服务信息输出给客户端，通常只需要发布几个根Web服务的地址作为最初的访问点，此后在每个响应中包含相关服务的地址信息，客户端解析响应之后就可以发现后续服务URI，那么客户端根据服务列表有选择的使用其他服务了。该方式的优点有：<br>　　(1) 响应可以只是提供一组对最近请求有上下文意义的服务地址，对客户端完成正确的工作流转换具有指导意义；<br>　　(2) 由于服务的地址是服务端返回的，可以确保这些地址是有效的，如果依赖客户端构造服务地址通常会出现各种各样的问题；<br>　　(3) 增加、减少、修改服务变得更加容易，只需要在响应中做出相应修改就可以了，客户端需要修改识别新的服务，对于旧的不可用服务服务端返回404就可以了；<br>　　<strong>考虑因素</strong><br>　　(1) 这种模式主要同上述的资源API一起使用；<br>　　(2) 这种服务容易遭受中间人攻击，因为中间人可以截获响应或者构造响应指向一个恶意服务。通常需要采用TLS安全传输，也可以采用数字签名保护消息不被篡改。</p>
+<p>本文完！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="https://book.douban.com/subject/26906846/" target="_blank" rel="external">互联网创业核心技术：构建可伸缩的web应用</a></li>
+<li><a href="https://book.douban.com/subject/25786076/" target="_blank" rel="external">服务设计模式</a></li>
+<li><a href="http://www.drdobbs.com/web-development/restful-web-services-a-tutorial/240169069" target="_blank" rel="external">RESTful Web Services: A Tutorial</a></li>
+<li><a href="http://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html" target="_blank" rel="external">Amazon S3 REST API Introduction</a></li>
+<li><a href="http://blog.igevin.info/posts/restful-architecture-in-general/" target="_blank" rel="external">RESTful 架构风格概述</a></li>
+<li><a href="http://blog.igevin.info/posts/restful-api-get-started-to-write/" target="_blank" rel="external">RESTful API 编写指南</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></p>
+        <p><span>最后更新:</span>2017-02-22, 09:37:46</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201702/study-note-of-scalable-backend-(2)-web-service.html" title="后台开发那些常用技术再次小结（二）：Web服务层">https://taozj.org/201702/study-note-of-scalable-backend-(2)-web-service.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201702/study-note-of-scalable-backend-(2)-web-service.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201702/study-note-of-scalable-backend-(3)-storage.html">
+                    后台开发那些常用技术再次小结（三）：存储部分
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201702/study-note-of-scalable-backend-(1)-front.html">
+                    后台开发那些常用技术再次小结（一）：前端部分
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201702/study-note-of-scalable-backend-(2)-web-service.html" data-title="后台开发那些常用技术再次小结（二）：Web服务层" data-url="https://taozj.org/201702/study-note-of-scalable-backend-(2)-web-service.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201702/study-note-of-scalable-backend-(3)-storage.html" title="上一篇: 后台开发那些常用技术再次小结（三）：存储部分">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201702/study-note-of-scalable-backend-(1)-front.html" title="下一篇: 后台开发那些常用技术再次小结（一）：前端部分">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

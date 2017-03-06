@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>Windows服务端程序向Linux移植经验总结 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前面做了一些Windows服务端程序向Linux服务端程序的移植工作，还是有些收获的，这里整理记录一下，将工作内容和细节方面的东西供大家参考。　　需要说明几点：这里的移植是真的移植，而不是考虑跨平台开发型的；这里的移植是针对无界面形式的程序，主要是服务端程序；那啥wine、mono的太大，就不考虑了。
+一、数据类型定义1.1 数据类型的差异　　Windows和Linux的数据类型定义完全是两个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows服务端程序向Linux移植经验总结">
+<meta property="og:url" content="https://taozj.org/201604/server-prog-port-from-windows-to-linux.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="前面做了一些Windows服务端程序向Linux服务端程序的移植工作，还是有些收获的，这里整理记录一下，将工作内容和细节方面的东西供大家参考。　　需要说明几点：这里的移植是真的移植，而不是考虑跨平台开发型的；这里的移植是针对无界面形式的程序，主要是服务端程序；那啥wine、mono的太大，就不考虑了。
+一、数据类型定义1.1 数据类型的差异　　Windows和Linux的数据类型定义完全是两个">
+<meta property="og:image" content="https://taozj.org/post_images/images/201604/e7b52d9197604c2914da1244565384bb.jpg">
+<meta property="og:updated_time" content="2017-02-28T04:55:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Windows服务端程序向Linux移植经验总结">
+<meta name="twitter:description" content="前面做了一些Windows服务端程序向Linux服务端程序的移植工作，还是有些收获的，这里整理记录一下，将工作内容和细节方面的东西供大家参考。　　需要说明几点：这里的移植是真的移植，而不是考虑跨平台开发型的；这里的移植是针对无界面形式的程序，主要是服务端程序；那啥wine、mono的太大，就不考虑了。
+一、数据类型定义1.1 数据类型的差异　　Windows和Linux的数据类型定义完全是两个">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201604/e7b52d9197604c2914da1244565384bb.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-server-prog-port-from-windows-to-linux" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201604/server-prog-port-from-windows-to-linux.html" class="article-date">
+      <time datetime="2016-04-18T10:33:52.000Z" itemprop="datePublished">2016-04-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Windows服务端程序向Linux移植经验总结
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>　　前面做了一些Windows服务端程序向Linux服务端程序的移植工作，还是有些收获的，这里整理记录一下，将工作内容和细节方面的东西供大家参考。<br>　　需要说明几点：这里的移植是真的移植，而不是考虑跨平台开发型的；这里的移植是针对无界面形式的程序，主要是服务端程序；那啥wine、mono的太大，就不考虑了。<br><img src="/post_images/images/201604/e7b52d9197604c2914da1244565384bb.jpg" alt="WINDOWS LINUX"></p>
+<h1 id="一、数据类型定义">一、数据类型定义</h1><h2 id="1-1_数据类型的差异">1.1 数据类型的差异</h2><p>　　Windows和Linux的数据类型定义完全是两个风格，而且Windows的类型定义喜欢用大写字母，Windows的数据类型主要是定义在windef.h这个头文件里面的，可以将简单的数据类型按照目标机器翻译过来，当然也有些定义比较的复杂，不过很多却是没用的，可以安全的删掉。</p>
+<h2 id="1-2_函数接口的差异">1.2 函数接口的差异</h2><p>　　Windows也是支持POSIX标准的，所以大多数的底层函数还是可以用的，但是某些函数的名字和参数签名等还是有些差异(比如stricmp/strcasecmp)，如果要在这个头文件里面处理，可以内联封装加进去。</p>
+<h1 id="二、进程间的通信">二、进程间的通信</h1><h2 id="2-1_创建线程">2.1 创建线程</h2><p>　　Windows使用CreateThread创建线程，而Linux通常使用pthread线程库来实现多线程。</p>
+<h2 id="2-2_多线程以及进程间同步">2.2 多线程以及进程间同步</h2><p>　　在Windows上面，除了CriticalSection是仅限线程间的同步之外，其他Mutex、Event、filemap，在使用的时候，只要设定了lpName，那么就可以在其他进程中用这个名字打开，就算是进程间的同步和通信了，否则的话就是线程间的同步。<br>　　不仅仅在这里，其实进程间通信Linux一般都有POSIX和SYS V两套接口，实际经验和感受来说POSIX的接口更加习惯好用一些。</p>
+<table>
+<thead>
+<tr>
+<th>Windows</th>
+<th>Linux(线程)</th>
+<th>Linux(进程)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CriticalSection</td>
+<td>pthread_mutex</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Mutex</td>
+<td>semaphore</td>
+<td>semaphore</td>
+</tr>
+<tr>
+<td>Event</td>
+<td>semaphore</td>
+<td>semaphore</td>
+</tr>
+<tr>
+<td>filemap</td>
+<td>shm、mmap</td>
+<td>shm、mmap</td>
+</tr>
+</tbody>
+</table>
+<p>　　shm和mmap其实都差不多，但是如果有些数据不像映射到硬盘文件系统上（比如处于保密安全考虑），那么就推荐使用shm来实现。<br><a id="more"></a></p>
+<h1 id="三、定时器">三、定时器</h1><p>　　在Windows下面，调用SetTimer创建定时器的时候可以指定ID，一个进程中可以创建很多个定时器，但是在Linux下就没有这么方便了。alarm/sleep都是用SIGALRM来实现的，而且代码没法异步执行；timer_create可以指定发送的SIGNUM，然后可以利用调用sigaction提供的参数来区别各个定时器，当然是个候选的方式；同时我找到的网络还有推荐的是使用timerfd+epoll来实现，本库就是按照这个实现封装来模拟SetTimer的操作。<br>　　看似后面两者都可以实现多定时器，实际还是有些差异，前者设定信号处理函数，但是信号处理函数是异步的，所以在这种情况下所做的事情有限，而后者使用一个线程专门检测执行信号处理函数，算是一个进程同步上下文，虽然精度有所欠缺（比如只能按顺序检测没法按照真正时间排序），但是使用更加方便安全。</p>
+<h1 id="四、网络IO复用">四、网络IO复用</h1><h2 id="4-1_数据和函数定义细节差异">4.1 数据和函数定义细节差异</h2><p>　　Windows针对自己的异步IO添加了一系列的宏，比如WSAEFAULT、WSANOTINITIALISED等，以及WSAGetLastError等函数（这个直接用errno模拟了）。</p>
+<h2 id="4-2_网络IO复用">4.2 网络IO复用</h2><p>　　虽然都是事件驱动的网络IO复用技术，但是算是两者网络风格最大的不同了。</p>
+<h3 id="4-2-1_Windows平台">4.2.1 Windows平台</h3><p>　　Windows采用完成端口（Completion Port）的方式，一般的操作步骤是：<br>　　(1) 采用CreateIoCompletionPort创建完成端口；<br>　　(2) 创建bind、listen服务端套接字；<br>　　(3) 根据服务器的CPU数量，创建一定数目的工作线程，然后在每个工作线程中调用GetQueuedCompletionStatus等待完成事件；<br>　　(4) 上面函数返回，说明操作系统IO操作已经完成，就可以直接操作数据了。</p>
+<h3 id="4-2-2_Linux平台">4.2.2 Linux平台</h3><p>　　Linux有经典的select、poll，以及后面增强型的epoll方式，目前epoll有很多优点（侦听socket数目多、效率高等），所以没有特殊利用就用epoll吧，epoll的操作步骤是：<br>　　(1) 创建服务器侦听socket并实现bind、listen等操作；<br>　　(2) 设置socket为O_NONBLOCK模式；<br>　　(3) 创建epoll_event结构，首先将listen的socket加入到侦听当中；<br>　　(4) 进入event_loop中，调用epoll_wait，如果listen socket有请求，就accept得到链接的n_socket，并把这个n_socket再次添加到epoll侦听中；<br>　　(5) 以后每次epoll_wait返回，就两种情况：要么listen socket有新连接请求，要么之前连接并侦听的socket有数据到达可供读取。<br>　　内部的实现细节暂不讨论，其中最大的区别就是，Windows的完成端口用起来十分简单，注册之后，你提供数据存储的地址后就等待，一旦返回，说明数据已经接受好并放到指定的位置了，用户只需要专注数据处理了；Linux繁杂但是灵活，而且epoll可以设置Level/Edge触发，应对不同网络负载情况。<br>　　注意：其实现在看来，两者都归并为异步IO，Windows的完成端口是异步非阻塞的，比如接受程序调用IO操作之后就直接返回，执行其它事务了，而别的线程检测到IO完成标志后执行相应操作；而Linux的IO复用确是异步阻塞的，当监听的套接字都不可用的时候，这些函数将处于一直阻塞的状态(体现在epoll_wait的阻塞)。</p>
+<h1 id="五、其他方面">五、其他方面</h1><h2 id="5-1_调试技术">5.1 调试技术</h2><p>　　有时候程序写多了，莫名其妙的Segmentfault，如果没有调试信息会让人一脸萌逼不知所措。针对这类情况，可以：<br>　　(1) 编译的时候添加-g调试参数，产生函数符号；<br>　　(2) 系统启动coredump支持，这样产生fatal错误的时候，会生成错误转储，用gdb可以调试之；<br>　　(3) 发生段错误会产生SIGSEGV信号，可以在程序开始的时候，将这个信号处理函数挂靠在特定的处理函数中，在函数中使用backtrace_symbols来回溯调用链。</p>
+<h2 id="5-2_单链表">5.2 单链表</h2><p>　　Linux内核有个大名鼎鼎的list_head，可以封装在数据结构中使用，十分方便。但是这东西默认是内核态的，所以做了一点点修改，就可以在用户态方便的使用了。还要的RBTree也从内核中移植出来了，可以保证高性能的访问需求。<br>　　当然，如果不是洁癖的要C的话，还是可以考虑用C++，因为C++标准库和Boost库封装了大量的容器类和算法类，虽然编译出来的可执行程序显得比较的臃肿，不过大多数情况下总比你自己造出的轮子要稳定可靠的多。</p>
+<h2 id="5-3_编码问题">5.3 编码问题</h2><p>　　Windows系统下默认编码是GBK，Linux平台下默认编码是UTF8，虽然对于一般的程序源文件编码类型问题不大，最多是注释看起来是乱码而已，但是对于源代码中使用了字符串明文的情况，这个差异就会比较大。<br>　　我移植的程序是做自然语言处理部分的，代码中包含了大量的中文字符串明文，同时程序中还有很多算法也是基于字符串是GBK编码方式假设的。所以移植的时候，就全部保留了源代码文件GBK编码模式，这样程序处理逻辑就可以沿用原来的部分，但是在访问文件系统的时候还需要注意将文件路径编码为UTF8的模式，否则会告之文件和目录找不到的错误。<br>　　程序的编码沿用了传统的GNU libiconv库。Boost包含了一个Boost.locale的库，其中包含各种编码、常规字符和宽字符的互转，虽然表象使用起来方便，但是没有相关文档，就没有使用了。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">charset_convert</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *from_charset, <span class="keyword">const</span> <span class="keyword">char</span> *to_charset,</span></span></div><div class="line">                             <span class="keyword">const</span> <span class="keyword">char</span> *inbuf, <span class="keyword">char</span> *outbuf, <span class="keyword">size_t</span> outlen)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">iconv_t</span> icd;</div><div class="line">    <span class="keyword">size_t</span> inlen = <span class="built_in">strlen</span>(inbuf);</div><div class="line">    <span class="keyword">size_t</span> outleft = outlen;</div><div class="line">    <span class="built_in">memset</span>(outbuf, <span class="number">0</span>, outlen);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ((<span class="keyword">iconv_t</span>)<span class="number">-1</span> == (icd = iconv_open(to_charset, from_charset)))</div><div class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ((<span class="keyword">size_t</span>)<span class="number">-1</span> == iconv(icd, (<span class="keyword">char</span>**)&amp;inbuf, &amp;inlen, &amp;outbuf, &amp;outleft)) &#123;</div><div class="line">        iconv_close(icd);</div><div class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    iconv_close(icd);</div><div class="line">    <span class="keyword">return</span> (<span class="keyword">int</span>)(outlen - outleft);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">gbk2utf</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; str_gbk, <span class="built_in">std</span>::<span class="built_in">string</span>&amp; store)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">size_t</span> outlen = str_gbk.size() * <span class="number">2</span> + <span class="number">1</span>;</div><div class="line"></div><div class="line">    <span class="keyword">char</span> *outbuf = (<span class="keyword">char</span> *)<span class="built_in">malloc</span>(outlen);</div><div class="line">    <span class="keyword">if</span> (!outbuf)</div><div class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line"></div><div class="line">    <span class="keyword">int</span> ret = charset_convert(<span class="string">"GBK"</span>, <span class="string">"UTF-8"</span>, str_gbk.c_str(), outbuf, outlen);</div><div class="line">    <span class="keyword">if</span> (ret == <span class="number">-1</span>) &#123;</div><div class="line">        <span class="built_in">free</span>(outbuf);</div><div class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    store = <span class="built_in">std</span>::<span class="built_in">string</span>(outbuf);</div><div class="line">    <span class="built_in">free</span>(outbuf);</div><div class="line">    <span class="keyword">return</span> ret;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　此外，如果需要查看程序的输出，默认的UTF8终端可能会显示乱码，必须设置终端的输出字符为GBK编码才可以。汉字的编码由旧到新是GB2312、GBK、GB18030，越新的标准支持的汉字符集越多，而且编码方式都是向下兼容的，GB2312现在来说收录的字符偏少，但GBK已经满足绝大部分需要了。<br>　　如果原来程序是多个部分的，移植目标是生成一个大项目的时候，要记住使用命名空间进行包装，否则可能会产生潜在的名字冲突问题，常量定义尽量使用const代替define，否则名字空间也保护不了你！</p>
+<p>　　移植的代码已经托管到<a href="https://github.com/taozhijiang/st_utils" target="_blank" rel="external">st_utils</a>了，欢迎大家测试指正。同时由于工作的时间比较的旧，很多参考文献不能一一列出了，如原作者有需求，请联系我加上！</p>
+<p>本文完！</p>
+<h1 id="参考文献">参考文献</h1><ul>
+<li><a href="http://www.ibm.com/developerworks/systems/library/es-MigratingWin32toLinux.html" target="_blank" rel="external">Migrating Win32 C/C++ applications to Linux on POWER, Part 1: Process, thread, and shared memory services</a></li>
+<li><a href="http://www.ibm.com/developerworks/systems/library/es-win32linux.html" target="_blank" rel="external">Migrate Win32 C/C++ application to Linux on POWER, Part 2: Mutexes</a></li>
+<li><a href="http://www.ibm.com/developerworks/systems/library/es-win32linux-sem.html" target="_blank" rel="external">Migrate Win32 C/C++ applications to Linux on POWER, Part 3: Semaphores</a></li>
+<li><a href="http://blog.csdn.net/wenhm/article/details/1758848" target="_blank" rel="external">Windows下程序向Linux下移植细节</a></li>
+<li><a href="http://qiusuoge.com/12451.html" target="_blank" rel="external">手把手教你玩转SOCKET模型：完成端口(Completion Port)详解</a></li>
+<li><a href="http://www.graphics-muse.org/wp/?p=868" target="_blank" rel="external">Working with timer_create() to use multiple timers using a single signal</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/linux/l-cn-signalsec/" target="_blank" rel="external">Linux 多线程应用中如何编写安全的信号处理函数</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></p>
+        <p><span>最后更新:</span>2017-02-28, 12:55:31</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201604/server-prog-port-from-windows-to-linux.html" title="Windows服务端程序向Linux移植经验总结">https://taozj.org/201604/server-prog-port-from-windows-to-linux.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201604/server-prog-port-from-windows-to-linux.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201604/oversee-of-http-based-on-libmicrohttpd.html">
+                    基于libmicrohttpd的HTTP服务器初探
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201604/recommend-system-algorithm.html">
+                    推荐系统常用的推荐算法
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201604/server-prog-port-from-windows-to-linux.html" data-title="Windows服务端程序向Linux移植经验总结" data-url="https://taozj.org/201604/server-prog-port-from-windows-to-linux.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201604/oversee-of-http-based-on-libmicrohttpd.html" title="上一篇: 基于libmicrohttpd的HTTP服务器初探">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201604/recommend-system-algorithm.html" title="下一篇: 推荐系统常用的推荐算法">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

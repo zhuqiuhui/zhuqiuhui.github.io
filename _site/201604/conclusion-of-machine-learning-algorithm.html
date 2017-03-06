@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>不带公式的机器学习算法整理 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="生命不息，奋斗不止。持续更新中…
+　　这个题目取得比较奇怪，原因是：虽然号称数学是世界上最简洁的语言，但是太多的公式难免看的人心慌；其次是公式在hexo+mathjax打起来比较的费劲，还有兼容性问题。其实，本意就是想把常用算法罗列一下，用个一两段文字描述一下基本意思和原理，还有用途和局限性，如果看看记不起来了，再去寻求一大堆资料温习一下。其实机器学习常用的算法都比较老了，各种语言的学习库也久经考">
+<meta property="og:type" content="article">
+<meta property="og:title" content="不带公式的机器学习算法整理">
+<meta property="og:url" content="https://taozj.org/201604/conclusion-of-machine-learning-algorithm.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="生命不息，奋斗不止。持续更新中…
+　　这个题目取得比较奇怪，原因是：虽然号称数学是世界上最简洁的语言，但是太多的公式难免看的人心慌；其次是公式在hexo+mathjax打起来比较的费劲，还有兼容性问题。其实，本意就是想把常用算法罗列一下，用个一两段文字描述一下基本意思和原理，还有用途和局限性，如果看看记不起来了，再去寻求一大堆资料温习一下。其实机器学习常用的算法都比较老了，各种语言的学习库也久经考">
+<meta property="og:image" content="https://taozj.org/post_images/images/201604/3dd9457bf78c0383571901dab41eb69f.png">
+<meta property="og:updated_time" content="2016-12-18T13:56:43.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="不带公式的机器学习算法整理">
+<meta name="twitter:description" content="生命不息，奋斗不止。持续更新中…
+　　这个题目取得比较奇怪，原因是：虽然号称数学是世界上最简洁的语言，但是太多的公式难免看的人心慌；其次是公式在hexo+mathjax打起来比较的费劲，还有兼容性问题。其实，本意就是想把常用算法罗列一下，用个一两段文字描述一下基本意思和原理，还有用途和局限性，如果看看记不起来了，再去寻求一大堆资料温习一下。其实机器学习常用的算法都比较老了，各种语言的学习库也久经考">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201604/3dd9457bf78c0383571901dab41eb69f.png">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-conclusion-of-machine-learning-algorithm" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201604/conclusion-of-machine-learning-algorithm.html" class="article-date">
+      <time datetime="2016-04-07T05:26:27.000Z" itemprop="datePublished">2016-04-07</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      不带公式的机器学习算法整理
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/机器学习/">机器学习</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数学/">数学</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>生命不息，奋斗不止。持续更新中…</p>
+<p>　　这个题目取得比较奇怪，原因是：虽然号称数学是世界上最简洁的语言，但是太多的公式难免看的人心慌；其次是公式在hexo+mathjax打起来比较的费劲，还有兼容性问题。其实，本意就是想把常用算法罗列一下，用个一两段文字描述一下基本意思和原理，还有用途和局限性，如果看看记不起来了，再去寻求一大堆资料温习一下。其实机器学习常用的算法都比较老了，各种语言的学习库也久经考验，正如越来越多的码农沦为系统集成工程师一样，数据挖掘虽然不用从头实现算法的各个部分，但是如果能对流程和数据特性了如指掌，对各种算法适用范围、优缺点、参数含义烂熟于心，对各种业务指标期望有的放矢，岂不乐哉～<br>　　在此还想啰嗦的一句是，这么多算法无论复杂与简单，大多（统计类的可能有些例外）遵循了给出一个模型—计算误差—修正系统，直到得到最优解或者可以接受的误差为止，由此不得不感叹道维纳“控制论”之伟大！<br><img src="/post_images/images/201604/3dd9457bf78c0383571901dab41eb69f.png" alt="Machine Learning"></p>
+<h1 id="一、分类">一、分类</h1><h2 id="1-1_贝叶斯">1.1 贝叶斯</h2><p>　　遵循贝叶斯公式框架的理论，后验概率正比于先验概率与似然度之积。</p>
+<h3 id="1-1-1_朴素贝叶斯">1.1.1 朴素贝叶斯</h3><p>　　朴素贝叶斯之所以朴素，是基于“属性条件的独立性假设”而使得模型的计算被简化了。具体来说，就是输入样本有N维的属性，所有属性之间相互独立，每个属性单独独立的对分类结果产生影响。<br>　　对于离散值，就考虑每个属性出现的频率关系得到概率关系，而对于连续的属性，可以考虑其分布类型的概率密度函数。离散属性中，贝叶斯分布一般可以分为Bernoulli /Multinomial，前者是二项式分布，后者是多项式分布。对于统计的元素前者出现与否只有0、1两个状态，后者多项式分布，会记录出每个元素的具体出现频率。一般短文本分类的情况，适用于二项式分布，长文本分析的类似情况，使用多项式分布效果较好。<br>　　在文本分类（情感分析）中，使用过贝叶斯分类，很明显：先验概率就是训练文档各个分类的文档比重，此时你没有观测数据，那么按照这么个比例把握比较大，相似度就统计各个分类中词的出现与否/频率，然后对待测的数据，衡量待测数据中出现的词在各个分类中的比率来计算和各个分类的相似程度，最终修正先验概率得到后验概率。关于伯努利分布和多项式分布，在具体文本测试中两者估计就一个多点的差异，尚不是很明显。<br>　　这两个实现和求解的过程都比较简单，性能还不错，注意建模时候需要平滑处理，防止最终计算概率时候未出现词导致概率为0，其中常用的拉普拉斯修正~“+1”平滑实现简单而且有效。</p>
+<h3 id="1-1-2_半朴素贝叶斯">1.1.2 半朴素贝叶斯</h3><p>　　朴素贝叶斯有属性独立性假设，这种假设在现实中并不是总是成立的，所以对属性独立性假设进行放松就形成了版朴素贝叶斯，比如常见的“独依赖估计”(ODE)，其就是假设每个属性在类别之外最多依赖一个其他的属性（如果增加依赖的属性可能计算结果会变好，但是高阶联合概率计算十分复杂），而这个被依赖的属性选择方法就成了这类算法的研究点：比如所有属性都依赖同一个属性，而这个父属性可以通过交叉验证来选择最好的。</p>
+<h3 id="1-1-3_贝叶斯网络">1.1.3 贝叶斯网络</h3><p>　　又称为信念网络(Belief Network)，借助于有向无环图(DAG)来刻画属性之间的依赖关系。<br><a id="more"></a></p>
+<h2 id="1-2_最大熵估计">1.2 最大熵估计</h2><p>　　在单一机器算法中算是性能上乘的。它基于一个事实：对于我们确信的东西，我们用规则去约束它，对于我们不确定的东西，我们不做任何的假设。新手很容易绕进去，说最大熵不就是最不确定么，我们的目的就是要消除不确定度，让熵降低，那你这个算法让不确定度最大，搞毛线啊。<br>　　其实举个例子，比如投骰子，如果什么不规定，你肯定知道投下去1向上的概率是1/6；然后我告诉你投下去1，2，3向上的概率是2/3，那你就知道1向上的概率就是2/9；然后我再约定3向上的概率为1/3，那么你几就推断出1向上的概率就是1/6了。为什么我要做出这么个判断，缘由我们不知道信息的时候，就让他平均分布，不加入人为的任何假设，这时候相对来说风险最小，但同时也是在满足约束条件下熵最大的时候。<br>　　在文本分类中，最大熵估计准确度确实比贝叶斯估计多4~5个百分点，但是最大熵估计需要不断的迭代约束条件来让他收敛，性能问算是这个算法最大的问题，常用的解法包括GIS(Generalized Iterative Scaling)、IIS(Improved Iterative Scaling)、L-BFGS，前者的计算效率最低，但是原理清晰，适于学习，而后者算法效率较高，适于工程实践。</p>
+<h2 id="1-3_决策树">1.3 决策树</h2><p>　　决策树直观上感觉是跟数学关联最小的一种，其实就是建立一个个的判别规则，形似流程图一样，让样本走到最终的叶节点完成分类。但是，决策树在数据挖掘和商业决策中用的情况非常的广泛，同时一个专业的决策树还是有一些技巧的。由于决策树就是从属性集中选择属性来进行样本划分，所以希望决策树的分支节点的样本尽可能是同类别的，称之为纯度。<br>　　决策树的属性有连续和离散之分，对于离散属性，其只会在整个决策树中出现一次，而每个步骤的决策属性不是随便选的，而是基于一定的数学规则来进行，比如ID3使用的信息增益、C4.5使用到的增益率。<br>　　信息增益是先计算这个节点的信息熵，然后对于每一个可选属性，假设该种算法计算其分类后各个节点的信息熵，再根据各个节点数目加权进行整合，计算分类之前的信息熵和这个整合值之间的差异，定义为信息增益，大者说明该属性的划分信息增益大，取之。但是信息增益有个问题，就是比较偏向于可选类型值较多的属性，因此还有个增益率选择法，用之前的信息熵整合值处以“属性固有值”IV，而这个IV对于可选值较多的类型结果会比较大，所以偏向与属性类型值取值较小的属性。通常而言，是使用信息增益率先筛选掉一部分属性，在选择剩余的信息增益大的属性来划分。而CART使用的是Gini值，其表示了样本的分散度。<br>　　决策树还有的处理是剪枝处理，这对于处理过拟合十分的重要。一些情况下决策树学习的过于细致，一些样本的个性也被计算进去了，导致了模型的泛化很弱。剪枝分预剪枝（在生成树的过程中决定是否继续划分）和后剪枝（生成成功之后，从底向上查看非叶节点能否将其子树整合为叶节点）。一般来说，预剪枝有欠拟合的风险，而后剪枝欠拟合风险小，但是计算相对复杂一些。<br>　　对于连续值的预测，可以按照样本的值从小到大进行排序，然后两两去中位数，得到n-1个分类点。然后依次分类点分别计算分类的信息增益，取信息增益大的分类点来决策。还需要注意的是，连续值分类，其属性可以在分类树中使用多次的。<br>　　决策树中常会用到的算法有：ID3、CART、C4.5。</p>
+<h1 id="二、回归(Regression)和正则化(Regularization_)">二、回归(Regression)和正则化(Regularization )</h1><p>　　回归问题属于有监督学习范畴，其相对与分类，回归的最大区别是输出变量是连续值，然而这两者没有必然的区分，因为对于回归的结果，也可以设定一个阈值区域用来实现分类效果。</p>
+<h2 id="2-1_线性回归(Linear_Regression)">2.1 线性回归(Linear Regression)</h2><p>　　线性回归问题，目的在于得到一个线性模型，使得尽可能的能够让给定的输入能够准确的预测出对应的输出。可以表示为，对于训练数据集D，其每个样本$x^{(i)}$由多个属性所描述，然后我们试图得到函数模型$y=h(x)$，让$y^{(i)} \approx h(x^{(i)})$，然后可以对任意的新样本输入都能给出连续的输入出值，称之为多元线性回归。记为<br>$$h(x) = \sum_i\theta_ix_i = \theta^Tx$$<br>　　上式中每个$x$是一个样本，为了方便添加$x_0=1$和截距$\theta_0$截距。然后实际的输出和模型的输出肯定是有差距的，因此定义代价函数<br>$$J(\theta) = \frac{1}{2} \sum_i \left( h(x^{(i)}) - y^{(i)} \right)^2 = \frac{1}{2} \sum_i \left( \theta^\top x^{(i)} - y^{(i)} \right)^2$$<br>　　然后我们就是要通过训练样本来调整$\theta$，使得$J(\theta)$最小化（1/2为了求导方便）。最常用的方法有：梯度下降法、最小二乘法。</p>
+<h3 id="2-1-1_梯度下降法">2.1.1 梯度下降法</h3><p>　　对于梯度下降法，有批量梯度下降法和随机梯度下降法。区别在于批量梯度下降法每次都考虑全部样本，运算量较大；随机梯度下降法在考虑单个样本之后就会更新$\theta$值，所以可以快速收敛。<br>　　批量梯度下降法$\theta$更新公式：$\theta_j := \theta_j + \alpha\sum_{i=1}^m(y^{(i)}-h_\theta(x^{(i)}))x_j^{(i)}$<br>　　随机梯度下降法$\theta$更新公式：$\theta_j := \theta_j - \alpha\frac{\partial{J(\theta)}}{\partial\theta_j} = \theta_j + \alpha(y^{(i)}-h_\theta(x^{(i)}))x_j^{(i)}$</p>
+<h3 id="2-1-2_最小二乘法">2.1.2 最小二乘法</h3><p>　　相比较梯度下降法需要迭代求取参数$\theta$。</p>
+<h2 id="2-2_逻辑回归(Logistic_Regression)">2.2 逻辑回归(Logistic Regression)</h2><p>　　逻辑回归其本质还是在于线性回归，只是对之前无约束的线性输出做了一个映射$g(z)$，对于sigmoid函数输出范围为[0,1]，对tanh函数为[-1,1]，下面假设以sigmoid函数为例，可得<br>$$ h_\theta(x)=g(\theta^Tx)= \frac{1}{1+e^{-\theta^Tx}}$$<br>　　这个得到的结果$h_\theta(x)$就是x分类为1的概率，而$1-h_\theta(x)$就是分类为0的概率，训练的目的就是对于标记为1的样本输出最可能的大，二标记为0的样本输出的值尽可能的小。其误差函数定义为：<br>$$ J(\theta) = \sum_i y^{(i)}log(h_\theta(x^{(i)})) + (1-y^{(i)})log( 1- h_\theta(x^{(i)}))$$<br>　　其用梯度下降法计算同上面的线性回归是一样的。</p>
+<h2 id="2-3_Softmax回归">2.3 Softmax回归</h2><p>　　逻辑回归只能用于二分类的情况，而Softmax更像其在多分类情况下的推广，在使用中，如果目标的分类是多分类互斥的，那么用Softmax，否则可以为每个分类建立一个逻辑回归分类器。</p>
+<h2 id="2-4_正则化">2.4 正则化</h2><p>　　为了防止模型过拟合的现象，在损失函数中增加一个对每个特征的惩罚因子的过程。过拟合出现的原因往往是特征维度太多，通过去处不重要的特征可以防止过拟合现象，但是去除特征会损失信息，这种情况下采用正则化就比较的方便（个人的直观感受就是增加了一个阻尼项，使得各个特征的表现不像之前那么明显激进）。工程约定中通常不对$\theta_0$进行正则化，同时正则化系数不能选择太大，否则会有欠拟合的风险。<br>　　常见的正则化有L-2范数正则化（岭回归 Ridge Regression）、L-1范数正则化（LASSO）<br>$$min_w\sum_{i=1}^n(y_i - \vec{w}^T\vec{x}_i)^2+\lambda||\vec{w}||_1$$<br>$$min_w\sum_{i=1}^n(y_i - \vec{w}^T\vec{x}_i)^2+\lambda||\vec{w}||_2^2$$<br>　　L-1范数和L-2范数都有助于降低过拟合的风险，而且相比L-2正则化，L-1正则化更容易得到稀疏解，等于起到了特征选择的作用。</p>
+<h2 id="2-5_支持向量机_SVM">2.5 支持向量机 SVM</h2><h3 id="2-5-1_支持向量机">2.5.1 支持向量机</h3><h3 id="2-5-2_支持向量回归（SVR）">2.5.2 支持向量回归（SVR）</h3><p>　　其实一看模型$f(\vec{x})=\vec{w}^T\vec{x}+b$就类似于回归模型。SVR同一般的回归模型不同的是，一般的回归模型除非输出和标记完全一样，否则肯定会产生和记录误差，但是对于SVR，相当于在回归线的附近产生了一个缓冲带，在这个缓冲带的误差不计算，超过这个缓冲带的误差才会就算中。</p>
+<h3 id="2-5-3_核方法">2.5.3 核方法</h3><p>　　通常的SVM是假设训练样本是线性可分的，就是可以通过超平面将数据正确分类。对于有些不能达到这个要求的样本，就只有想办法将原始特征映射到一个更高维度的特征空间。</p>
+<h1 id="三、聚类">三、聚类</h1><p>　　聚类算法中比较核心的是距离的度量，距离近的才会被视为一类。常用的距离是Minkowski距离：<br>$$(\sum_{i=1}^n|x_{i}-y_{i}|^p)^{\frac1p}$$<br>　　当上式的p=2，就退化成了欧拉距离；当p=1，就退化成了麦哈顿距离。当然属性有离散型和连续型之分，连续型的属性计算距离没有什么问题，对于离散型的属性，如果是数值型的，也可以用Minkowski距离计算，而对于{颜色深,颜色浅}等无序属性，可以采用VDM(Value Difference Metric)计算其距离：<br>$$ VDM_p(a,b)=\sum_{i=1}^k|\frac{m_{u,a,i}}{m_{u,a}} - \frac{m_{u,b,i}}{m_{u,b}}|$$<br>　　上面的公式表示，对于k个样本簇，a、b为属性u的两个取值，两个比值表示每个簇中样本a、b占总数的比例。</p>
+<h2 id="3-1_K均值算法(K-means)">3.1 K均值算法(K-means)</h2><p>　　其迭代过程表示为：通过对聚得到的每个簇i计算其均值向量$\vec{\mu_{i}}$，然后再将样本集中的每个元素，计算其与各个簇均值向量的距离，找到距离最近的聚类j，再将这个元素添加到j簇中。这样进行过一轮迭代之后，计算每个簇的新均值向量，如果簇均值向量不再更新，那么迭代停止。<br>　　当然K-means也有其缺点：（1）具体K聚类个数不太好把握；（2）初始聚类的种子选择是随机的。</p>
+<h2 id="3-2_学习向量化(Learning_Vector_Quantization)">3.2 学习向量化(Learning Vector Quantization)</h2><p>　　要求训练的样本带有标记，算是监督类学习的一种，其目标是对每一个聚类簇学习得到一个属性向量。在训练样本中随机选择带标记的样本，然后计算与各个簇向量的距离，选择距离最近的那个簇，然后比较两者的标记是否一致，如果一致就让簇向量向样本属性向量靠拢；否则就反向远离之。<br>　　当达到最大迭代数目，或者各个簇向量更新很小的时候，就停止迭代。此时可以对任意样本与各个簇向量计算得到所划分的簇。</p>
+<h2 id="3-3_层次聚类(Hierarchical_Clustering)">3.3 层次聚类(Hierarchical Clustering)</h2><p>　　试图在不同层次对数据进行划分，形成树形的聚类结构，有自顶向下和自底向上之分。常见的AGNES是一种自底向上的算法。该算法首先将每个样本看作一个初始聚类，然后在运算的每一步中选择距离最近的两个簇进行合并，重复之直到达到要求的聚类数目。这个算法的核心是计算各个簇之间的距离，当然簇也是由元素组成的，其实就映射到两个簇中选择元素进行计算，然后会有最小距离、最大距离、平均距离等方式来决定结果。</p>
+<h2 id="3-4_Latent_Dirichlet_Allocation_(LDA)">3.4 Latent Dirichlet Allocation (LDA)</h2><p>　　这个算法最初发表，作者就是研究的文字类的分类，所以注定其在自然语言处理方便应用非常之很多，比如社交媒体热点监控、政府舆论监控等，而其中腾讯的广告系统就是基于这个算法的一个并行化实现。<br>　　本算法是个无指导的分类，只需参数提供聚类的数目即可（该算法还有一个变种，Labelled-LDA，可以实现指导分类）。同时，这个算法还比较有个性的是，其涉及到的数学概念和知识是相当之多。</p>
+<h2 id="3-5_Probabilistic_Latent_Semantic_Analysis（PLSA）">3.5 Probabilistic Latent Semantic Analysis（PLSA）</h2><p>　　其实按照出现的顺序来说或，算是PLSA先出来（据说作者搞完这个就去开公司了，也算潇洒），看看PLSA和LDA就感觉是频率派和贝叶斯派的区别：比如在PLSA中在可观测的doc和term之间，隐藏了一个坚信存在的主题变量z，然后用EM方法估计这个z；相比前者LDA添加了个Dirichlet先验分布和一个Gibbs采样。<br>　　理论上人家说LDA由于有先验分布，所以对于超短文本应当可靠性较好，但是在现实的工程实现中，PLSA比较的简单，计算高效而且可以并行化实现，所以PLSA应当更具实用性。</p>
+<h1 id="四、数据降维">四、数据降维</h1><p>　　在高纬数据处理中，数据降维和特征选择是两大主流技术。</p>
+<h2 id="4-1_主成分分析(Principal_Component_Analysis,_PCA)">4.1 主成分分析(Principal Component Analysis, PCA)</h2><p>　　PCA是最常见的降维方法，常常作为一般算法对于数据的预处理操作。其原理就是将高维属性空间变换为一个低维属性空间，让这个空间中的样本密度大幅提高，因为与学习任务密切相关的信息只是高维属性空间中的某些低维属性，而且通常是各个样本变化比较大的那些属性而应当被保留，而差异比较小的，通常是干扰噪声应当被去除。<br>　　然后PCA跟SVD(Singular Value Decomposition)，很多资料分开讨论，其实算是一个东西：SVD是底层的数学基础，不仅可以降维属性而且可以降维样本数甚至不降维用另外的方式表示数据，PCA算是在统计和机器学习中的一个降低属性维度的约定吧。<br>　　算法的过程：（1）对所有输入样本去直流化，并将数据映射到[0-1]区间；（2）计算样本的协方差矩阵$\vec{X}\vec{X}^T$；（3）对协方差矩阵$\vec{X}\vec{X}^T$做特征值分解；（4）取最大的d个特征值对应的特征向量$\vec{w}_1,\vec{w}_2,…\vec{w}_d$;（5）生成投影矩阵$\vec{W} = \vec{w}_1,\vec{w}_2,…\vec{w}_d$;<br>　　这样生成的投影矩阵$\vec{W}$是正交基向量，$\vec{Y} = \vec{W}^T \vec{X}$就实现了数据的降维。PCA认为一个随机信号最有用的信息体包含在方差里，在投影的时候就希望找到的超平面上各个样本能够经可能的分开，所以上面得到的$\vec{Y}$各个向量不仅是独立的，而且是按照方差从大到小的顺序排列的。同时既然进行了降维，那么必定有些数据信息被舍弃了，舍弃这些信息后能让原本的采样密度更大，同时这些被舍弃的特征向量往往跟噪声有关，PCA此时也起到了降噪的作用。<br>　　同时，PCA还可以有的作用比如：</p>
+<ul>
+<li>数据压缩，比如对于图片这种数据，如果$\lambda$的选取的比较少，原来的(m,n)二维矩阵就可以用U,S,V三个小矩阵来近似等价存储了；</li>
+<li>高维数据的可视化，将数据降维到2~3维就可以可视化了。</li>
+</ul>
+<h2 id="4-2_特征选择">4.2 特征选择</h2><p>　　特征选择就是对于高维的属性，挑选那些对当前学习有用的“相关特征”作为属性子集，去除那些没什么用的“无关特征”或者“冗余特征”，这样不但降低了计算的复杂度，同时也免除了那些无关特征对计算结果的干扰。<br>　　产生特征集，不能穷举所有的组合类型，因为特征选择本来就是应对高维属性的，穷举的组合类型就会非常的多，因此必须采用合适的子集生成和评价方法。前向搜索方法是：将所有属性分割成单个属性的子集，然后选择单个子集中评价最好的，再依次添加剩余的属性，形成两个元素的属性子集，选择评价最好的，依次类推，直到添加特征后评价还不如不添加，那么添加结束，返回该结果；类似的还有“后向”搜索、“双向”搜索。关于子集的评价，可以使用决策桩形式的信息增益来评价，或者分类准确度等各种评价指标。<br>　　常见的特征选择算法：</p>
+<p>###4.2.1 过滤式选择<br>　　主要特点是先进行特征选择，然后进行训练学习，两者是无关的。代表方法是Relief(Relevant Features)，其设计了一个相关统计量来度量特征的重要性，该变量是个向量，每个分量代表了其特征的重要性，选择的时候：对每个样本，在其周围选择最近的同类样本和不同类样本，然后依照如下方法进行更新：<br>$$\delta^j=\sum_i-diff(x_i^j,x_{i,nh}^j)^2+diff(x_i^j,x_{i,nm}^j)^2$$<br>　　前者为同类样本的距离，后者为不同类样本的距离（离散类型根据是否相同为0/1，连续类型归一化到0~1）。</p>
+<p>###4.2.2 包裹式选择<br>　　把学习器的最终性能作为属性子集的选择评判标准，所以等于是一种所见即所得的特征选择方法，但是其需要多次训练学习器，因此计算开销比较大。<br>　　最常见的包裹式特征选择法是LVM(Las Vegas Wrapper)算法，其算法的主要概念为：采用随机策略产生特征子集A’，采用交叉验证的方法得到学习误差$\epsilon’$，如果它比当前特征子集A误差更小，或者特征子集包含的特征数量更小，则保留A’。这种算法算是比较简单粗暴的，且其停止条件是迭代次数……</p>
+<p>###4.2.3 嵌入式选择<br>　　这其实是L-1范数正则化(LASSO)的副产品，因为对于<br>$$min_w\sum_{i=1}^n(y_i - \vec{w}^T\vec{x}_i)^2+\lambda||\vec{w}||_1$$<br>　　LASSO正则化后$\vec{w}$是稀疏的，而$\vec{w}$中非零的分量特征才会出现在最终的模型中，所以等于在使用了L-1正则化的时候，本身就潜入了特征选择的过程。</p>
+<h2 id="4-3_隐形语义分析类(Latent_Semantic_Indexing,_LSI)和潜在语义索引(Latent_Semantic_Analysis,_LSA)">4.3 隐形语义分析类(Latent Semantic Indexing, LSI)和潜在语义索引(Latent Semantic Analysis, LSA)</h2><p>　　这里的方法是基于上面的SVD的，通常应用于文本处理和信息检索之中（LSI将自己定位为Information Retrival）。<br>　　这些方法通过TruncatedSVD（其实就是降维啦），一方面可以去除那些不重要的噪音，还可以带来的好处有：对原始的数据进行了新的表示方式，可以处理Synonymy（同一个语义可以有不同种的表达方式）、Polysemy（对于多义词，他们可能工作的不是很好，因为最终得到的向量是加权平均的，所以会展示为接近平均值的语义项）、Term Dependence（原始的空间是基于独立性假设的，但是这往往是不成立的，但是进过SVD变换后，我们可以轻易的使用这个假设）。<br>　　经过TruncatedSVD之后，新的Doc-Term表示就可以做很多的事情了：如果要作为文本或者话题分类，就可以按照各个Doc的向量来进行聚类；如果要用作信息检索的话，就将要检索的文本计算其投影后向量，然后在这些文档的向量中寻找最接近的即可；不仅仅对文档，词汇也是按照向量表示的，因此还可以对词汇进行研究，比如寻找某个词关系最密切的词汇等。<br>　　对于使用$\vec{A}=word\times docs$的矩阵（与常理的习惯有些差异），进行SVD之后，word以$\vec{U}$的行向量表示，docs以$\vec{V}$的行向量表示（而不是其转置），他们降维之后的版本就是$\vec{U}\vec{S}$和$\vec{V}\vec{S}$。</p>
+<h1 id="五、相关学习算法">五、相关学习算法</h1><h2 id="5-1_Apriori_algorithm">5.1 Apriori algorithm</h2><p>　　该算法属于关联分析中的经典算法，用于找到各种集合中频繁出现的项，在商家产品推荐中应用广泛，常常也被称为购物篮分析，用于挖掘常见的商品购买组合。如果产品的数据有限，道可以穷举所有的组合来统计，但是一般商家的产品数目众多，这种笨办法显然是不合适的。<br>　　a. 支持度(support)：表示某个子集合在数据集所有集合中所占的比例；<br>　　b. 置信度/可信度(confidence)：针对A-&gt;B这条规则，可信度表示为 支持度(A,B)/支持度(A)；<br>　　从原理上说，Apriori实际是一个自底到顶的生成算法，Apriori的原理是：如果某个集合是频繁项，那么他的所有子集也是频繁项；反之，如果某个集合是非频繁项，那么他的所有超级肯定也不是频繁项。通过后面的原理，加上支持度的约束，可以省略很多集合项的统计操作。<br>　　其生成步骤描述为：<br>　　a. 首先创建长度为1的子集合，然后扫描数据集计算支持度，去掉支持度不满足的元素；<br>　　b. 将元素组合，生成长度为2的子集合，进行支持度的计算和排除；<br>　　c. 后面对于要生成长度为k的子集合，具有一定的技巧操作——对上一轮的(k-1)长度的子集合，进行两两比较，如果排序后其前(k-2)个元素相同，就取(k-2)|(k-1)~1|(k-1)~2这样组合成长度为k的子集合；（注意，这里有点像Eclat算法）<br>　　d. 依次进行(3)，直到不能产生子集合为止。<br>　　Apriori算法的缺点是：需要产生大量的候选子集合，而且需要不断扫描原始数据集，算法效率比较低。</p>
+<h2 id="5-2_FP-growth">5.2 FP-growth</h2><p>　　针对Apriori的缺点，FP不生成候选子集合，同时只需要扫描两遍数据集，将原始数据集压缩成一个频繁模树，然后依据这个频繁模式树生成关联规则，比Apriori算法快一个数量级。</p>
+<h2 id="5-3_Eclat_algorithm">5.3 Eclat algorithm</h2><p>　　Eclat算法的思想采用了倒排的概念，一般的数据集都是(TID, items)的形式，而Eclat将数据转换成(item,TIDs)的组织方式。<br>　　子集的元素按照顺序排列，假设其前(k-1)项相同，那么就可以进行或操作得到k项子集了，而同时两个集合的TIDs进行并操作，就得到了新子集的TIDs，所以不需要扫描原始数据集，算法的效率比较的高。<br>　　这个算法的缺点是要保留所有子集合的TID交易集，所以如果数据规模大的话，需要耗费大量的内存。</p>
+<h1 id="六、半监督学习">六、半监督学习</h1><p>　　针对标记的样本数量比较的少，未标记样本数目比较大的情况，而假设标记样本和未标记样本都是从数据源中独立同分布采样而得到的，那么就可以考虑使用标记和未标记样本的半监督的学习方法来建立模型。</p>
+<h1 id="七、集成学习">七、集成学习</h1><p>　　通过构建多个学习器来完成学习任务，将个体学习器的结果运用某些策略集合产生最终的结果。对于个体学习器，如果是相同的称为同质学习器，如果不同的则称为异质学习器。<br>　　其实在整个集成学习的理论中，追求的就是各个基学习器“好而不同”，其实对每个基学习器的要求不会像平常单个学习方法那么高（当然高更好，可以减少基学习器的数目），关键是各个基学习器之间要有差异，有自己的个性，如果大家对相同的样本做出的判断都一样，其实对最终的准确性和泛化能力没有任何的帮助<br>　　基学习器多样性的方法有：</p>
+<ul>
+<li>数据样本扰动：基本基于样本采样实现，主要对决策树、神经网络等不稳定基学习器有效，而对线性学习器、支持向量机、朴素贝叶斯等稳定学习器效果很小。</li>
+<li>输入属性扰动：当属性比较多的时候推荐，比如随机森林的机制。</li>
+<li>输出表示扰动：</li>
+<li>算法参数扰动：</li>
+</ul>
+<p>集成学习的集合策略有：</p>
+<ul>
+<li>平均法和加权平均法：前者可为后者权重相同时候的一个特例，一般来说，除非各个基学习器之前性能差异十分明显，否则建议蚕蛹平均法集成学习结果。</li>
+<li>投票法：可分为绝对多数投票法（只有当投票超过半数才接受，否则不输出结果，用于对可靠性要求高，可以不输出结果的情形）、相对多数投票法、加权投票法。</li>
+</ul>
+<p>　　根据个体学习器的生成方式，集成学习分为两类：个体学习器之间有强依赖关系，必须串行化生成，代表的有Boosting；个体学习器之间没有强依赖关系，代表有Bagging和随机森林(Random Forest)。</p>
+<h2 id="7-1_Boosting及著名代表AdaBoost">7.1 Boosting及著名代表AdaBoost</h2><p>　　如上文的描述，整个模型是串行生成的。算法首先给训练样本权值均匀化，使用一个基分类器训练之，然后根据样本的输出与标记进行对比：如果一致，那么样本的权重会相应降低，如果不一致，那么样本的权重会相应的增加，然后用这些新权重的样本去训练下一个分类器，直到达到指定数目的分类器。这里每一步训练的时候，会对结果的误差$\theta$进行评判，如果小于0.5（还不如随机分布），整个训练以失败结束。<br>　　实践中，有的属性是可以赋值权重的，对于不能赋值权重的，可以通过重采样来实现（估计就是将错误的样本大概率多采集点）。同时，AdaBoost只支持二分类的计算。</p>
+<h2 id="7-2_Bootstrapped_Aggregation_(Bagging)">7.2 Bootstrapped Aggregation (Bagging)</h2><p>　　主要是基于自助采样法(bootstrap sampling)，进行有放回的采样得到采样集（初始样本约有63.2%的几率会出现在采样集中），然后用每个采样集训练每个基学习器，再将这些基学习器的结果进行集合（常用简单投票法）就可以了。同时由于对于每个基学习器都有36.8%的样本没有用于训练，所以这些“包外样本”可以用于验证基学习器的泛化性能等。</p>
+<h2 id="7-3_随机森林_Random_Forest">7.3 随机森林 Random Forest</h2><p>　　实际是Bagging的一个扩展变体。RF以决策树作为基学习器来构建Bagging集成学习，同时在决策树训练的时候，引入随机属性选择的机制，因为传统的决策树都会按照信息增益、增益率等方式选择出一个最好的属性来用于每一步划分，而随机森林会在这之前每次随机选择一个属性集的子集合，然后在子集和中选择最优属性进行划分，k为随机度——k=1就是完全随机，k=d就是传统的决策树，推荐k=$log_2d$。</p>
+<h1 id="八、暴力类">八、暴力类</h1><p>　　之所以这么称，源于这类算法对计算量要求实在是高，网络层数少了模型能力有限（单层神经网络甚至不能执行异或操作），层数深了吧计算量和对训练数据的要求也斗升，所以不搞个Nvdia支持Cuda的GPU，很多样例复现都费劲。深度学习自然是当前机器学习的研究热点，相关论文发布很多，成果也很诱人，同时漫山遍野的深度库使得是个码农都能玩两下——但请谨慎入坑，其毛病也多多：<br>　　训练出来的模型是黑核的，不具备解释性，改进、微调等都比较麻烦，部署风险很高；网络结构，参数设置，训练样本涉及到的因素太多，对开发者经验要求好，而且最终一个工作的模型可能是不断试错最终得出来的；欠拟合、过拟合问题比大多数算法都为的严重（包外数据验证）；最不低碳环保的算法。</p>
+<h2 id="8-1_神经网络_BP神经网络">8.1 神经网络 BP神经网络</h2><p>　　早期的神经网络主要以BP网络最为常见和重要。由控制论得知，如果没有BP机制反向传递系统误差用于修正，就很难实现复杂稳定的模型。</p>
+<h2 id="8-2_深度学习">8.2 深度学习</h2><h3 id="8-2-1_Convolutional_Neural_Network_(CNN)">8.2.1 Convolutional Neural Network (CNN)</h3><p>　　卷积神经网络，主要适用于固定维度的输入信号，以图像处理最为代表。</p>
+<h3 id="8-2-2_Recurrent_Neural_Network_(RNN)">8.2.2 Recurrent Neural Network (RNN)</h3><p>　　表现为这一层网络的那个神经元，除了接受上一层神经元的输出作为输入之外，还接受同层相邻神经元的输出作为输入，这些输入会有个类似开关的东西控制各个输入源的权重。常见的RNN网络有LSTM、GRU。</p>
+<p>　　最后，我不得不说——不用公式记录算法根本做不到~~~<br>　　同时，如果有些科学计算不方便，但是有没有装Matlab的，推荐这个<a href="http://octave-online.net/" target="_blank" rel="external">GNU OCTAVE ONLINE</a>，很好用！</p>
+<h1 id="参考目录">参考目录</h1><ul>
+<li><a href="https://book.douban.com/subject/26708119/" target="_blank" rel="external">机器学习 - 周志华</a></li>
+<li><a href="http://machinelearningmastery.com/a-tour-of-machine-learning-algorithms/" target="_blank" rel="external">A Tour of Machine Learning Algorithms</a></li>
+<li><a href="http://spark.apache.org/docs/latest/mllib-guide.html" target="_blank" rel="external">Machine Learning Library (MLlib) Guide</a></li>
+<li><a href="https://github.com/taozhijiang/chinese_nlp" target="_blank" rel="external">中文语言处理工具</a></li>
+<li><a href="http://yuedu.baidu.com/ebook/d0b441a8ccbff121dd36839a" target="_blank" rel="external">LDA漫游指南</a></li>
+<li><a href="http://www.flickering.cn/nlp/2014/07/lda%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E4%B9%8B%E7%AE%97%E6%B3%95%E7%AF%87-1%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0%E6%AD%A3%E7%A1%AE%E6%80%A7%E9%AA%8C%E8%AF%81/" target="_blank" rel="external">[LDA工程实践之算法篇-1]算法实现正确性验证</a></li>
+<li><a href="http://scikit-learn.org/stable/index.html" target="_blank" rel="external">scikit-learn docs</a></li>
+<li><a href="https://zh.wikipedia.org/zh/%E5%85%88%E9%AA%8C%E7%AE%97%E6%B3%95" target="_blank" rel="external">Apriori算法</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></p>
+        <p><span>最后更新:</span>2016-12-18, 21:56:43</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201604/conclusion-of-machine-learning-algorithm.html" title="不带公式的机器学习算法整理">https://taozj.org/201604/conclusion-of-machine-learning-algorithm.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201604/conclusion-of-machine-learning-algorithm.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201604/how-to-calc-svd.html">
+                    SVD的数学计算步骤
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201604/random-sampling-method.html">
+                    随机采样方法
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201604/conclusion-of-machine-learning-algorithm.html" data-title="不带公式的机器学习算法整理" data-url="https://taozj.org/201604/conclusion-of-machine-learning-algorithm.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201604/how-to-calc-svd.html" title="上一篇: SVD的数学计算步骤">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201604/random-sampling-method.html" title="下一篇: 随机采样方法">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

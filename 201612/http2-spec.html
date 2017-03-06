@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>HTTP/2协议规范和特性解读 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="HTTP/2也算是个比较新的东西吧，虽然很多特性是基于之前的Google SPDY，但毕竟自2015年5月正式发布到现在也就一年半的时间。虽说绝大多数的主流浏览器在2015年底就基本都支持了HTTP/2协议(估计之前的SPDY“预演”功不可没)，但是对于生产环境的服务端来说可不会这么迅速就得到普及的，Apache 2.4.12通过mod_h2模块支持HTTP/2，nginx 1.9.5支持HT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP/2协议规范和特性解读">
+<meta property="og:url" content="https://taozj.org/201612/http2-spec.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="HTTP/2也算是个比较新的东西吧，虽然很多特性是基于之前的Google SPDY，但毕竟自2015年5月正式发布到现在也就一年半的时间。虽说绝大多数的主流浏览器在2015年底就基本都支持了HTTP/2协议(估计之前的SPDY“预演”功不可没)，但是对于生产环境的服务端来说可不会这么迅速就得到普及的，Apache 2.4.12通过mod_h2模块支持HTTP/2，nginx 1.9.5支持HT">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/1655d08c.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/42aa82451aaaf166f59f2fb57f1e9182.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/73cb3b0bac9aa53312ed78266c8bc82f.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/5efd484de1faf2aa803318f932000426.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/706987b79550d63f3e197f1065ae9e11.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/ffb18df8ced7cc0e5eeba0a962a8c801.png">
+<meta property="og:updated_time" content="2017-02-24T08:55:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP/2协议规范和特性解读">
+<meta name="twitter:description" content="HTTP/2也算是个比较新的东西吧，虽然很多特性是基于之前的Google SPDY，但毕竟自2015年5月正式发布到现在也就一年半的时间。虽说绝大多数的主流浏览器在2015年底就基本都支持了HTTP/2协议(估计之前的SPDY“预演”功不可没)，但是对于生产环境的服务端来说可不会这么迅速就得到普及的，Apache 2.4.12通过mod_h2模块支持HTTP/2，nginx 1.9.5支持HT">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201612/1655d08c.png">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-http2-spec" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201612/http2-spec.html" class="article-date">
+      <time datetime="2016-12-08T23:39:09.000Z" itemprop="datePublished">2016-12-09</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      HTTP/2协议规范和特性解读
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/协议/">协议</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>　　HTTP/2也算是个比较新的东西吧，虽然很多特性是基于之前的Google SPDY，但毕竟自2015年5月正式发布到现在也就一年半的时间。虽说绝大多数的主流浏览器在2015年底就基本都支持了HTTP/2协议(估计之前的SPDY“预演”功不可没)，但是对于生产环境的服务端来说可不会这么迅速就得到普及的，Apache 2.4.12通过mod_h2模块支持HTTP/2，nginx 1.9.5支持HTTP/2，所以一般服务器除非自己编译安装，要等到发行版入稳定仓库估计估计还得要个两年吧，毕竟最新的RHEL 7上的Apache还是2.4.6呢。<br>　　Google的主页已经全部部署了HTTP/2了(但是那个sffe服务器是个什么鬼？)，通过后面查看RFC发现HTTP/2具有很多优秀的特性，并且完全可以退化至HTTP/1.1，想想也是十分诱人啊。如果想在自己服务器部署Nginx支持HTTP/2的话，推举Ubuntu 16.04 LTS或许是一个不错的选择，最主要是因为<a href="https://www.nginx.com/blog/supporting-http2-google-chrome-users/" target="_blank" rel="external">新版Google Chrome移除了NPN只支持ALPN</a>，而这依赖于openSSL 1.0.2，但是很多系统都没有更新到这个版本，而系统最重要的基础库又不能轻易升级，所以用Ubuntu 16.04 LTS是在稳定性和便捷性一个比较好的平衡点，不过如果你的服务器跑的其他非企业级发行版就另当别论了。<br>　　至于突然想到这个，是因为昨天看到gRPC/Protobuf，底层是用的HTTP/2的协议，而且一个朋友做OTT，也是使用的HTTP/2的协议传输的。虽说现实很凄惨，但是前途很光明，瞄一下RFC7540流水帐一把吧！错过了HTTP/1.x，不要再错过了HTTP/2了。<br><img src="/post_images/images/201612/1655d08c.png" alt="http2"><br>　　PS：网上流传的baidu/fex-team的中文版翻译，大家在参阅的时候需要特别注意，一方面那份文档是基于草案翻译的，和正式发布的版本还是有一些差异，二来一些翻译的质量还待商榷，只建议用来对照正式版协议辅助理解，而不可作为依赖。</p>
+<h1 id="一、HTTP/1-x主要缺点和HTTP/2协议概述">一、HTTP/1.x主要缺点和HTTP/2协议概述</h1><h2 id="1-1_HTTP/1-x的主要缺陷">1.1 HTTP/1.x的主要缺陷</h2><p>　　HTTP/1.0的请求都是短连接，服务端应答之后会主动关闭掉该连接，HTTP/1.1为了减少这种频繁连接建拆支持KeepAlive长连接，但是请求和应答仍然是串行报头阻塞的，因此HTTP/1.x如果需要实现真正的并发则必须建立多个连接才可以。通常，增加HTTP/1.x的传输效率有：<br>　　(1) 通常浏览器和服务端允许建立6~8个长连接，但是这增加了服务器并发量的压力；<br>　　(2) 将资源分布到多个主机上面去，那么整体来说就可以建立更多的并发数，算是横向扩展的一种方式；<br>　　(3) 将多个图片组合成一个大的图片，然后通过CSS的方式将各个部分逻辑分割成小的图片，总体减少了请求的次数；<br>　　(4) HTTP/1.1 pipeline，允许多个请求在应答之前发送出去，不过服务端的返回必须是严格按照FIFO的顺序返回，也就是说只要其中一个请求响应时间长了也会导致后续的响应被阻塞。<br>　　HTTP/1.x是纯文本格式的协议，协议头附带很多冗余的信息，而且这种头部会被反复传输，最终会占用大量带宽，而且TCP的拥塞控制更加会恶化响应时间。</p>
+<h2 id="1-2_HTTP/2概述">1.2 HTTP/2概述</h2><p>　　HTTP/2针对上面问题做出了改进，允许在单个TCP连接上面通过Stream的逻辑概念实现复用机制，在增加传输效率的同时减少了连接数(自然也降低了服务端和客户端压力)。HTTP/2通过流量控制和优先级机制，有助于只传播接受者需要使用的数据资源，并在有限的资源下建议某些资源优先被传输处理。<br>　　HTTP/2允许服务器主动推送响应给客户端，主要是基于服务端预测客户端将来会用到的资源。<br>　　传统HTTP/1.x的每个请求和应答都是Header+Body的形式传输的，HTTP/2对传输帧进行了重新设计，采用二进制进行封装和压缩，增加了传输效率和可扩展性。HTTP/2的报头(HEADERS)帧和数据(DATA)帧组成了基本的HTTP请求和响应，而设置(SETTINGS)帧、窗口更新(WINDOW_UPDATE)帧、推送承诺(PUSH_PROMISE)帧可以实现HTTP/2的其他功能。</p>
+<h2 id="1-3_HTTP/2协议包的抓取">1.3 HTTP/2协议包的抓取</h2><p>　　因为HTTP/2所有流量都是加密的，虽然使用浏览器F12调试器可以查看上层的数据，尤其是一些协议相关的非数据帧是无法查看的，任何分析协议不抓包的行为都是耍流氓，但是如果直接用Wireshark得的抓包是无法查阅的。调试SSL/TLS加密数据的方法有两种：<br>　　(1). 如果针对是使用自己的网站，则可以使用你部署服务器的私钥来解密数据包；<br>　　(2). 如果是调试第三方的网站，则可以通过设置浏览器的SSLKEYLOGFILE环境变量以导出对称密钥，然后让Wireshark共享读取这个文件就可以解密浏览器回话过程中的包。<br>　　第三方的服务端和浏览器可能会有这样那样的问题，自己截取了一份Chrome访问Google的数据包，设置一下SSL中的(Pre)-Master-Secret就可以了，过滤条件使用http2，懒癌患者晚期可以直接<a href="/upload/http2_package.zip">下载</a>使用。<br><img src="/post_images/images/201612/42aa82451aaaf166f59f2fb57f1e9182.png" alt="http2-flow"></p>
+<h1 id="二、HTTP/2连接的启动">二、HTTP/2连接的启动</h1><p>　　HTTP/2需要客户端感知服务端是否支持HTTP/2，而不能一开始就进行HTTP/2通信。因为HTTP通信包括http和https两种情况，虽然HTTP/2必定是加密的，但是源请求方式不同，探测HTTP/2的方式也不相同。<br>　　在http的模式下，客户端发起一个普通的HTTP/1.1请求，外加HTTP升级机制所需要的额外头部信息，即 Upgrade: h2c头。如果服务端不支持HTTP/2则忽略这个请求，按照HTTP/1.1的模式正常的返回通信，后续对话退化到HTTP/1.x协议上面；而支持HTTP/2的服务端可以返回一个101(转换协议)响应来接受升级请求，这是一个空相应，紧接着两者就可以发送HTTP/2的帧了(先前主要是SETTINGS设置帧)。<br>　　鉴于https在2017年将会大量代替http，且很多服务器都将http直接301重定向到https，所以https下的HTTP/2连接的建立比较普遍。在这种情况下需要先协商建立TLS连接，然后在TLS的应用层协议协商(ALPN)中得出支持h2协议。ALPN是TLS的一个扩展，允许客户端在TLS连接建立后协商接下来需要使用的协议类型，当客户端或者服务器端不支持ALPN时HTTP/1.1将会被使用，否则客户端会向服务器端发送自己支持的协议列表，服务器会决定接下来要选用的协议并发送响应，比如下图中选用h2代表使用HTTP/2协议。<br><img src="/post_images/images/201612/73cb3b0bac9aa53312ed78266c8bc82f.png" alt="http2-start"><br>　　当然还有比如客户端通过其他方式知道某些主机一定支持HTTP/2，或者叫做先验知识知道协议支持。<br>　　上面的任何情况下，每个端点(客户端和服务端)都需要发送一个固定的24个字节连接序言(Magic)作为HTTP/2协议的最终确认<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n</div></pre></td></tr></table></figure></p>
+<p>　　紧接着序言后面是一个设置帧，详细内容可以看上面的h2截图。</p>
+<h1 id="三、HTTP/2_Frame帧结构">三、HTTP/2 Frame帧结构</h1><p><img src="/post_images/images/201612/5efd484de1faf2aa803318f932000426.png" alt="http2-frame"><br>　　所有的帧都是由9个字节的固定前缀打头的。Length指定了Payload长度，默认不超过2^14 (16,384)，除非设置了SETTINGS_MAX_FRAME_SIZE为更大的参数；Type指定了是前面某种帧的一种，比如SETTINGS、DATA等；Flags是一些bit的标志位；Stream Identifier用作后面的stream标识，0被保留用于表示连接相关的整体而不是一个具体的流。<br>　　关于流的长度，前面说道默认是2^14+9，任何的协议实现都必须能至少处理这个长度，通过SETTINGS_MAX_FRAME_SIZE可以最大扩展长度为2^24-1。任何接受到的帧太小而无法处理，或者操果设置值，应当返回FRAME_SIZE_ERROR。<br>　　HTTP/2的Header包含一个或者多个键值对，然后使用报头压缩序列化到header block中，然后他们会被分割成1个或多个header block fragments，并在HEADERS/PUSH_PROMISE/CONTINUATION中作为Payload部分传输。Cookie部分会被额外单独处理。如果fragment只有一份，那么只会在一个HEADERS/PUSH_PROMISE帧中传输，而且Flag的END_HEADERS会被置位，否则后面连续的PUSH_PROMISE/CONTINUATION只会在最后一个fragment处置位END_HEADERS，而且这些fragment必须作为一个连续的帧序列传输，没有任何类型或任何其他流的交错帧在中间。<br><a id="more"></a></p>
+<h1 id="四、stream(流)和多路复用">四、stream(流)和多路复用</h1><p>　　stream流应该算在一个TCP连接中分组交换的逻辑概念，在单个的TCP连接上面，客户端可以发送多个请求，服务端可以在资源就绪的时候响应任何一个请求。其特性主要包括：<br>　　(1). 一个单独的HTTP/2连接能够保持多个同时打开的流，各个端点间从多个流中交换帧；<br>　　(2). 流可以被内部建立和使用，也可以用于客户端和服务端建立和共享，而且任何一个端点都可以关闭流；<br>　　(3). 流中帧的传输顺序十分重要，接收方将按照接收到的顺序处理帧；<br>　　(4). 流通过一个整型来标识，由发起的端点分配这个标识号。</p>
+<h2 id="4-1_stream的状态">4.1 stream的状态</h2><h3 id="4-1-1_stream的状态和状态切换">4.1.1 stream的状态和状态切换</h3><p><img src="/post_images/images/201612/706987b79550d63f3e197f1065ae9e11.png" alt="http2-stream"><br>　　(1) <strong>idle</strong><br>　　流都是从idle状态开始的，发送或者接受一个HEADERS会导致其变为open状态，也可能导致其变成半关闭half-closed的状态；发送一个PUSH_PROMISE将导致流变成reserved (local)；收到一个PUSH_PROMISE将导致流变成reserved (remote)。<br>　　(2) <strong>reserved (local)</strong><br>　　发送PUSH_PROMISE的流将会变成reserved (local)，此时端点可以发送HEADERS使流变成half-closed (remote)；或者任意端点都可以发送一个RST_STREAM导致流变成closed状态，导致释放stream reservation。<br>　　(3) <strong>reserved (remote)</strong><br>　　收到PUSH_PROMISE的流将会变成reserved (remote)，此时端点收到HEADERS会使流变成half-closed (local)；或者任意端点都可以发送一个RST_STREAM导致流变成closed状态，导致释放stream reservation。<br>　　(4) <strong>open</strong><br>　　处于open状态的流可以用来发送任意类型的帧。任何一个端点都可以发送带有END_STREAM标记的帧，将会导致流变成half-closed状态：发送方变成half-closed (local)，接收方变成half-closed (remote)。任何一端发送RST_STREAM将会导致流变成closed状态。<br>　　(5) <strong>half-closed (local)</strong><br>　　此状态下的流只能发送WINDOW_UPDATE/PRIORITY/RST_STREAM类型的帧，当接收到END_STREAM或者任何一端发送RST_STREAM将会使流转为close状态。该状态下的流可以接收任何的帧。<br>　　(6) <strong>half-closed (remote)</strong><br>　　该状态的流表明对端不会再用其发送帧了，所以除了受到WINDOW_UPDATE/PRIORITY/RST_STREAM之外任何类型的帧都是错误的。该状态的流可以接收任何帧，而同样的当发送END_STREAM或者任何一端发送RST_STREAM将会使流转为close状态<br>　　(7) <strong>closed</strong><br>　　流的终结状态。当流接收到RST_STREAM之后如果收到除PRIORITY类型的帧，或者收到END_STREAM后再次受到任何帧，都应当被认为是STREAM_CLOSED错误。</p>
+<h3 id="4-1-2_stream的标识符">4.1.2 stream的标识符</h3><p>　　由31位的整形来标识，因为标识符是发起端分配的，所以规定client必须用奇数，server必须用偶数，0保留用于连接控制。一个新建立的流的标识符必须大于任何发起终端已经打开或者保留的流标识符，同时发起一个新的流也表示该端之前创建的所有比这个标识符小的处于idle的流转换成关闭状态。<br>　　因为标识符不能被重用，所以长时间存在的连接可能会产生标识符用尽的状况。这种情况下，客户端会重新打开一个TCP连接然后创建新的流；服务端可以发送GOAWAY强制客户端打开一个新的连接。</p>
+<h3 id="4-1-3_stream的并发">4.1.3 stream的并发</h3><p>　　通过SETTINGS帧设置SETTINGS_MAX_CONCURRENT_STREAMS参数，而且这个参数连接的两端都可以设置，作用于对端可以创建流的并发数目。处于open和half-closed状态的流会被计数，而处于reserved状态的stream不会被计数。</p>
+<h2 id="4-2_stream的流量控制">4.2 stream的流量控制</h2><p>　　引入stream的概念就是为了避免TCP连接中的阻塞，而HTTP/2通过WINDOW_UPDATE帧实现流量控制，主要确保同一个连接上的各个流不会造成破坏性的干扰。其流控制有以下特点：<br>　　(1) 流量控制只针对下一跳(hop)，而不是完整路径的端对端的控制；<br>　　(2) 流量控制是基于WINDOW_UPDATE帧的，接收者告知自己打算接收的数量，这是一种基于信任实现的机制；<br>　　(3) 流量控制是有方向性的，且由接收端全权控制。实现中客户端、服务端、中介者都可以设置流量控制；<br>　　(4) 初始窗口大小是65,535，针对新建的流以及整个连接；<br>　　(5) 只有DATA帧受流量控制，其它类型的帧都不会计入到流量控制中，确保控制帧不会因为流量控制而被阻塞；<br>　　(6) 流量控制不能被禁用；<br>　　(7) HTTP/2协议只规定了WINDOW_UPDATE帧的格式，而具体的算法和实现没有说明。<br>　　其实说白了，就是在内存、带宽等资源有限的条件下，通过流量控制保证资源的合理分配，不会被某些流不公平的独占。流和连接的窗口，表示了允许服务端发送的字节数，每次发送数据后这个窗口的值就会相应地减少，一旦被用完后就不允许再发送数据了，直到远端再次发送WINDOW_UPDATE帧来增加这个窗口的值。<br>　　在网络开发中，传输速率和处理速度不匹配的情况经常的发生，通常的做法就是：(1)不断的缓存数据，慢慢地下方到下游去处理，但是这显然是不安全的，因为不可能无限制的缓存下去；(2)缓存足够量的数据后，拒绝从底层socket再次接收数据，但这显然是不公平的，这会让其他的stream数据无法被接收，少数的stream占用了绝对的资源。所以流量控制机制是十分重要的。</p>
+<h2 id="4-3_stream的优先级">4.3 stream的优先级</h2><p>　　stream的优先级是通过依赖关系和权重来实现的，优先级不是必须的，服务端可以选择完全忽略优先级。新建立的流，可以在HEADERS帧中指定流的优先级，而其他时刻对于已经存在的流，可以通过PRIORITY帧来改变优先级。<br>　　这也是一种在带宽、资源有限时候的一种分配机制。端点不能够保证按照特定顺序传输、处理这些并发流，这只能算是一种建议性的机制。优先级信息是可选的，没有指定将会使用默认优先级。</p>
+<h2 id="4-4_错误处理">4.4 错误处理</h2><p>　　错误包括两种情况：连接错误和流错误。<br>　　(1) <strong>连接错误处理</strong><br>　　当阻止了frame layer的进一步处理，或者连接的状态被破坏了的情况。<br>　　当任何一个端点遇见这种错误的时候，应当首先发送一个包含如下信息的GOAWAY帧：自己最后一次从对端成功接收的stream标识符，解释连接错误原因的错误码。发送完GOAWAY帧后端点必须关闭连接。发送GOAWAY帧的机制只是尽量保证报告出错的原因信息，并不能保证对端一定可靠接收到该帧。<br>　　端点可以在任何时候结束连接。端点也可以选择将流错误当作连接错误来处理。端点在结束连接的时候在允许的条件下都应当发送GOAWAY帧。<br>　　(2) <strong>流错误处理</strong><br>　　特定流的错误，不会影响到其他流的处理。<br>　　端点检测到流错误的时候，应当发送一个带有错误标识码的RST_STREAM帧，端点一定不能发送RST_STREAM帧来响应一个接收到的RST_STREAM帧，避免出现死循环的情况。</p>
+<h1 id="五、Frame帧定义">五、Frame帧定义</h1><p>　　帧的类型由前缀的8位Type所定义。<br>　　(1) <strong>DATA</strong> Type=0x0<br>　　用来传输任意可变长度的字节流。通常可以用一个或者多个DATA帧来传输HTTP响应或者请求。<br>　　DATA帧中如果PADDED标识被设置，则有一个8bit的Pad Length，数据后面的Padding是可选的，主要可以用来隐藏数据包的长度信息。DATA帧只允许在非0流标识流上传输。<br>　　(2) <strong>HEADERS</strong> Type=0x1<br>　　可以用来打开一个stream，携带header block fragment，当单个HEADERS帧不能传输时，使用后续的CONTINUATION帧继续传递。HEADERS帧只允许在非0流标识流上传输。<br>　　(3) <strong>PRIORITY</strong> Type=0x2<br>　　PRIORITY帧主要的参数是Stream Dependency，用于设置当前流所以来的stream的其流标识符。这个帧可以在idle或closed状态的流上设置，以间接影响具有依赖关系的其他流的优先级。这个帧的长度固定是5，PRIORITY帧只允许在非0流标识流上传输。<br>　　(4) <strong>RST_STREAM</strong> Type=0x3<br>　　RST_STREAM帧只包含一个32bit的Error Code，用于解释流被终止的原因。RST_STREAM帧会立即终止一个流使其进入closed状态，接收者收到RST_STREAM帧后则不能发送除了PRIORITY之外的任何帧。RST_STREAM帧的长度固定是4，且不能在idle状态流上发送。<br>　　(5) <strong>SETTINGS</strong> Type=0x4<br>　　设置不是一种协商，而是发送者描述了自身的特性以被对端所使用，所以即使同一个参数，在客户端和服务端其参数值很可能不一样。<br>　　设置帧必须在连接开始的时候就发送，而且在通信过程中任何时候也支持发送，接收到设置帧后端点直接用帧中的新值覆盖自己的旧值，而不用保持维护先前状态。接收端会发送特殊的带有ACK长度为0的SETTINGS帧以确认。<br>　　设置帧从来都是针对连接而非单个stream的，所以其流标识符必须是0，其长度必须是6的整数倍，因为除了ACK通常的SETTINGS帧都是Identifier(2)+Value(4)。具体的参数类型参见手册。<br>　　接收者收到SETTINGS帧必须尽快更新相关参数，然后参数按照他们出现的顺序依次处理，并且保证在处理这些参数的时候不再处理其他的帧，对于不能识别的参数作忽略处理。更新完成后进行ACK确认，发送者收到ACK信息后，就可以依赖自己之前请求的参数信息了。<br>　　(6) <strong>PUSH_PROMISE</strong> Type=0x5<br>　　PUSH_PROMISE帧是预先通知对端需要初始化的流，其包含了Promised Stream ID标识符和额外的header block fragment参数信息，主要用来预先初始化压缩状态，以及保留stream标识符成为reserved状态。<br>　　某些角度看来PUSH_PROMISE帧和HEADERS帧有些像，包含END_HEADERS标志以及CONTINUATION帧的支持，其必须在一个已经open或者half-closed (remote)的流上面传输，而且如果对端设置了SETTINGS_ENABLE_PUSH，那么如果收到这种帧的ACK就是PROTOCOL_ERROR。接收者也可以返回RST_STREAM来拒绝这个PUSH_PROMISE请求。<br>　　(7) <strong>PING</strong> Type=0x6<br>　　通过PING帧是一种从发送端测量最小RTT的机制，同样也是一种检测连接是否可用的方法，可以被任意端发送。<br>　　发送PING帧的流标识符必须是0，并且应当被给予高优先级。其负载必须是一个8字节的自定义数据，而接收端ACK的时候设置ACK标志并原样返回该负载。<br>　　(8) <strong>GOAWAY</strong> Type=0x7<br>　　GOAWAY帧主要是用于主动关闭连接或者当连接遇到严重错误的情况下。其是一种优雅的方式进行关闭：不再接受新的流，并且处理完之前已经建立的流。<br>　　当一端发送GOAWAY帧的时候，另外一端创建新的流就是一个竞争条件，于是GOAWAY帧带有一个Last-Stream-ID参数，表示承认发送GOAWAY帧的对端最大的流标识符，此后这个连接将不再接受新的更大标志符的流(对端可以尝试新建连接来继续建立新流)。当关闭一个连接的时候，总应当发送GOAWAY帧让对端知道那些流已经或者将要被处理，发送GOAWAY帧的流标识符必须是0。<br>　　发GOAWAY帧后发送端能丢弃流标识符大于Last-Stream-ID的帧，但是任何修改连接状态的帧不能被全部忽略。HEADERS帧、PUSH_PROMISE帧和CONTINUATION帧必须被处理来保证维持header compression状态的一致。<br>　　(9) <strong>WINDOW_UPDATE</strong> Type=0x8<br>　　主要用于实现流来控制的，包括两个级别的流量控制：流级别和整个连接级别，根据发送流的流标识符是否为0来区分。<br>　　流量控制只针对下一跳(hop-to-hop)，而不是客户端-服务端整条链路的设置(end-to-end)，因为WINDOW_UPDATE帧不会被转发，HTTP/2中只有DATA帧受流量控制限制，而且帧开头的固定9字节不会被计入。WINDOW_UPDATE的负载是一个保留位和31位的无符号整型，其值的范围为1~(2^31-1)，其值是用于累加(in addition)在端点当期剩余的窗口值上面的，端点的窗口值表明允许其发送的字节数目。<br>　　初始的流和连接窗口大小都默认是65,535，通过SETTINGS帧的SETTINGS_INITIAL_WINDOW_SIZE参数可以设置新流的初始窗口大小，而针对连接的窗口大小只能通过WINDOW_UPDATE来设置而不能通过SETTINGS帧来改变。<br>　　(10) <strong>CONTINUATION</strong> Type=0x9<br>　　可以是紧跟着前一个HEADERS帧/PUSH_PROMISE帧或者不带END_HEADERS标志的CONTINUATION帧，其负载必定是一个header block fragment。</p>
+<h1 id="六、HTTP/2消息交换">六、HTTP/2消息交换</h1><h2 id="6-1_HTTP请求与应答交换">6.1 HTTP请求与应答交换</h2><p>　　客户端在一个新的流上发起请求，服务端在同一个流上做出应答。请求和应答的HTTP消息可以由HEADERS帧、CONTINUATION帧和DATA帧组合，原先chunked传输编码被废弃。HTTP的请求/应答交换完全占用了一个流：请求由客户端通过HEADERS帧发起并使流进入到open状态；当请求以END_STREAM标志帧结尾后请求结束，流进入到客户端half-closed (local)/服务端half-closed (remote)状态；响应通过服务端的HEADERS帧开始并通过END_STREAM标志帧结束，流进入到close状态。</p>
+<h2 id="6-2_HTTP头部">6.2 HTTP头部</h2><p>　　HTTP的头部都是一些键值信息，在HTTP/1.x中都是ASCII编码且不区分大小写的，而在HTTP/2中需要全部转换成小写字母后再编码。这些头部组合后如果一个HEADERS帧不能传输，后面使用CONTINUATION帧继续传递，知道最后一个标志END_HEADERS意味着头部传输完毕。<br>　　(1) <strong>伪头字段</strong><br>　　HTTP/1.x有一个固定的请求头，比如“GET /resource HTTP/1.1”，来携带请求方法、URI、协议版本以及相应码，而HTTP/2用’:’开头表示的伪头部(而非真真HTTP协议头部)来携带这些信息，并且所有的伪头部必须在正规HTTP协议标准头部之前出现完。<br>　　(2) <strong>连接相关的字段</strong><br>　　在HTTP/2协议中，不应当包含连接相关(Connection-Specific)的头部，trailers是个例外。<br>　　(3) <strong>请求相关的伪字段</strong><br>　　:method GET、POST等标准方法<br>　　:scheme 通常是http或https<br>　　:authority 比如www.googleapis.com，类似于HTTP/1.x的Host头信息<br>　　:path 请求目的的URI，包括路径名和参数<br>　　对于一个请求，必须为:method、:scheme、:path包含一个准确合法的值，这些伪头部必须首先且在第一帧中出现。请求可以带DATA帧(比如POST请求)或者不带DATA帧，完整的请求最后一帧通过END_STREAM标示结束。<br>　　(4) <strong>响应相关的伪字段</strong><br>　　:status 所有的响应中都必须包含该字段。响应通过一个HEADERS帧和可选的CONTINUATION帧开始，然后通过DATA帧传输响应body。<br>　　(5) <strong>压缩和Cookie字段</strong><br>　　Cookie字段可能会有多个，他们既可以作为键值对多次出现，也可以单个cookie键接多个值，值与值之间用”; “连接。<br><img src="/post_images/images/201612/ffb18df8ced7cc0e5eeba0a962a8c801.png" alt="http2-example"><br>　　这里只是定义了头部字段和结构，而头部压缩是HTTP/2的另外一大特性，其使用的HPACK header compression技术的具体的细节，可以参看RFC7541。HPACK维护着一个static头表，是在HTTP协议中经常用到的头部结构，同时在通信的服务端和客户端维护着一个dynamic头部表，在通信过程中增加的头部信息都会记录到这个表中，此后如果需要再次传输这个头，就只需要传输在动态头表中的索引就可以了。头表的键和值采用了高效的Huffman编码，默认头表4k的大小，可以通过SETTINGS帧来修改。</p>
+<h2 id="6-3_Server_push">6.3 Server push</h2><p>　　Server Push是HTTP/2中的一个新特性，不过在抓Google首页的包中没有该帧，所以也只能看着手册瞎说了。这个行为一定是服务端对客户端的行为，客户端可以通过SETTINGS_ENABLE_PUSH来控制是否开启这个功能。服务端可以预测接下来客户端需要请求的资源，然后发送这些可以被缓存的资源，最显式的好处就是提高了页面加载的速度。<br>　　Promised请求必须满足——cacheable、safe、no request body，cacheable可以让服务端校验后由客户端缓存，同时服务端必须支持:authority以支持认证。<br>　　(1) <strong>Push请求</strong><br>　　在语义上Server Push等同于一个响应，只不过这个相应的请求也是由服务端通过PUSH_PROMISE帧发起的。<br>　　比如，一个服务器接收到一个来自客户端的页面请求，页面中嵌入了其他图片连接，那么服务器会在发送这个DATA帧之前，先发送PUSH_PROMISE帧，这样可以确保客户端在接受到相应解析之前PUSH_PROMISE帧已经被接受生效了。请求帧中包含完整的头部信息，最重要的包含:path信息，所以客户端可以知道服务端推送的是哪个资源。<br>　　只可以在服务器观来open或者half-closed (remote)状态的流上发送PUSH_PROMISE帧，效果是创建一个新的流并将流切换到服务端看来reserved (local)的状态。<br>　　(2) <strong>Push响应</strong><br>　　发送完PUSH_PROMISE帧后，服务端就可以在这些预留的流上面发送响应了。如果客户端想要取消(比如客户端本地已经缓存了这个资源了)或者等待超时了这个响应，可以发送RST_STREAM帧附带CANCEL/REFUSED_STREAM进行取消这个响应。<br>　　响应以HEADERS帧开始，流会立即进入服务端视角half-closed (remote)状态，后面会带有DATA帧传输响应数据，并经过带有END_STREAM标记的帧结束，然后流进入closed状态。</p>
+<p>　　洋洋洒洒这么多，就暂且这样吧！太长了自己看着也恶心。</p>
+<p>本文完！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="https://en.wikipedia.org/wiki/HTTP/2" target="_blank" rel="external">Wikipedia</a></li>
+<li><a href="https://tools.ietf.org/rfc/rfc7540.txt" target="_blank" rel="external">Hypertext Transfer Protocol Version 2 | HTTP/2</a></li>
+<li><a href="https://www.nginx.com/blog/7-tips-for-faster-http2-performance/" target="_blank" rel="external">7 Tips for Faster HTTP/2 Performance</a></li>
+<li><a href="https://http2.github.io/faq/" target="_blank" rel="external">HTTP/2 Frequently Asked Questions</a></li>
+<li><a href="https://blog.cloudflare.com/tools-for-debugging-testing-and-using-http-2/" target="_blank" rel="external">Tools for debugging, testing and using HTTP/2</a></li>
+<li><a href="https://github.com/fex-team/http2-spec/blob/master/HTTP2%E4%B8%AD%E8%8B%B1%E5%AF%B9%E7%85%A7%E7%89%88%2806-29%29.md" target="_blank" rel="external">HTTP2中英对照版 06-29</a></li>
+<li><a href="https://developers.google.com/web/fundamentals/performance/http2/" target="_blank" rel="external">Introduction to HTTP/2</a></li>
+<li><a href="http://undertow.io/blog/2015/04/27/An-in-depth-overview-of-HTTP2.html" target="_blank" rel="external">An in depth overview of HTTP/2</a></li>
+<li><a href="https://lwn.net/Articles/558302/" target="_blank" rel="external">What’s new in HTTP 2</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></p>
+        <p><span>最后更新:</span>2017-02-24, 16:55:44</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201612/http2-spec.html" title="HTTP/2协议规范和特性解读">https://taozj.org/201612/http2-spec.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201612/http2-spec.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201612/design-patterns-(2)-structural.html">
+                    设计模式整理总结（二）：结构型模式
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201612/learn-note-of-google-grpc.html">
+                    Google gRPC框架学习笔记
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201612/http2-spec.html" data-title="HTTP/2协议规范和特性解读" data-url="https://taozj.org/201612/http2-spec.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201612/design-patterns-(2)-structural.html" title="上一篇: 设计模式整理总结（二）：结构型模式">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201612/learn-note-of-google-grpc.html" title="下一篇: Google gRPC框架学习笔记">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>Pro Git速查笔记 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一、前言　　git是个性大神Linus自Linux内核而来的第二大发明。对于这个神器,个人也用了很久，相对其它的版本控制工具,其速度快、性能好、操作智能人性，是开发人员必备之利器；GitHub依托git作为程序员和开源项目代码首选托管网站，俨然同时也已成为全球最大的程序员基佬之交友网站。　　正如Linux下面的大多数命令行程序一样，只有常用的和用的多的才记得住，不常用的即使当时搞得很清晰，事后也容">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pro Git速查笔记">
+<meta property="og:url" content="https://taozj.org/201603/learn-note-of-pro-git.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="一、前言　　git是个性大神Linus自Linux内核而来的第二大发明。对于这个神器,个人也用了很久，相对其它的版本控制工具,其速度快、性能好、操作智能人性，是开发人员必备之利器；GitHub依托git作为程序员和开源项目代码首选托管网站，俨然同时也已成为全球最大的程序员基佬之交友网站。　　正如Linux下面的大多数命令行程序一样，只有常用的和用的多的才记得住，不常用的即使当时搞得很清晰，事后也容">
+<meta property="og:image" content="https://taozj.org/post_images/images/201603/f17a0279e1e0ec49860ae30ec1dd9bde.png">
+<meta property="og:updated_time" content="2016-12-18T14:05:59.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pro Git速查笔记">
+<meta name="twitter:description" content="一、前言　　git是个性大神Linus自Linux内核而来的第二大发明。对于这个神器,个人也用了很久，相对其它的版本控制工具,其速度快、性能好、操作智能人性，是开发人员必备之利器；GitHub依托git作为程序员和开源项目代码首选托管网站，俨然同时也已成为全球最大的程序员基佬之交友网站。　　正如Linux下面的大多数命令行程序一样，只有常用的和用的多的才记得住，不常用的即使当时搞得很清晰，事后也容">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201603/f17a0279e1e0ec49860ae30ec1dd9bde.png">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-learn-note-of-pro-git" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201603/learn-note-of-pro-git.html" class="article-date">
+      <time datetime="2016-03-20T02:52:55.000Z" itemprop="datePublished">2016-03-20</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Pro Git速查笔记
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/开发基础/">开发基础</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/软件/">软件</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h3 id="一、前言">一、前言</h3><p>　　git是个性大神Linus自Linux内核而来的第二大发明。对于这个神器,个人也用了很久，相对其它的版本控制工具,其速度快、性能好、操作智能人性，是开发人员必备之利器；<a href="https://github.com" target="_blank" rel="external">GitHub</a>依托git作为程序员和开源项目代码首选托管网站，俨然同时也已成为全球最大的程序员基佬之交友网站。<br>　　正如Linux下面的大多数命令行程序一样，只有常用的和用的多的才记得住，不常用的即使当时搞得很清晰，事后也容易忘记。这次在假期把<a href="https://git-scm.com/book/zh/v2" target="_blank" rel="external">Pro Git中文版</a>看了一遍，这里打算对常用的命令和参数进行一次整理，方便后续复习查阅。<br><img src="/post_images/images/201603/f17a0279e1e0ec49860ae30ec1dd9bde.png" alt="Pro Git"></p>
+<h3 id="二、git常用命令记录">二、git常用命令记录</h3><h6 id="-gitignore文件格式">.gitignore文件格式</h6><ul>
+<li>所有空行以及用#开头的注释都会被忽略；</li>
+<li>匹配的模式是glob模式，*匹配零个或多个任意字符，[abc]匹配任何一个列在方括号中的字符，?只匹配一个任意字符；</li>
+<li>模式后面接/表示要忽略的是目录；</li>
+<li>要对某些模式或者目录提出例外情况，使用!进行取反；</li>
+<li>doc/<em>.txt只匹配doc直接目录下的</em>.txt,而doc/<em>*/</em>.txt会递归匹配整个目录和子目录的*.txt；</li>
+</ul>
+<h6 id="git_diff">git diff</h6><ul>
+<li>git diff #默认查看的是当前修改的文件和暂存区快照文件的差异；</li>
+<li>git diff –cached/–staged #查看暂存区快照文件和上一次提交的对比；</li>
+<li>git reset HEAD <filename> #将文件从暂存区撤出来,和当前修改合并；</filename></li>
+</ul>
+<h6 id="git_rm">git rm</h6><ul>
+<li>git rm <filename> #将文件从版本控制中剔除,默认会连同文件系统的文件一通删掉</filename></li>
+<li>git rm –cached <filename> #保留文件本身而脱离版本控制(常用于比如忘了添加到.gitignore)</filename></li>
+</ul>
+<h6 id="git_log">git log</h6><ul>
+<li>git log -p   #以补丁的形式显示提交的内容差异</li>
+<li>git log -<n>  #显示最近的n次提交</n></li>
+<li>git log –word-diff #显示单词(而不是默认行)级别的差异,在处理文本的时候比较有用</li>
+<li>git log -U<n> #显示差异的上下文行数,默认是3</n></li>
+<li>git log –stat #相比默认显示,添加了修改文件,及其行数信息</li>
+<li>git log –pretty=[online,short,full,fuller,format:]<br>git log –pretty=format:”%h %ae %cd %s” #这在提交数目太多的时候,可以方便的显示.</li>
+<li>git log –author=xxx –since=”2015-01-12” –before=”2015-03-10” –grep=”CPP” #可以指定单条或者多条过滤格式.默认是满足任何一条就列出,如果需要满足多条,需要额外添加–match-all选项.<a id="more"></a></li>
+</ul>
+<h6 id="git_commit">git commit</h6><ul>
+<li>git commit –amend #对最后一次提交进行覆盖重新提交.(切记对于已经push的commit会引来麻烦)</li>
+<li>git reset HEAD <filename> #可以对已经暂存的文件撤出暂存区并同当前目录文件合并</filename></li>
+<li>git checkout – <filename> #放弃当前文件的修改,文件内容跟暂存区内容一致.</filename></li>
+</ul>
+<h6 id="git_remote">git remote</h6><ul>
+<li>git remote -v #显示远程仓库的信息</li>
+<li>git remote add <remote-name> <a href="https://remote-url" target="_blank" rel="external">https://remote-url</a> #添加远程仓库</remote-name></li>
+<li>git fetch <remote-name>  #抓取远程仓库的内容,注意的是fetch只是抓取内容,而不会自动合并内容到本地</remote-name></li>
+<li>git push <remote-name> <branch-name> #推送内容到远程的某个分支</branch-name></remote-name></li>
+<li>git remote show <remote-name> #显示远程仓库的详细信息(需要联网)</remote-name></li>
+<li>git remote rename/rm  #重命名/删除远程仓库</li>
+</ul>
+<h6 id="git_tag">git tag</h6><ul>
+<li>git tag #显示当前仓库已有的标签.</li>
+<li>git tag <tag-name> #打轻量级的标签</tag-name></li>
+<li>git tag -a <tag-name> -m “tag-message” #打带附注的标签</tag-name></li>
+<li>git config –global user.signingKey C0CC5261 #设置默认签名<br>git tag -s <tag-name> -m “tag-message” #打带GPG签名的标签</tag-name></li>
+<li>git tag -v <tag-name>  #验证带签名的标签</tag-name></li>
+<li>git push origin <tag-name> #默认push不会把tag推送到远程服务器的,可以用这个命令将<tag-name>推送到远程仓库<br>git push origin –tags  #推送本地所有tag到远程仓库</tag-name></tag-name></li>
+<li><blockquote>
+<p>(1)Git的标签轻量级的和带附注的两种类型.前者其实就是对某个特定提交的引用；而后者是一个实际的标签对象,包含校验信息\标签名\email\日期\GPG校验等信息.</p>
+</blockquote>
+</li>
+</ul>
+<h6 id="git_branch">git branch</h6><ul>
+<li>git branch <branch-name> #创建分支</branch-name></li>
+<li>git checkout <branch-name> #切换到对应分支(切换分支的时候最好保持一个干净的工作空间-stash)</branch-name></li>
+<li>git checkout master<br>git merge devel   #将devel分支的更新合并到master分支<br>git branch -d devel #删除无用分支</li>
+<li>git branch –merged #查看那些分支已经被并入到当前的分支,也就是那些分支是当前分支的直接上游,因为已经被合并了,所以当前分支已经包含了其所有的数据,可以安全删除这里列出的分支；</li>
+<li>git branch –no-merged #与上面相反,包含尚未合并的数据,默认不能简单删除之</li>
+<li>git log <master>..<experiment> # 查看所有在[experiment]中而不在<master>分支中的提交,显示的就是git merge <experiment>所用到的存在于<experiment>中的所有提交；</experiment></experiment></master></experiment></master></li>
+<li>git log origin/master..HEAD #预览你将会被那些推送给远程仓库;</li>
+<li>git log –left-right <master>..<experiment> #查看两个分支各自不同的提交信息</experiment></master></li>
+<li><blockquote>
+<p>(1)上面这些分支都是本地的分支,跟服务器上的分支没有任何关系,服务器上的分支需要<remote-name>/<branch-name>这样的方式来引用；</branch-name></remote-name></p>
+</blockquote>
+</li>
+<li><blockquote>
+<p>(2)合并有快进合并(Fast-forward)和普通合并,当某个分支在被合并分支的下游,就会快进合并；否则在之前的某个提交开始分叉的话,会从两者的共同祖先开始进行一个三方合并；</p>
+</blockquote>
+</li>
+<li><blockquote>
+<p>(3)合并冲突:git会自动进行相关合并,如果合并冲突的话,冲突的文件会在Unmerged paths项目下,手动解决这些冲突(git mergetool会调用图形化的合并工具),然后再暂存提交这些修改,提交后合并就结束了；</p>
+</blockquote>
+</li>
+</ul>
+<h6 id="git_push">git push</h6><ul>
+<li>git push origin master:<new_remote_br> #将本地的master分支推送到远程<new_remote_br>分支(可以新建)上去</new_remote_br></new_remote_br></li>
+<li>git fetch origin #通过fetch会把服务器上的分支信息同步下来,<br>git merge origin/<new_remote_br> #然后用将远程<new_remote_br>分支的修改合并到本地分支</new_remote_br></new_remote_br></li>
+<li>git checkout -b <new_remote_br> origin/<new_remote_br>  #上面同步得到的origin/<new_remote_br>是一个你不能本地修改的远程分支,如果本地需要基于其修改,就必须依据其创建本地分支；同时此时本地的<new_remote_br>是跟踪远程的origin/<new_remote_br>的,可以简略git pull/push不加远程和分支名进行操作；</new_remote_br></new_remote_br></new_remote_br></new_remote_br></new_remote_br></li>
+<li>git push origin :<new_remote_br> #删除远程分支</new_remote_br></li>
+</ul>
+<h6 id="git_rebase_(衍合)">git rebase (衍合)</h6><ul>
+<li>git rebase master <fea_branch> #将特新分支<fea_branch>在master分支上衍合一遍<br>git rebase –continue #如果有冲突会停止,此时手动修改,然后git add,再用这个命令继续衍合<br>git checkout master &amp;&amp; git merge <fea_branch> #衍合后两个分支进行快进合并<br>git branch -d <fea_branch> #不包含其它数据了</fea_branch></fea_branch></fea_branch></fea_branch></li>
+<li>git cherry-pick 2faf37cd1e57efacd11581ae1ae1175687c53a6c #只挑选某个感兴趣的提交来衍合</li>
+<li><blockquote>
+<p>(1)针对两个分支,一种操作是merge,还有就是rebase.rebase的原理就是从两个分支的共同祖先开始,让需要衍合的分支<fea_branch>从此处开始依次后续的提交生成相应的补丁,然后在基底分支(master)最后一个提交开始逐个应用上述补丁,在master之后生成一系列新的提交对象,从而<fea_branch>成为了master的直接下游,master进行一次Fast-Forward就可以了.其好处是master可以看到一个清晰的提交历史,仿佛是在一个分支上的连续操作产生的.</fea_branch></fea_branch></p>
+</blockquote>
+</li>
+<li><blockquote>
+<p>(2)如果你要跟别人提交补丁,也最好使用衍合,你的补丁在origin/master最新代码上生成补丁,维护者只需要根据你的提交进行一次快进合并就可以了,将冲突等问题由你自己解决了.   </p>
+</blockquote>
+</li>
+<li><blockquote>
+<p>(3)注意:你衍合的应该是你未公布的提交,否则别人之前同步了你的修改,然后你再发布衍合的提交,其实是相同的内容做了两次不同的提交,那么别人不断同步你的更新时候,代码仓库就会乱套.    </p>
+</blockquote>
+</li>
+</ul>
+<h6 id="git_stash">git stash</h6><ul>
+<li>git stash #保存当前的工作状态(包括跟踪被更改的文件和暂存的文件,未被跟踪的修改不会被保存)</li>
+<li>git stash list #查看所有被保存的stash</li>
+<li>git stash pop/apply #应用暂存数据,默认的情况是所有的更改被应用到跟踪修改状态,如果想让之前暂存的修改仍然在暂存中,添加使用–index参数.</li>
+<li>git stash drop #删除对应的暂存</li>
+<li>git stash show -p stash@{0} | git apply -R #取消暂存的修改,相当与unapply的效果</li>
+<li>git stash branch <br_name> #可以在你stash save时候的提交开始创建一个分支,然后将存储应用之,并删除存储</br_name></li>
+</ul>
+<h6 id="git修改提交">git修改提交</h6><ul>
+<li><p>git rebase -i HEAD~3 #进入选择的编辑窗口</p>
+<ul>
+<li>需要修改提交注释的改为edit；</li>
+<li>可以重排顺序,就修改了提交顺序；</li>
+<li>删除某一项,就删除了那个提交本身；</li>
+<li>squash合并到前一个提交,如果有多个要合并,接连用squash；</li>
+<li>edit还可以拆分某个修改,git reset HEAD^将修改撤出,然后慢慢添加到暂存区慢慢提交；</li>
+<li>然后交互用git commit –amend, git rebase –continue逐步完成(与git log反序显示,实际上是从过去某个点慢慢重新提交这个过程)   </li>
+</ul>
+</li>
+<li><blockquote>
+<p>(1)注意,这里修改的提交必须是没有同步到远程仓库的提交,否则会给别人带来困扰</p>
+</blockquote>
+</li>
+</ul>
+<h6 id="git_bisect">git bisect</h6><ul>
+<li>git bisect start #当前HEAD开始<br>git bisect bad  #设置当前HEAD的bad状态<br>git bisect good [tag-name/commit-id…] #设定之前一个正常提交开始</li>
+<li>git bisect start HEAD v1.0 #简化了上面的操作,设置二分查找的范围<br>git bisect run test-error-not-zero.sh #脚本测试,正确返回0,错误返回非0</li>
+<li>git bisect reset #切记要恢复HEAD值</li>
+</ul>
+<h6 id="git_submodule">git submodule</h6><ul>
+<li>git submodule add <a href="https://github.com/taozhijiang/st_utils.git" target="_blank" rel="external">https://github.com/taozhijiang/st_utils.git</a> st_utils<br>git commit -m “add submodule st_utils”</li>
+<li>git clone <a href="https://github.com/taozhijiang/git_test.git" target="_blank" rel="external">https://github.com/taozhijiang/git_test.git</a><br>git submodule init<br>git submodule update</li>
+<li>git fetch origin master  #进入子模块的目录,获取子模块的更新<br>git merge origin master  #合并更新<br>git submodule update    #在顶项目中,更新指针</li>
+</ul>
+<h6 id="git_svn">git svn</h6><ul>
+<li>git svn clone svn://gcc.gnu.org/svn/gcc -T trunk -b branches -t tags<br>git svn clone svn://gcc.gnu.org/svn/gcc -s #与上面等价,注意这里的路径,一般svn的项目根目录会有trunk,branches,tags等目录,如果你对整个项目都有权限的时候,才可以这样,如果你只对trunk某个目录有权限,就不能这么做了</li>
+<li>git svn clone svn://gcc.gnu.org/svn/gcc/config #没有项目的根权限</li>
+<li>git svn dcommit #向服务器推送更新</li>
+<li>git svn rebase  #向服务器拉取更新,时时运行他保证本地代码更新的<br>​</li>
+</ul>
+<h3 id="三、git其它">三、git其它</h3><h6 id="git_alias">git alias</h6><ul>
+<li>git config –global alias.co checkout</li>
+<li>git config –global alias.st status</li>
+<li>git config –global alias.last ‘log -p -1 HEAD’</li>
+</ul>
+<h6 id="发布自己的GPG(实际是将公钥信息存储在一个tag中)">发布自己的GPG(实际是将公钥信息存储在一个tag中)</h6><ul>
+<li>gpg -a –export C0CC5261 | git hash-object -w –stdin<br>git tag -a maintainer-pgp-pub 687224919a16ae0dcc4fb4aace4b2228a59805f1<br>git push –tags<br>git show maintainer-pgp-pub | gpg –import #别人导入你的公钥</li>
+</ul>
+<h6 id="代码发布">代码发布</h6><ul>
+<li>git archive master –prefix=’git_test’ | gzip &gt; <code>git describe master</code>.tar.gz<br>git archive master –prefix=’git_test’ –format=zip &gt; <code>git describe master</code>.zip </li>
+</ul>
+<h6 id="git配置">git配置</h6><ul>
+<li>git config –global credential.helper cache</li>
+<li>git config –global user.signingKey C0CC5261</li>
+<li>git config –global color.ui true</li>
+<li>git config –global core.autocrlf input</li>
+</ul>
+<h3 id="四、感言">四、感言</h3><p>　　git作为新生一代版本控制工具的代表，各种概念颠覆了传统的版本控制工具，虽然其看似复杂，但是如果能理解并熟练掌握，则可以大大提高开发和项目管理的效率。一般来说，越是历史悠久、传统保守、对代码掌控越严格的公司，其版本控制工具也越保守，使用如IBM Clearcase、Subversion、SVN等等。现在一般公司用Subversion的比较多，可以试着使用git-svn，虽然不如原生的git那么强大，但基本本地的功能都还能用。</p>
+<p>本文完!</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="https://git-scm.com/book/zh/v2" target="_blank" rel="external">Pro Git中文版</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></p>
+        <p><span>最后更新:</span>2016-12-18, 22:05:59</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201603/learn-note-of-pro-git.html" title="Pro Git速查笔记">https://taozj.org/201603/learn-note-of-pro-git.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201603/learn-note-of-pro-git.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">
+                    Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201603/interesting-cases-of-machine-learning.html">
+                    深度学习的那些有趣案例
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201603/learn-note-of-pro-git.html" data-title="Pro Git速查笔记" data-url="https://taozj.org/201603/learn-note-of-pro-git.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html" title="上一篇: Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201603/interesting-cases-of-machine-learning.html" title="下一篇: 深度学习的那些有趣案例">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

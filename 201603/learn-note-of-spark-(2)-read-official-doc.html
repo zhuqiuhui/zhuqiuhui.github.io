@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spark学习手册（二）：Spark官方手册读摘 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本来想买本Spark的书的，无奈最近买的书有点多超预算了。再看看官方的开发文档写的还是挺全的，就想着自己边读文档边自己做一下记录吧。毕竟，别人网上写的东西都是提纲挈领的没有那么细，看英文虽然繁琐一些，但也好理解一些；但是搞一个完整的手册翻译也太费精力了，这个读摘的定位跟Pro Git速查笔记一样——适合回顾而不适合学习。　　Spark与HDFS环境的搭建，请参照HDFS支撑下的Spark搭建与">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习手册（二）：Spark官方手册读摘">
+<meta property="og:url" content="https://taozj.org/201603/learn-note-of-spark-(2)-read-official-doc.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="本来想买本Spark的书的，无奈最近买的书有点多超预算了。再看看官方的开发文档写的还是挺全的，就想着自己边读文档边自己做一下记录吧。毕竟，别人网上写的东西都是提纲挈领的没有那么细，看英文虽然繁琐一些，但也好理解一些；但是搞一个完整的手册翻译也太费精力了，这个读摘的定位跟Pro Git速查笔记一样——适合回顾而不适合学习。　　Spark与HDFS环境的搭建，请参照HDFS支撑下的Spark搭建与">
+<meta property="og:image" content="https://taozj.org/post_images/images/201603/7aa02b77aa24f8f16e88461c00e086f0.png">
+<meta property="og:updated_time" content="2016-12-18T14:06:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark学习手册（二）：Spark官方手册读摘">
+<meta name="twitter:description" content="本来想买本Spark的书的，无奈最近买的书有点多超预算了。再看看官方的开发文档写的还是挺全的，就想着自己边读文档边自己做一下记录吧。毕竟，别人网上写的东西都是提纲挈领的没有那么细，看英文虽然繁琐一些，但也好理解一些；但是搞一个完整的手册翻译也太费精力了，这个读摘的定位跟Pro Git速查笔记一样——适合回顾而不适合学习。　　Spark与HDFS环境的搭建，请参照HDFS支撑下的Spark搭建与">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201603/7aa02b77aa24f8f16e88461c00e086f0.png">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-learn-note-of-spark-(2)-read-official-doc" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201603/learn-note-of-spark-(2)-read-official-doc.html" class="article-date">
+      <time datetime="2016-03-27T11:22:16.000Z" itemprop="datePublished">2016-03-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spark学习手册（二）：Spark官方手册读摘
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/开发基础/">开发基础</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/软件/">软件</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>　　本来想买本Spark的书的，无奈最近买的书有点多超预算了。再看看官方的开发文档写的还是挺全的，就想着自己边读文档边自己做一下记录吧。毕竟，别人网上写的东西都是提纲挈领的没有那么细，看英文虽然繁琐一些，但也好理解一些；但是搞一个完整的手册翻译也太费精力了，这个读摘的定位跟<a href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a>一样——适合回顾而不适合学习。<br>　　Spark与HDFS环境的搭建，请参照<a href="/201603/learn-note-of-spark-(1">HDFS支撑下的Spark搭建与尝试</a>-construct-spark-hdfs.html)。个人感觉，理解Spark的核心，是理解其RDD(Resilient Distributed Dataset)的数据模型！同时，以下部分，会尽量用Python(Python3)来测试，不过有些特性或者功能官方还没有支持。<br>　　还有，由于本人对Spark还不太理解，文中的很多术语直接英文，不敢造次。<br><img src="/post_images/images/201603/7aa02b77aa24f8f16e88461c00e086f0.png" alt="Spark"></p>
+<h1 id="一、常用术语解释">一、常用术语解释</h1><p>　　Spark中一个Application由1个driver program构成，由程序中的SparkContext定位，SparkContext可以链接各种类型的Cluster Manager(Spark自身的standalone、Mesos、YARN)，然后申请executors，申请到之后将程序代码发送到executors，最终由SparkContext发送tasks到executors以执行之。   </p>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>application</td>
+<td style="text-align:center">spark上的用户应用程序，由一个driver program和多个executors组成</td>
+</tr>
+<tr>
+<td>driver program</td>
+<td style="text-align:center">运行main并创建SparkContext的进程</td>
+</tr>
+<tr>
+<td>worker node</td>
+<td style="text-align:center">任何执行代码的集群节点</td>
+</tr>
+<tr>
+<td>executor</td>
+<td style="text-align:center">worker node启动的程序，执行tasks并在内存或者磁盘上保存数据</td>
+</tr>
+<tr>
+<td>task</td>
+<td style="text-align:center">每一个executor的执行单元</td>
+</tr>
+<tr>
+<td>job</td>
+<td style="text-align:center">由多个tasks构成的并行计算操作，一般由action操作催生</td>
+</tr>
+<tr>
+<td>stage</td>
+<td style="text-align:center">并行计算的核心是计算过程中不会产生shuffle，所以stage就是在shuffle边界产生的tasks集合，一个job一般由多个stages组成</td>
+</tr>
+</tbody>
+</table>
+<h1 id="二、官方首页显示的Spark的优势">二、官方首页显示的Spark的优势</h1><ul>
+<li>速度快，当数据常驻内存会比Hadoop快100倍，即使硬盘访问，速度也会快10倍以上。这同在后面的文档中强调的，可以使用persist将Spark数据常驻内存，同时惰性计算加大了计算的效率和开销有关。将数据保存到内存里面，可以减少磁盘以及HDFS等操作，对于数据挖掘这种常常需要迭代计算的情形尤为适合。</li>
+<li>接口简单可用，提供Java/Scala/Python/R的接口，个人比较喜欢Python。</li>
+<li>包含Spark SQL，Spark Streaming，MLlib，GraphX模块，可以说从数据源、算法、生成显示的部分都囊括了。</li>
+<li>和Hadoop，Mesos等的结合。暂时还没体会，不过用HDFS是刚刚滴，Spark支持本机standalone模式，后面可能会测试跟Hadoop YARN进行集成。<a id="more"></a>
+<h1 id="三、Spark启动和实用">三、Spark启动和实用</h1></li>
+<li>bin/pyspark会启动一个交互式的shell，并初始化SparkContext和sqlContext（注意查看提示实用的python版本），比如PYSPARK_PYTHON=python3.4 bin/pyspark；<br>–master local/local[4]/spark://host:port….，指定master的地址，当为local的时候在本机执行，不进行分布式操作；</li>
+<li>bin/spark-submit提交一个脚本的任务。比如<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">➜  ~  bin/spark-submit /root/wordc.py</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="四、RDD数据表示">四、RDD数据表示</h1><p>　　RDD数据模型会对数据进行分区，可以在各个集群节点上进行并行计算。RDD的数据来源既可以是程序中的数据，也可以是来自外部存储的或者是网路上的数据。</p>
+<ul>
+<li><p>程序中的数据可以使用sc的parallelize方法，对一个可迭代或者collection的数据进行并行化生成一个可以并行化计算的分布式数据集， 此函数接受一个分区数目参数，一个分区运行一个task，一般是一个CPU分配2～4个分区，系统一般会自动根据集群的规模设置分区数目。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">data = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]</div><div class="line">distData = sc.parallelize(data)</div></pre></td></tr></table></figure>
+</li>
+<li><p>外部数据主要是hadoop支持的数据，形式有文本数据，序列文件（SequenceFiles）以及其他Hadoop支持的输入格式；<br>文本文件主要用textFile函数，把文件读入，形成以行为单位的数据集，</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">distFile = sc.textFile(<span class="string">"/root/data.txt"</span>)</div><div class="line">print(distFile.collect())</div><div class="line">distFile.map(<span class="keyword">lambda</span> s: len(s)).reduce(<span class="keyword">lambda</span> a, b: a + b) <span class="comment">#计算总的词的个数</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>　　注意：如果指示的文件路径是本地路径，那么在各个work节点上都必须要能在相同的路径访问该文件，比如拷贝过去，或者用网络文件系统共享等到各个work节点的相同路径处；对于输入的文件，可以是路径、含*的通配符、gz压缩文件；函数还支持partition数目的参数，HDFS会把文件分block，默认一个partition对应一个block，也可以设置partition数目大于block数目。<br>　　wholeTextFiles 可以读取一个目录下的所有文件，然后保存成文件名—内容格式；<br>　　RDD.saveAsPickleFile和SparkContext.pickleFile，可以保存RDD以及Python的数据；<br>　　SequenceFiles，比较特殊的，为Hadoop所用二进制形式来存储key-value模式的平面文件，其数据的读写在pyspark中实际上是进行了Python-<pyrolite>-Java数据类型的底层转换的，但是对用户来说是透明的；<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">rdd = sc.parallelize(range(<span class="number">1</span>, <span class="number">4</span>)).map(<span class="keyword">lambda</span> x: (x, <span class="string">"a"</span> * x ))</div><div class="line">rdd.saveAsSequenceFile(<span class="string">"root/aaaa.txt"</span>)</div><div class="line">sc.sequenceFile(<span class="string">"root/aaaa.txt"</span>).collect()</div></pre></td></tr></table></figure></pyrolite></p>
+<ul>
+<li>Spark SQL；</li>
+<li><p>RDD支持两种操作：transformation和action，前者是将一个数据集转换成另外一个数据集，而后者让程序计算并将结果返回给driver程序。前者比如常见的map函数，会将数据集中的每一个元素通过某个函数转换成RDD表示的数据集，而reduce就是把RDD的所有元素通过某些函数聚集起来并返回给driver程序。<br>　　Spark所有的计算都是惰性的，只有在driver程序需要返回而执行action操作时，才会进行真正的计算，这样可以增加Spark的计算效率，减少无用计算和数据传递。<br>　　具体的Transformation函数和Action函数见下文的列表。<br>　　一个map/reduce的例子程序</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">lines = sc.textFile(<span class="string">"data.txt"</span>)</div><div class="line">lineLengths = lines.map(<span class="keyword">lambda</span> s: len(s))</div><div class="line">totalLength = lineLengths.reduce(<span class="keyword">lambda</span> a, b: a + b)</div></pre></td></tr></table></figure>
+</li>
+<li><p>Spark依赖于传奇函数使其节点进行计算任务，函数包含：lamda表达式、文件中定义的局部函数、定义在模块中的函数。<br> 函数模式举例如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python3</span></div><div class="line"><span class="keyword">from</span> pyspark <span class="keyword">import</span> SparkConf, SparkContext</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">word_c</span><span class="params">(string)</span>:</span></div><div class="line">        words = string.split()</div><div class="line">        <span class="keyword">return</span> len(words)</div><div class="line"></div><div class="line">    conf = SparkConf().setAppName(<span class="string">"WORD_TEST"</span>).setMaster(<span class="string">"local[2]"</span>)</div><div class="line">    sc = SparkContext(conf=conf)</div><div class="line">    distFile = sc.textFile(<span class="string">"/root/wordc.py"</span>)</div><div class="line">    rest = distFile.map(word_c).reduce(<span class="keyword">lambda</span> a, b: a + b)</div><div class="line">    print(<span class="string">"Total:%d"</span> %(rest))</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>　　然后，使用” bin/spark-submit  /root/wordc.py”提交任务。</p>
+<ul>
+<li><p>Closures<br>　　这个可能是Java中什么闭包的概念。总之，在Spark中被worker节点执行的函数中，不要使用全局变量，如果在本地非分布式环境的话，实际使用的一个JVM虚拟机结果可能是正常的，但是如果是分布式的，那么这个变量会被序列化并传递给每个worker节点一份拷贝，在worker节点上更新的都是自己本地副本而不会反馈回driver程序，所以最终driver程序中的变量压根就没被更新。<br>　　如果要使用全局变量，请使用Broadcasting vars和Accumulators</p>
+<ul>
+<li><p>Broadcasting vars是共享的只读变量，一般worker节点上执行计算的数据，既可以通过执行函数传递过去，也可以通过这种Broadcasting vars方式传递过去，Broadcasting vars让所有worker节点保持只读的数据拷贝，而且其使用的Broadcasting算法使得这种传递更为的有效率，在使用中一旦被创建就不应当改变其值，以保证各个节点的数据都是一致的，同时也不应当在各个执行节点上被更新。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>arr = [<span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">9</span>, <span class="number">10</span>]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>broadcastVar = sc.broadcast(arr)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>broadcastVar.value</div><div class="line">[<span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">9</span>, <span class="number">10</span>]</div></pre></td></tr></table></figure>
+</li>
+<li><p>Accumulators能够保证在各个worker节点对该变量的更新都能安全的实现，其默认支持数字类型，代码可以继承AccumulatorParam类扩充为其他类型（只需实现zero和addInPlace函数），同时也只能在driver程序中才能读到其值，worker节点只能进行更新操作。此处还需要注意：对于在actions中的更新，系统能保证变量只会被更新一次，所以对于重启的task不会被再次更新；但在transform中的更新操作没有这个保证，重启任务可能会被更新多次，或许可以这么理解：transform自己不会进行实际的计算操作，是由action驱动的计算规则，所以无法保存task计算状态（自己猜的~）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>accum = sc.accumulator(<span class="number">0</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>distFile = sc.textFile(<span class="string">"/root/wordc.py"</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>distFile.map(<span class="keyword">lambda</span> s: (s,len(s))).foreach(<span class="keyword">print</span>)  <span class="comment">#查看??</span></div><div class="line"><span class="meta">&gt;&gt;&gt; </span>distFile.map(<span class="keyword">lambda</span> s: len(s)).foreach(<span class="keyword">lambda</span> x: accum.add(x))</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>accum.value</div><div class="line"><span class="number">396</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p>　　这里引申出打印数据，每个工作节点的print到的标准输出都是本地的，所以如果要在driver程序的节点上看到打印结果，必须将数据收集起来然后在本地打印显示：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">distFile = sc.textFile(<span class="string">"/root/wordc.py"</span>)</div><div class="line">print(distFile.collect())</div><div class="line">print(distFile.take(<span class="number">3</span>))</div></pre></td></tr></table></figure></p>
+<h1 id="五、RDD的Transformations和Actions函数">五、RDD的Transformations和Actions函数</h1><ul>
+<li>Transformations</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>map(func)</td>
+<td style="text-align:center">通过func将源数据的每一个元素进行转换生成RDD</td>
+</tr>
+<tr>
+<td>filter(func)</td>
+<td style="text-align:center">通过func选择那些返回为true的数据组成新的数据集</td>
+</tr>
+<tr>
+<td>flatMap(func)</td>
+<td style="text-align:center">同map，但是每一个输入元素可能会被映射成0或者多个items</td>
+</tr>
+<tr>
+<td>mapPartitions(func)</td>
+<td style="text-align:center">类似map，不过是在RDD各个partition上单独运行的，所以func的参数都是迭代器的（同上面结果可能会有些差异）</td>
+</tr>
+<tr>
+<td>mapPartitionsWithIndex(func)</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td>sample(withReplacement, fraction, seed)</td>
+<td style="text-align:center">取样</td>
+</tr>
+<tr>
+<td>union(otherDataset)</td>
+<td style="text-align:center">两个数据集的交集</td>
+</tr>
+<tr>
+<td>intersection(otherDataset)</td>
+<td style="text-align:center">两个数据集的并集</td>
+</tr>
+<tr>
+<td>distinct([numTasks]))</td>
+<td style="text-align:center">取出不含重复值的数据集</td>
+</tr>
+<tr>
+<td>groupByKey([numTasks])</td>
+<td style="text-align:center">集合数据集的(K, V)产生(K, Iterable<v>) ，注意如果是如果可能，reduceByKey/aggregateByKey性能会更好</v></td>
+</tr>
+<tr>
+<td>reduceByKey(func, [numTasks])</td>
+<td style="text-align:center">将(K, V)中同K的V通过func方式集合起来</td>
+</tr>
+<tr>
+<td>aggregateByKey(zeroValue)(seqOp, combOp, [numTasks])</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td>sortByKey([ascending], [numTasks])</td>
+<td style="text-align:center">通过K进行排序</td>
+</tr>
+<tr>
+<td>join(otherDataset, [numTasks])</td>
+<td style="text-align:center">将(K, V)、(K, W)联合为(K, (V, W))</td>
+</tr>
+<tr>
+<td>cogroup(otherDataset, [numTasks])</td>
+<td style="text-align:center">将(K, V)和(K, W)返回(K, (Iterable<v>, Iterable<w>))元祖</w></v></td>
+</tr>
+<tr>
+<td>cartesian(otherDataset)</td>
+<td style="text-align:center">笛卡尔，对于T、U数据集，返回(T, U)Pair</td>
+</tr>
+<tr>
+<td>pipe(command, [envVars])</td>
+<td style="text-align:center">对每一个partition，通过将每个元素作为command的stdin输入，然后将stdout输出定位到string类型的RDD数据集</td>
+</tr>
+<tr>
+<td>coalesce(numPartitions)</td>
+<td style="text-align:center">合并，减少partition数目</td>
+</tr>
+<tr>
+<td>repartition(numPartitions)</td>
+<td style="text-align:center">随机的Reshuffle数据</td>
+</tr>
+<tr>
+<td>repartitionAndSortWithinPartitions(partitioner)</td>
+<td style="text-align:center">repartition和sort集成的更高效实现</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Actions</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reduce(func)</td>
+<td style="text-align:center">集合</td>
+</tr>
+<tr>
+<td>collect()</td>
+<td style="text-align:center">将数据集的所有元素以数组的方式返回给driver program</td>
+</tr>
+<tr>
+<td>count()</td>
+<td style="text-align:center">返回数据集元素的个数</td>
+</tr>
+<tr>
+<td>first()</td>
+<td style="text-align:center">返回第一个元素，类似take(1)</td>
+</tr>
+<tr>
+<td>take(n)</td>
+<td style="text-align:center">返回前面的n个元素</td>
+</tr>
+<tr>
+<td>takeSample(withReplacement, num, [seed])</td>
+<td style="text-align:center">返回随机的num个元素</td>
+</tr>
+<tr>
+<td>takeOrdered(n, [ordering])</td>
+<td style="text-align:center">返回通过自然排序或者定制比较器的n个元素</td>
+</tr>
+<tr>
+<td>saveAsTextFile(path)</td>
+<td style="text-align:center">将每个元素调用toString方法成为一行，然后保存写入到文件中</td>
+</tr>
+<tr>
+<td>saveAsSequenceFile(path) (Java and Scala)</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td>saveAsObjectFile(path) (Java and Scala)</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td>countByKey()</td>
+<td style="text-align:center">只适用于(K,V)类型，返回(K, Int)计数，默认并行task数为2</td>
+</tr>
+<tr>
+<td>foreach(func)</td>
+<td style="text-align:center">对每个元素执行func，通常用于Accumulators等操作</td>
+</tr>
+</tbody>
+</table>
+<h1 id="六、Shuffle">六、Shuffle</h1><p>　　主要是数据的重新分配，涉及到执行磁盘IO、数据序列化、网络IO等操作，是十分耗费资源的操作。比如对于reduceByKey操作，系统会读取所有的partition，收集keys形成一个元祖，然后再在所有的partitions中将这些key的值进行搜集整理而得到最终的答案。为了向shuffle组织数据，Spark会产生一些map任务集来负责组织数据，reduce任务集来聚集数据，两者中间会有交互的数据文件，因此会消耗大量的内存，如果内存不够甚至会写入磁盘导致磁盘IO。<br>　　会导致Shuffl的操作有：repartiton(repartition, coalesce)；ByKey(groupByKey, reduceByKey)；join(cogroup, join)</p>
+<h1 id="七、RDD_Persistence">七、RDD Persistence</h1><p>　　Spark的缓存是在action触发后，将指定缓存的数据结果保留在某些地方，同时缓存是容错的，当任何一个partition出错数据丢失时候，缓存的数据会重新按照原来的方式计算出来。<br>　　通过persist传递各种Storage Level，可以让缓存在内存与磁盘、平坦与压缩、CPU计算量等方面做出各种妥协和权衡。默认的级别是StorageLevel.MEMORY_ONLY，cache()函数为其缩写。<br>　　Spark会自动跟踪缓存的使用，必要的时候会根据LRU的原则丢弃旧的缓存，当然用户也可以调用 RDD.unpersist()显式地删除某些rdd的缓存。</p>
+<p>Spark其他部分待续~</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="http://spark.apache.org/docs/latest/" target="_blank" rel="external">Spark Doc</a></li>
+<li><a href="http://spark.apache.org/docs/latest/cluster-overview.html" target="_blank" rel="external">Spark Cluster Mode Overview</a></li>
+<li><a href="http://www.open-open.com/lib/view/open1453249796636.html" target="_blank" rel="external">Spark的性能调优</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></p>
+        <p><span>最后更新:</span>2016-12-18, 22:06:04</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201603/learn-note-of-spark-(2)-read-official-doc.html" title="Spark学习手册（二）：Spark官方手册读摘">https://taozj.org/201603/learn-note-of-spark-(2)-read-official-doc.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201603/learn-note-of-spark-(2)-read-official-doc.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201603/learn-note-of-spark-(3)-relative-modules.html">
+                    Spark学习手册（三）：Spark模块学习摘读
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">
+                    Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201603/learn-note-of-spark-(2)-read-official-doc.html" data-title="Spark学习手册（二）：Spark官方手册读摘" data-url="https://taozj.org/201603/learn-note-of-spark-(2)-read-official-doc.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201603/learn-note-of-spark-(3)-relative-modules.html" title="上一篇: Spark学习手册（三）：Spark模块学习摘读">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html" title="下一篇: Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

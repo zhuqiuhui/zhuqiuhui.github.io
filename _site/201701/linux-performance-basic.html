@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>Linux服务器的那些性能参数指标 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一个基于Linux操作系统的服务器运行的同时，也会表征出各种各样参数信息。通常来说运维人员、系统管理员会对这些数据会极为敏感，但是这些参数对于开发者来说也十分重要，尤其当你的程序非正常工作的时候，这些蛛丝马迹往往会帮助快速定位跟踪问题。　　这里只是一些简单的工具查看系统的相关参数，当然很多工具也是通过分析加工/proc、/sys下的数据来工作的，而那些更加细致、专业的性能监测和调优，可能还需要">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux服务器的那些性能参数指标">
+<meta property="og:url" content="https://taozj.org/201701/linux-performance-basic.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="一个基于Linux操作系统的服务器运行的同时，也会表征出各种各样参数信息。通常来说运维人员、系统管理员会对这些数据会极为敏感，但是这些参数对于开发者来说也十分重要，尤其当你的程序非正常工作的时候，这些蛛丝马迹往往会帮助快速定位跟踪问题。　　这里只是一些简单的工具查看系统的相关参数，当然很多工具也是通过分析加工/proc、/sys下的数据来工作的，而那些更加细致、专业的性能监测和调优，可能还需要">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/76667dfc.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/bbbd0eb3.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/86dda451.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/e41c6480.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/3df5f810.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/e123717e.jpg">
+<meta property="og:updated_time" content="2017-02-24T08:39:30.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux服务器的那些性能参数指标">
+<meta name="twitter:description" content="一个基于Linux操作系统的服务器运行的同时，也会表征出各种各样参数信息。通常来说运维人员、系统管理员会对这些数据会极为敏感，但是这些参数对于开发者来说也十分重要，尤其当你的程序非正常工作的时候，这些蛛丝马迹往往会帮助快速定位跟踪问题。　　这里只是一些简单的工具查看系统的相关参数，当然很多工具也是通过分析加工/proc、/sys下的数据来工作的，而那些更加细致、专业的性能监测和调优，可能还需要">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201701/76667dfc.png">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-linux-performance-basic" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201701/linux-performance-basic.html" class="article-date">
+      <time datetime="2017-01-03T15:24:43.000Z" itemprop="datePublished">2017-01-03</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Linux服务器的那些性能参数指标
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/运维/">运维</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内核/">内核</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/软件/">软件</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>　　一个基于Linux操作系统的服务器运行的同时，也会表征出各种各样参数信息。通常来说运维人员、系统管理员会对这些数据会极为敏感，但是这些参数对于开发者来说也十分重要，尤其当你的程序非正常工作的时候，这些蛛丝马迹往往会帮助快速定位跟踪问题。<br>　　这里只是一些简单的工具查看系统的相关参数，当然很多工具也是通过分析加工/proc、/sys下的数据来工作的，而那些更加细致、专业的性能监测和调优，可能还需要更加专业的工具(perf、systemtap等)和技术才能完成哦。毕竟来说，系统性能监控本身就是个大学问。<br><img src="/post_images/images/201701/76667dfc.png" alt="linux-performance"></p>
+<h1 id="一、CPU和内存类">一、CPU和内存类</h1><h2 id="1-1_top">1.1 top</h2><p>　　<code bash="">➜  ~ top</code><br><img src="/post_images/images/201701/bbbd0eb3.png" alt="linux-top"><br>　　第一行后面的三个值是系统在之前1、5、15的平均负载，也可以看出系统负载是上升、平稳、下降的趋势，当这个值超过CPU可执行单元的数目，则表示CPU的性能已经饱和成为瓶颈了。</p>
+<p>　　第二行统计了系统的任务状态信息。running很自然不必多说，包括正在CPU上运行的和将要被调度运行的；sleeping通常是等待事件(比如IO操作)完成的任务，细分可以包括interruptible和uninterruptible的类型；stopped是一些被暂停的任务，通常发送SIGSTOP或者对一个前台任务操作Ctrl-Z可以将其暂停；zombie僵尸任务，虽然进程终止资源会被自动回收，但是含有退出任务的task descriptor需要父进程访问后才能释放，这种进程显示为defunct状态，无论是因为父进程提前退出还是未wait调用，出现这种进程都应该格外注意程序是否设计有误。<br><a id="more"></a><br>　　第三行CPU占用率根据类型有以下几种情况：<br>　　(us) user: CPU在低nice值(高优先级)用户态所占用的时间(nice&lt;=0)。正常情况下只要服务器不是很闲，那么大部分的CPU时间应该都在此执行这类程序<br>　　(sy) system: CPU处于内核态所占用的时间，操作系统通过系统调用(system call)从用户态陷入内核态，以执行特定的服务；通常情况下该值会比较小，但是当服务器执行的IO比较密集的时候，该值会比较大<br>　　(ni) nice: CPU在高nice值(低优先级)用户态以低优先级运行占用的时间(nice&gt;0)。默认新启动的进程nice=0，是不会计入这里的，除非手动通过renice或者setpriority()的方式修改程序的nice值<br>　　(id) idle: CPU在空闲状态(执行kernel idle handler)所占用的时间<br>　　(wa) iowait: 等待IO完成做占用的时间<br>　　(hi) irq: 系统处理硬件中断所消耗的时间<br>　　(si) softirq: 系统处理软中断所消耗的时间，记住软中断分为softirqs、tasklets(其实是前者的特例)、work queues，不知道这里是统计的是哪些的时间，毕竟work queues的执行已经不是中断上下文了<br>　　(st) steal: 在虚拟机情况下才有意义，因为虚拟机下CPU也是共享物理CPU的，所以这段时间表明虚拟机等待hypervisor调度CPU的时间，也意味着这段时间hypervisor将CPU调度给别的CPU执行，这个时段的CPU资源被”stolen”了。这个值在我KVM的VPS机器上是不为0的，但也只有0.1这个数量级，是不是可以用来判断VPS超售的情况？<br>　　CPU占用率高很多情况下意味着一些东西，这也给服务器CPU使用率过高情况下指明了相应地排查思路：<br>　　(a) 当user占用率过高的时候，通常是某些个别的进程占用了大量的CPU，这时候很容易通过top找到该程序；此时如果怀疑程序异常，可以通过perf等思路找出热点调用函数来进一步排查；<br>　　(b) 当system占用率过高的时候，如果IO操作(包括终端IO)比较多，可能会造成这部分的CPU占用率高，比如在file server、database server等类型的服务器上，否则(比如&gt;20%)很可能有些部分的内核、驱动模块有问题；<br>　　(c) 当nice占用率过高的时候，通常是有意行为，当进程的发起者知道某些进程占用较高的CPU，会设置其nice值确保不会淹没其他进程对CPU的使用请求；<br>　　(d) 当iowait占用率过高的时候，通常意味着某些程序的IO操作效率很低，或者IO对应设备的性能很低以至于读写操作需要很长的时间来完成；<br>　　(e) 当irq/softirq占用率过高的时候，很可能某些外设出现问题，导致产生大量的irq请求，这时候通过检查/proc/interrupts文件来深究问题所在；<br>　　(f) 当steal占用率过高的时候，黑心厂商虚拟机超售了吧！</p>
+<p>　　第四行和第五行是物理内存和虚拟内存(交换分区)的信息:<br>　　total = free + used + buff/cache，现在buffers和cached Mem信息总和到一起了，但是buffers和cached<br>Mem的关系很多地方都没说清楚。其实通过对比数据，这两个值就是/proc/meminfo中的Buffers和Cached字段：Buffers是针对raw disk的块缓存，主要是以raw block的方式缓存文件系统的元数据(比如超级块信息等)，这个值一般比较小(20M左右)；而Cached是针对于某些具体的文件进行读缓存，以增加文件的访问效率而使用的，可以说是用于文件系统中文件缓存使用。<br>　　而avail Mem是一个新的参数值，用于指示在不进行交换的情况下，可以给新开启的程序多少内存空间，大致和free + buff/cached相当，而这也印证了上面的说法，free + buffers + cached Mem才是真正可用的物理内存。并且，使用交换分区不见得是坏事情，所以交换分区使用率不是什么严重的参数，但是频繁的swap in/out就不是好事情了，这种情况需要注意，通常表示物理内存紧缺的情况。</p>
+<p>　　最后是每个程序的资源占用列表，其中CPU的使用率是所有CPU core占用率的总和。通常执行top的时候，本身该程序会大量的读取/proc操作，所以基本该top程序本身也会是名列前茅的。<br>　　top虽然非常强大，但是通常用于控制台实时监测系统信息，不适合长时间(几天、几个月)监测系统的负载信息，同时对于短命的进程也会遗漏无法给出统计信息。</p>
+<h2 id="1-2_vmstat">1.2 vmstat</h2><p>　　vmstat是除top之外另一个常用的系统检测工具，下面截图是我用-j4编译boost的系统负载。<br><img src="/post_images/images/201701/86dda451.png" alt="linux-vmstat"><br>　　r表示可运行进程数目，数据大致相符；而b表示的是uninterruptible睡眠的进程数目；swpd表示使用到的虚拟内存数量，跟top-Swap-used的数值是一个含义，而如手册所说，通常情况下buffers数目要比cached Mem小的多，buffers一般20M这么个数量级；io域的bi、bo表明每秒钟向磁盘接收和发送的块数目(blocks/s)；system域的in表明每秒钟的系统中断数(包括时钟中断)，cs表明因为进程切换导致上下文切换的数目。<br>　　说到这里，想到以前很多人纠结编译linux kernel的时候-j参数究竟是CPU Core还是CPU Core+1？通过上面修改-j参数值编译boost和linux kernel的同时开启vmstat监控，发现两种情况下context switch基本没有变化，且也只有显著增加-j值后context switch才会有显著的增加，看来不必过于纠结这个参数了，虽然具体编译时间长度我还没有测试。资料说如果不是在系统启动或者benchmark的状态，参数context switch&gt;100000程序肯定有问题。</p>
+<h2 id="1-3_pidstat">1.3 <strong>pidstat</strong></h2><p>　　如果想对某个进程进行全面具体的追踪，没有什么比pidstat更合适的了——栈空间、缺页情况、主被动切换等信息尽收眼底。这个命令最有用的参数是-t，可以将进程中各个线程的详细信息罗列出来。<br>　　-r： 显示缺页错误和内存使用状况，缺页错误是程序需要访问映射在虚拟内存空间中但是还尚未被加载到物理内存中的一个分页，缺页错误两个主要类型是<br>　　(a). minflt/s 指的minor faults，当需要访问的物理页面因为某些原因(比如共享页面、缓存机制等)已经存在于物理内存中了，只是在当前进程的页表中没有引用之，这种情况下MMU只需要设置对应的entry就可以了，这个代价是相当小的；<br>　　(b). majflt/s 指的major faults(hard page fault)，MMU需要在当前可用物理内存中申请一块空闲的物理页面(如果没有可用的空闲页面，则需要将别的物理页面切换到交换空间去以释放得到空闲物理页面)，然后从外部低速设备加载数据到该物理页面中，并设置好对应的entry，这个代价是相当高的，和前者有几个数据级的差异；如果发生较多的major faults，虽然可以将交换分区建立在高速设备(比如PCI-E SSD)上改善性能，但主要是提示你缺物理内存了；<br>　　(c). 还有一种情况有人也归结进来，就是invalid fault，指的进程要访问的地址不在其虚拟空间内部，属于越界访问。这是比较严重的错误，通常会报段错误并终止程序的执行。<br>　　-s：栈使用状况，包括StkSize为线程保留的栈空间，以及StkRef实际使用的栈空间。使用ulimit -s发现CentOS 6.x上面默认栈空间是10240K，而CentOS 7.x、Ubuntu系列默认栈空间大小为8196K<br><img src="/post_images/images/201701/e41c6480.png" alt="pidstat"><br>　　-u：CPU使用率情况，参数同前面类似<br>　　-w：线程上下文切换的数目，还细分为cswch/s因为等待资源等因素导致的主动切换，以及nvcswch/s线程CPU时间导致的被动切换的统计<br>　　如果每次都先ps得到程序的pid后再操作pidstat会显得很麻烦，所以这个杀手锏的-C可以指定某个字符串，然后Command中如果包含这个字符串，那么该程序的信息就会被打印统计出来，-l可以显示完整的程序名和参数<br><code bash="">➜  ~  pidstat -w  -t -C “ailaw”  -l </code><br>　　这么看来，如果查看单个尤其是多线程的任务时候，pidstat比常用的ps更好使！</p>
+<h2 id="1-4_其他">1.4 <strong>其他</strong></h2><p>　　当需要单独监测单个CPU情况的时候，除了htop还可以使用mpstat，查看在SMP处理器上各个Core的工作量是否负载均衡，是否有某些热点线程占用Core。Linux中还有一个工具taskset，可以设置后面运行的命令的CPU affinity。<br><code bash="">➜  ~ mpstat -P ALL 1</code><br>　　如果想直接监测某个进程占用的资源，既可以使用<code bash="">top -u taozj</code>的方式过滤掉其他用户无关进程，也可以采用下面的方式进行选择，ps命令可以自定义需要打印的条目信息：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span> :; <span class="keyword">do</span> ps -eo user,pid,ni,pri,pcpu,psr,comm | grep <span class="string">'ailawd'</span>; sleep 1; <span class="keyword">done</span></div></pre></td></tr></table></figure></p>
+<p>　　如想理清继承关系，下面一个常用的参数可以用于显示进程树结构，显示效果比pstree详细美观的多<br><code bash="">➜  ~ ps axjf</code></p>
+<h1 id="二、磁盘IO类">二、磁盘IO类</h1><p>　　iotop可以直观的显示各个进程、线程的磁盘读取实时速率；lsof不仅可以显示普通文件的打开信息(使用者)，还可以操作/dev/sda1这类设备文件的打开信息，那么比如当分区无法umount的时候，就可以通过lsof找出磁盘该分区的使用状态了，而且添加+fg参数还可以额外显示文件打开flag标记。</p>
+<h2 id="2-1_iostat">2.1 iostat</h2><p><code bash="">➜  ~ iostat -xz 1</code><br>　　其实无论使用<code bash="">iostat -xz 1</code>还是使用<code bash="">sar -d 1</code>，对于磁盘重要的参数是：<br>　　avgqu-sz: 发送给设备I/O请求的等待队列平均长度，对于单个磁盘如果值&gt;1表明设备饱和，对于多个磁盘阵列的逻辑磁盘情况除外；<br>　　await(r_await、w_await): 平均每次设备I/O请求操作的等待时间(ms)，包含请求排列在队列中和被服务的时间之和；<br>　　svctm: 发送给设备I/O请求的平均服务时间(ms)，如果svctm与await很接近，表示几乎没有I/O等待，磁盘性能很好，否则磁盘队列等待时间较长，磁盘响应较差；<br>　　%util: 设备的使用率，表明每秒中用于I/O工作时间的占比，单个磁盘当%util&gt;60%的时候性能就会下降(体现在await也会增加)，当接近100%时候就设备饱和了，但对于有多个磁盘阵列的逻辑磁盘情况除外；<br>　　还有，虽然监测到的磁盘性能比较差，但是不一定会对应用程序的响应造成影响，内核通常使用I/O asynchronously技术，使用读写缓存技术来改善性能，不过这又跟上面的物理内存的限制相制约了。<br>　　上面的这些参数，对网络文件系统也是受用的。</p>
+<h1 id="三、网络类">三、网络类</h1><p>　　网络性能对于服务器的重要性不言而喻，工具iptraf可以直观的现实网卡的收发速度信息，比较的简洁方便通过<code bash="">sar -n DEV 1</code>也可以得到类似的吞吐量信息，而网卡都标配了最大速率信息，比如百兆网卡千兆网卡，很容易查看设备的利用率。<br>　　通常，网卡的传输速率并不是网络开发中最为关切的，而是针对特定的UDP、TCP连接的丢包率、重传率，以及网络延时等信息。</p>
+<h2 id="3-1_netstat">3.1 netstat</h2><p><code bash="">➜  ~ netstat -s</code><br>　　显示自从系统启动以来，各个协议的总体数据信息。虽然参数信息比较丰富有用，但是累计值，除非两次运行做差才能得出当前系统的网络状态信息，亦或者使用watch眼睛直观其数值变化趋势。所以netstat通常用来检测端口和连接信息的：</p>
+<blockquote>
+<p>netstat –all(a) –numeric(n) –tcp(t) –udp(u) –timers(o) –listening(l) –program(p)</p>
+</blockquote>
+<p>　　–timers可以取消域名反向查询，加快显示速度；比较常用的有<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">➜  ~ netstat -antp  <span class="comment">#列出所有TCP的连接</span></div><div class="line">➜  ~ netstat -nltp   <span class="comment">#列出本地所有TCP侦听套接字，不要加-a参数</span></div></pre></td></tr></table></figure></p>
+<h2 id="3-2_sar">3.2 sar</h2><p>　　sar这个工具太强大了，什么CPU、磁盘、页面交换啥都管，这里使用-n主要用来分析网络活动，虽然网络中它还给细分了NFS、IP、ICMP、SOCK等各种层次各种协议的数据信息，我们只关心TCP和UDP。下面的命令除了显示常规情况下段、数据报的收发情况，还包括<br>　　<strong>TCP</strong><br>　　<code bash="">➜  ~ sudo sar -n TCP,ETCP 1 </code><br><img src="/post_images/images/201701/3df5f810.png" alt="tcpstat"><br>　　active/s：本地发起的TCP连接，比如通过connect()，TCP的状态从CLOSED -&gt; SYN-SENT<br>　　passive/s：由远程发起的TCP连接，比如通过accept()，TCP的状态从LISTEN -&gt; SYN-RCVD<br>　　retrans/s(tcpRetransSegs)：每秒钟TCP重传数目，通常在网络质量差，或者服务器过载后丢包的情况下，根据TCP的确认重传机制会发生重传操作<br>　　isegerr/s(tcpInErrs)：每秒钟接收到出错的数据包(比如checksum失败)<br>　　<strong>UDP</strong><br>　　<code bash="">➜  ~ sudo sar -n UDP 1 </code><br>　　noport/s(udpNoPorts)：每秒钟接收到的但是却没有应用程序在指定目的端口的数据报个数<br>　　idgmerr/s(udpInErrors)：除了上面原因之外的本机接收到但却无法派发的数据报个数<br>　　当然，这些数据一定程度上可以说明网络可靠性，但也只有同具体的业务需求场景结合起来才具有意义。</p>
+<h2 id="3-3_tcpdump">3.3 tcpdump</h2><p>　　tcpdump不得不说是个好东西。大家都知道本地调试的时候喜欢使用wireshark，但是线上服务端出现问题怎么弄呢？附录的参考文献给出了思路：复原环境，使用tcpdump进行抓包，当之前的问题复现(比如通过观察日志显示或者某个状态显现)的时候，就可以结束抓包了。而且tcpdump本身带有-C/-W参数，可以限制抓取包存储文件的大小，当达到这个这个限制的时候保存的包数据自动rotate，所以抓取的数据包的数量总体还是可控的。此后将线上数据包拿下线来，用wireshark想怎么看就怎么看，岂不乐哉！tcpdump虽然没有GUI界面，但是抓包的功能丝毫不弱，线上服务器的流量可能会很大，但是通过指定网卡、主机、端口、协议等各项过滤参数，抓下来的包完整又带有时间戳，可以结合时间点进行推测就可以大大缩小可疑数据包的范围，所以线上程序的数据包分析也可以这么简单。<br>　　下面就是一个小的测试，可见Chrome启动时候自动向Webserver发起建立了三条连接，由于这里限制了dst port参数，所以服务端的应答包被过滤掉了，拿下来用wireshark打开，SYNC、ACK建立连接的过程还是很明显的！在使用tcpdump的时候，需要尽可能的配置抓取的过滤条件，一方面便于接下来的分析，二则tcpdump开启后对网卡和系统的性能会有影响，进而会影响到在线业务的性能。<br><img src="/post_images/images/201701/e123717e.jpg" alt="tcpdump"></p>
+<p>本文完！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="http://techblog.netflix.com/2015/11/linux-performance-analysis-in-60s.html" target="_blank" rel="external">Linux Performance Analysis in 60,000 Milliseconds</a></li>
+<li><a href="http://man7.org/linux/man-pages/man5/proc.5.html" target="_blank" rel="external">Linux Programmer’s Manual PROC-5 </a></li>
+<li><a href="http://www.tecmint.com/command-line-tools-to-monitor-linux-performance/" target="_blank" rel="external">20 Command Line Tools to Monitor Linux Performance</a></li>
+<li><a href="http://books.gigatux.nl/mirror/linuxperformanceguide/0131486829/" target="_blank" rel="external">linuxperformanceguide</a></li>
+<li><a href="http://blog.scoutapp.com/articles/2015/02/24/understanding-linuxs-cpu-stats" target="_blank" rel="external">Understanding Linux CPU stats</a></li>
+<li><a href="https://www.qcloud.com/community/article/164816001481011819" target="_blank" rel="external">Linux性能监控——CPU,Memory,IO,Network</a></li>
+<li><a href="https://yq.aliyun.com/articles/6047" target="_blank" rel="external">Linux系统性能指标</a></li>
+<li><a href="https://wiki.mikejung.biz/Performance_Analysis" target="_blank" rel="external">Performance Analysis</a></li>
+<li><a href="https://www.socallinuxexpo.org/scale11x-supporting/default/files/presentations/scalelinuxperformance-130224171331-phpapp01.pdf" target="_blank" rel="external">Linux Performance Analysis and Tools</a></li>
+<li><a href="https://www.linux.com/learn/uncover-meaning-tops-statistics" target="_blank" rel="external">Uncover the Meaning of top’s Statistics</a></li>
+<li><a href="https://yq.aliyun.com/articles/27461" target="_blank" rel="external">tcpdump 和 wireshark组合拳，揪出有问题的机器</a></li>
+<li><a href="http://www.cnblogs.com/maifengqiang/p/3863168.html" target="_blank" rel="external">超级详细Tcpdump 的用法</a></li>
+<li><a href="http://www-05.ibm.com/de/events/linux-on-system-z/downloads/Tools-MK2-V7-Web.pdf" target="_blank" rel="external">How to surprise by being a Linux-performance “know-it-all”</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></p>
+        <p><span>最后更新:</span>2017-02-24, 16:39:30</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201701/linux-performance-basic.html" title="Linux服务器的那些性能参数指标">https://taozj.org/201701/linux-performance-basic.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201701/linux-performance-basic.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201701/blog-collection.html">
+                    【置顶】博客资源收录大全
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201612/cmd-tools-sed-awk.html">
+                    文本处理利器sed与awk使用总结
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201701/linux-performance-basic.html" data-title="Linux服务器的那些性能参数指标" data-url="https://taozj.org/201701/linux-performance-basic.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201701/blog-collection.html" title="上一篇: 【置顶】博客资源收录大全">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201612/cmd-tools-sed-awk.html" title="下一篇: 文本处理利器sed与awk使用总结">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

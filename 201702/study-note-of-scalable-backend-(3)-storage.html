@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>后台开发那些常用技术再次小结（三）：存储部分 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原书对于存储模块，主要就是描述的数据库的设计和优化，和我通常想到的文件系统的存储有点差异，其实数据库的底层还是放在文件系统上面的(原谅我又不禁想到了GitLab删库事件)，只不过随着数据量增加数据库文件的尺寸会不断的变大(在mysql中查找datadir的变量就可以看见数据文件的位置)。　　互联网公司很多数据都塞在数据库中的，而且数据库这一模块的使用和优化经验也比较的丰富，更加有文章可做吧！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="后台开发那些常用技术再次小结（三）：存储部分">
+<meta property="og:url" content="https://taozj.org/201702/study-note-of-scalable-backend-(3)-storage.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="原书对于存储模块，主要就是描述的数据库的设计和优化，和我通常想到的文件系统的存储有点差异，其实数据库的底层还是放在文件系统上面的(原谅我又不禁想到了GitLab删库事件)，只不过随着数据量增加数据库文件的尺寸会不断的变大(在mysql中查找datadir的变量就可以看见数据文件的位置)。　　互联网公司很多数据都塞在数据库中的，而且数据库这一模块的使用和优化经验也比较的丰富，更加有文章可做吧！">
+<meta property="og:image" content="https://taozj.org/post_images/images/201702/ec6594c2.jpg">
+<meta property="og:updated_time" content="2017-02-28T00:37:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="后台开发那些常用技术再次小结（三）：存储部分">
+<meta name="twitter:description" content="原书对于存储模块，主要就是描述的数据库的设计和优化，和我通常想到的文件系统的存储有点差异，其实数据库的底层还是放在文件系统上面的(原谅我又不禁想到了GitLab删库事件)，只不过随着数据量增加数据库文件的尺寸会不断的变大(在mysql中查找datadir的变量就可以看见数据文件的位置)。　　互联网公司很多数据都塞在数据库中的，而且数据库这一模块的使用和优化经验也比较的丰富，更加有文章可做吧！">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201702/ec6594c2.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-study-note-of-scalable-backend-(3)-storage" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201702/study-note-of-scalable-backend-(3)-storage.html" class="article-date">
+      <time datetime="2017-02-12T15:12:07.000Z" itemprop="datePublished">2017-02-12</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      后台开发那些常用技术再次小结（三）：存储部分
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>　　原书对于存储模块，主要就是描述的数据库的设计和优化，和我通常想到的文件系统的存储有点差异，其实数据库的底层还是放在文件系统上面的(原谅我又不禁想到了GitLab删库事件)，只不过随着数据量增加数据库文件的尺寸会不断的变大(在mysql中查找datadir的变量就可以看见数据文件的位置)。<br>　　互联网公司很多数据都塞在数据库中的，而且数据库这一模块的使用和优化经验也比较的丰富，更加有文章可做吧！</p>
+<h1 id="一、文件存储">一、文件存储</h1><p>　　在绝大多数情况下磁盘一直都被诟病是拖慢整个系统的罪魁祸首，现在看来网络速度都会比磁盘要快得多。<br>　　如果是自己的服务器托管，建议尽可能的增加物理内存(云主机就算了，增加内存配置价格贼贵)，因为操作系统的缓存机制，较大的物理内存能减少IO操作，从而改善文件系统访问性能。<br>　　现在优化磁盘效率的方法除了操作系统和文件系统的参数调优之外，最直接的方法就是上SSD。想到前些年很多人对SSD还是持观望态度，时常会有SSD无故掉盘、数据无法恢复的情况，不过从这些年看来随着SSD技术的完善，各大厂商和数据中心都以SSD硬盘作为主机的卖点了，可见SSD还是接受住了现实的考验了(虽然现在随着工艺水平的提高和TLC的推广，据称SSD的寿命甚至还不如之前)，工业上通过SSD将业务性能提高几倍甚至几十倍的案例数见不鲜。其实，现实世界没有什么硬件是绝对可靠的，所谓的可靠性缺陷可以用软件来弥补。想当初我在2012年花了六百多大洋买了Crucial 64GB m-sata接口的固态硬盘，该硬盘作为系统盘现在仍然工作的杠杠地，所以增加内存和上固态硬盘是任何工作或者生产机器实现“垂直扩展“的最佳捷径了。对于固态硬盘如果是SATA3接口，其最高速率是6Gbps，而现在很多SSD的传输速度已经受限于该接口速率了，那么你可以考虑采用PCI-E接口的SSD存储来获取更高的性能了。<br>　　如果你对SSD的可靠性还是不放心的话，将SSD作为一个缓存介质而不做数据持久化的存储，也可以极大增加IOPS的性能指标，对随机化IO密集型的服务优化效果十分明显。虽然某些情况下SSD中的数据没有写回之前挂掉，还是会有丢数据的风险，但是相比之前安全系数已经高了好多。各个大厂针对此种情形的<a href="http://mogu.io/Facebook_flashcache-81" target="_blank" rel="external">解决方案</a>貌似很多啊！<br>　　RAID(独立冗余磁盘阵列)算是一个历史悠久但却极为有用的存储技术了，通过多个廉价独立的磁盘进行组合达到多种组合，将IO操作分散到多个物理磁盘上去，同时具有增加副本备份恢复的功能，让整个存储系统在可靠性、性能、成本之间做出权衡，RAID技术算是在存储最底层层次上所做出的备份和优化操作。RAID的类别可分为几十种，比如：RAID0是把数据切成块，分别存储在两个或者多个磁盘上，虽然读写性能都增加了N倍，但是安全性最低，任何一块磁盘挂掉数据就无法恢复了；RAID1是做的存储冗余镜像，读性能能增加N倍，但是写操作需要在多块磁盘上写出完整副本，性能可能会有所降低，而且磁盘空间利用率最低；RAID5和RAID6也是将数据分块，同时将可恢复的校验数据也作为一个数据块，他们依次分布在不同的磁盘上，这样在增加读写性能的同时，也允许少量磁盘坏掉后可以恢复原来的数据，工业上使用的较多；RAID10和RAID01算是RAID1和RAID0的合体也比较流行(两者镜像和条带操作的顺序不同)，虽然磁盘利用率低，但是大家觉得在可靠性和性能都能达到较好的效果(也不一定，工业上不都是认为3-5份的数据备份才是比较安全的嘛)。<a id="more"></a><br>　　让我印象最深刻的，还是当时在《<a href="https://book.douban.com/subject/24335672/" target="_blank" rel="external">淘宝技术这十年</a>》这本书里面看到的关于淘宝自建存储部分的章节。对于一般规模的公司觉得数据库的问题显得更为突出，而文件存储的需求只有特定业务类型公司才会比较急切。比如淘宝、腾讯、Facebook这类公司对于自身海量级别的数据，基本都不约而同地开发了适合自己的文件系统应对存储问题。<br>　　现在各大云厂商也提供了对象存储技术，除了在可靠性方面达到了99.9999999%的可用性，还提供水平弹性扩充、异地容灾、权限控制、线路优化、冷热存储、标准RESTful接口等各种特色服务，达到了开箱既用的便捷性。其实从硅谷的那些独角兽公司来说，基本初始阶段都使用Amazon这类成熟的云服务，等到自己的业务发展的比较规模后，再考虑自建数据中心节省成本，不过也有失败的案例(请原谅我在此又一次联想到了GitLab)。</p>
+<h1 id="二、关系型数据库伸缩性">二、关系型数据库伸缩性</h1><p>　　数据库虽然是一个再常见不过的组件了，但是其中学问大的很。在保证可靠性的同时，其性能直接关系到业务的可用性，同时作为有状态的存储部件也不像较上层的业务容易扩展，更可怕的是如果开始设计不够充分或是没有好好规划，那将会是埋下的一个巨坑，对后续维护、扩展来说后患不已、贻害无穷。</p>
+<h2 id="2-1_复制">2.1 复制</h2><p>　　MySQL自带同步机制，在一台主机作为主节点的时候，可以将主节点的修改同步到多台从节点。<br>　　对于数据库的修改命令，都应该在主节点上面操作，主服务器将这些修改操作记录到binlog日志文件中，一旦操作被记录到binlog日志中，那么主节点就可以向从节点发送了。MySQL的同步操作是异步的，所以主服务执行完更改后会立即返回给客户端响应，而不用等待从服务日志复制过程，从服务器可以在任意时刻连接到主服务器上，同时从服务器和主服务器可以快速进行增量更新，同时任何一个新的从服务器都可以连接到主服务器上面去。其好处有：<br>　　(1) 增加副本，那么只读操作就可以分布在多个从服务器上面，进而减轻主库的负载，而且这样的从服务器可以添加多个副本，不仅是水平的，在垂直的方向上海可以进行多层次的同步。<br>　　(2) 可以针对不同类型的查询使用不同的从数据库，比如将过慢的、对数据更新要求不高的查询放到单独的从数据库上面。因为数据库同步的异步性，从服务器的数据副本很可能不是最新的，所以对于数据更新需求强的读请求应该被路由到主库上面以确保得到最新的副本。<br>　　(3) 根据同步的异步性，可以在某个时间将从服务器停止同步，然后就可以对数据库进行完整的冷备份，而主库的对外服务不受影响。这种操作有时候是必须的，因为MySQL不支持从一个空数据库上启动一个从服务器，所以经常对数据库进行完整备份，可以提高下次增加或替换从服务器的速度。<br>　　(4) 如果主服务器失效，MySQL不支持自动失效转移的功能，即不能自动将一台从服务器提升为主服务器。这需要手动更改配置才能生效，而且由于同步的异步性，往往还需要检查将要提升为主服务器的binlog是否是最新的。</p>
+<p>　　<strong>主-主同步拓扑</strong><br>　　针对主服务器挂掉，从服务器不能自动提升为主服务器的情况，有提出主-主同步的架构，两个主服务器是对等的角色，在一台挂掉的情况下应用程序可以快速切换到另外一台服务器进行正常工作。因为MySQL的binlog日志会记录执行的主机信息，所以在主-主同步拓扑的情况下，服务器A发送给服务器B的日志不会再由服务器B发送回服务器A，虽然理论上可以同时向两台服务器进行写入操作，但是为了降低数据冲突的风险，通常也都是向一条服务器进行写入。不仅仅是2，还可以有多个主服务器之间进行同步，总体来说就是在增加可用性的同时，数据的一致性和冲突的问题就越严重，所以现实环境下慎重使用。</p>
+<p>　　<strong>复制的问题和挑战</strong><br>　　虽然使用副本的方法来进行伸缩的时候，只是对读操作进行了伸缩，其写入能力并没有得到改善(主要是处于数据一致性的考虑)，这对于读操作多的程序是一种很好的伸缩手段，可以大大增加客户端只读的并发读和QPS指标。增加副本对增加数据规模也没有任何帮助，任何一个主、从服务器都包含了完整的数据副本，其存储能力没有得到任何提升。<br>　　再次强调数据库同步是异步操作，正常情况下主-从的同步延时不会超过500ms，但是也有非正常情况。MySQL的复制是从服务器上单线程独立完成的，而主服务器上的更新操作是多线程并发执行的，很有可能从服务器跟不上主服务器的更新步骤，尤其当执行表结构更新等复杂的操作时，会阻塞之后所有的同步请求。解决这种问题的思路有：a.对数据敏感的请求直接发送到主服务器上面；b.尽量降低复制延迟，比如将服务器上更新表结构的操作binlog关闭，这类操作在从服务器上面手动执行，那么更新表结构和数据同步就可以并行完成了。<br>　　MySQL的复制还可能遇到其他问题导致数据不一致，比如使用生成随机数的功能(还有时间函数？)等，导致主服务器和从服务器的数据不一样，一旦主从服务器同步出现差错，后面的更新操作很可能会得到不一致的结果，这种问题就大发了！<br>　　现在想想，终于知道数据库专家的工资那么高了，数据库对于一个产品和公司的发展至关重要，而其相关技术专业性强，需要大量的经验和积累！</p>
+<h2 id="2-2_数据分片">2.2 数据分片</h2><p>　　数据分片是将数据通过某种方式进行切分，以便将他们分散存储在多台服务器上，这也是我们通常听到的数据库分表分库，是除了功能分隔、增加副本之外的第三种伸缩性手段。这里说的数据库分片是针对数据库本身不支持分片，在应用层实现的数据分片。<br>　　数据分片首先需要选择分片键，通过分片键和某种映射算法可以快速定位路由对应记录在哪个服务器上，而不需要获取记录时候同所有的服务器进行通信，分片键和映射算法的选择，最好能让各个分片中的记录能够均匀分布。数据分区是突破数据量、并发链接数、服务器IO限制的有效手段。</p>
+<p>　　<strong>数据分片的问题挑战</strong><br>　　应用层数据分片的主要假定分片键之间是彼此独立没有联系的，这也就制约了无法执行多个分片的联合查询，如果有这种需求只能在各个分片上执行对应操作后再在应用层进行合并后返回结果。而有些情况这种执行甚至是不可能的，比如按照用户ID分片的数据库，如果要执行销售量最多的产品ID，那甚至要对绝大多数记录进行整理，因为那些分布均匀看似普通的产品，可能累计值是最大的。还有，某些以年月为后缀的分表操作，跨月份查询也是个痛点。<br>　　数据分片还导致数据库的ACID特性难以得到满足。MySQL支持单个数据库的ACID，那么上面的例子对某个用户的所有数据执行更新就是可行的，但是如果针对某个产品进行更新就需要横跨多个数据库操作，MySQL是不支持分布式事务的。<br>　　数据分片还可能涉及到一致性HASH类似的问题，绝大多数情况下通过机器数目取模的方式进行定位的算法是极度不推荐的(不过也不是绝对的，比如可以采用逻辑数据库概念分布，然后将逻辑数据库映射到物理主机上面去)，因为一旦这样定位就意味着接下来没有第二次伸缩的可能性了。在定位算法中可以简单的在数据库或者配置文件中配置定位关系(比如用户ID在哪个区段定位到哪个数据库)，这样不仅不会影响到新增记录，而且数据迁移也十分方便：只需要将对应记录锁住，然后进行实际数据的迁移，接着更改他们的映射关系，最后解锁记录就完成了。映射关系的这种定位还可以增加灵活性，比如把某些活跃用户，或者优质用户映射到配置高、线路好的机器上面去，以实现差异化运营。<br>　　数据分片还有个问题就是生成唯一性键约束。在MySQL有两个变量：auto_increment_offset和auto_increment_increment，数据库在这两个变量上实现的自增的逻辑是：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">auto_increment_offset + N × auto_increment_increment</div></pre></td></tr></table></figure></p>
+<p>　　所以分区的数据库通过设置这两个变量就可以产生不重复的唯一性键了；另外的一种方式就是借助外部第三方组件生成唯一性键值，比如Redis。这种唯一性键的特性还常常用在主-主同步的环境中。<br>　　下面这个图是把上面技术都用到的样子。<br><img src="/post_images/images/201702/ec6594c2.jpg" alt="mysql"></p>
+<h2 id="2-3_其他">2.3 其他</h2><p>　　<strong>数据的冷热存储</strong><br>　　世界万事万物都是相互制约、相生相克的，在限制成本因素的时候数据存储的性能和容量是相互制约的，因此如果业务模型可以清晰的分离出冷热数据(比如交易类型的数据按照创建日期进行划分)，那么冷热数据分开处理也将是个存储上的优化。冷数据一般来说具有数据量大、通常只有简单的查询操作、对性能要求不高的特点，所以可以对低频数据分配性能、线路较差的机器负责(而且由于其访问和操作少，所以低配的机器响应也不一定会差)。现在的云计算厂商也提供不同特性的存储服务类型，自建数据中心的也可以借鉴之。</p>
+<p>　　当然，上面的水平伸缩虽然在系统设计之初的时候就应当考虑，不过也不要忽视各个独立服务器的性能优化，否则就有一种舍本取末的感觉，毕竟数据分区会在运维、业务处理上带来很多的麻烦，常常感觉有那么一种不得已而为之。在独立服务器本身的性能没有被压榨到极限的时候，你集群的规模可能会成为你的谈资，但是你为此所付出的确是白花花的银子。<br>　　所以，一方面还是要对数据库单表、单库优化做到心中有数，比如索引、数据库引擎、缓存；而对于开发人员来说SQL语句的使用也要养成良好的习惯，多看看数据库的慢查询日志再对应做出优化，不要让宝贵的资源被自己的不成熟代码白白吞噬了。建议查看下面两篇文章：<br>　　<a href="https://segmentfault.com/a/1190000006158186" target="_blank" rel="external">《MySQL大表优化方案》</a><br>　　<a href="https://code.tutsplus.com/tutorials/top-20-mysql-best-practices--net-7855" target="_blank" rel="external">《Top 20+ MySQL Best Practices》</a></p>
+<h1 id="三、NoSQL数据库伸缩性">三、NoSQL数据库伸缩性</h1><p>　　关于NoSQL这里就不多说了，因为没有支持SQL的存储都把自己叫做NoSQL，概念显得比较宽泛和模糊，就像是要有意要和SQL传统数据库划清界限以凸显自己似的。<br>　　觉得大家讲到的NoSQL很多时候都是KV键值类存储(比如Amazon Dynamo)，这类存储设计之初就想到高性能和灵活的扩展性，因此两者最大的差异性就体现在可扩展性上。其实两者对比来说也没有绝对的优劣，毕竟SQL是标准性的，这么悠久的历史大家玩起来更有经验，各种优化和扩展方案也十分丰富；NoSQL是伴随着大数据成长起来的一个新概念，因为其横向扩展性优秀，对于数据量大、数据类型简单的存储需求乃是如鱼得水，因此才得以倍受追捧吧。还是那句话，符合业务需求的技术才是好技术！</p>
+<p>本文完！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="http://mogu.io/Facebook_flashcache-81" target="_blank" rel="external">Facebook flashcache介绍与使用</a></li>
+<li><a href="https://book.douban.com/subject/24335672/" target="_blank" rel="external">淘宝技术这十年</a></li>
+<li><a href="https://book.douban.com/subject/26906846/" target="_blank" rel="external">互联网创业核心技术：构建可伸缩的web应用</a></li>
+<li><a href="http://www.d1net.com/datacenter/tech/256374.html" target="_blank" rel="external">SQL vs Nosql ：优劣大对比</a></li>
+<li><a href="https://segmentfault.com/a/1190000006158186" target="_blank" rel="external">MySQL大表优化方案</a></li>
+<li><a href="https://code.tutsplus.com/tutorials/top-20-mysql-best-practices--net-7855" target="_blank" rel="external">Top 20+ MySQL Best Practices</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></p>
+        <p><span>最后更新:</span>2017-02-28, 08:37:12</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201702/study-note-of-scalable-backend-(3)-storage.html" title="后台开发那些常用技术再次小结（三）：存储部分">https://taozj.org/201702/study-note-of-scalable-backend-(3)-storage.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201702/study-note-of-scalable-backend-(3)-storage.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201702/cmake-cheatsheet.html">
+                    CMake工具使用手册
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201702/study-note-of-scalable-backend-(2)-web-service.html">
+                    后台开发那些常用技术再次小结（二）：Web服务层
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201702/study-note-of-scalable-backend-(3)-storage.html" data-title="后台开发那些常用技术再次小结（三）：存储部分" data-url="https://taozj.org/201702/study-note-of-scalable-backend-(3)-storage.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201702/cmake-cheatsheet.html" title="上一篇: CMake工具使用手册">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201702/study-note-of-scalable-backend-(2)-web-service.html" title="下一篇: 后台开发那些常用技术再次小结（二）：Web服务层">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

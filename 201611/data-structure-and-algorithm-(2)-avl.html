@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>数据结构和算法（二）：AVL自平衡二叉树 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一、二叉树的基础知识1.1 二叉树　　二叉树(Binary Tree)是n个结点的有限集合，该集合或者为空集，或者由一个根节点和两棵互不相交的、分别称为根节点的左子树和右子树的二叉树组成，且二叉树的左右要求是有顺序的。
+1.1.1 特殊种类的二叉树　　(1). 斜树：所有的结点都只有左子树的二叉树称为左斜树，所有结点都只有右子树的二叉树称为右斜树。　　(2). 满二叉树：在一棵二叉树中，如果所有分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构和算法（二）：AVL自平衡二叉树">
+<meta property="og:url" content="https://taozj.org/201611/data-structure-and-algorithm-(2)-avl.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="一、二叉树的基础知识1.1 二叉树　　二叉树(Binary Tree)是n个结点的有限集合，该集合或者为空集，或者由一个根节点和两棵互不相交的、分别称为根节点的左子树和右子树的二叉树组成，且二叉树的左右要求是有顺序的。
+1.1.1 特殊种类的二叉树　　(1). 斜树：所有的结点都只有左子树的二叉树称为左斜树，所有结点都只有右子树的二叉树称为右斜树。　　(2). 满二叉树：在一棵二叉树中，如果所有分">
+<meta property="og:image" content="https://taozj.org/post_images/images/201611/71ad5dc7e6cd6c10b5fc683333257b73.jpg">
+<meta property="og:image" content="https://taozj.org/post_images/images/201611/baac94cdf73a6b6b2530c267f3ff3653.jpg">
+<meta property="og:image" content="https://taozj.org/post_images/images/201611/71ad5dc7e6cd6c10b5fc683333257b73.jpg">
+<meta property="og:updated_time" content="2016-12-18T07:58:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构和算法（二）：AVL自平衡二叉树">
+<meta name="twitter:description" content="一、二叉树的基础知识1.1 二叉树　　二叉树(Binary Tree)是n个结点的有限集合，该集合或者为空集，或者由一个根节点和两棵互不相交的、分别称为根节点的左子树和右子树的二叉树组成，且二叉树的左右要求是有顺序的。
+1.1.1 特殊种类的二叉树　　(1). 斜树：所有的结点都只有左子树的二叉树称为左斜树，所有结点都只有右子树的二叉树称为右斜树。　　(2). 满二叉树：在一棵二叉树中，如果所有分">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201611/71ad5dc7e6cd6c10b5fc683333257b73.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-data-structure-and-algorithm-(2)-avl" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201611/data-structure-and-algorithm-(2)-avl.html" class="article-date">
+      <time datetime="2016-11-05T06:44:35.000Z" itemprop="datePublished">2016-11-05</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      数据结构和算法（二）：AVL自平衡二叉树
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/开发基础/">开发基础</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h1 id="一、二叉树的基础知识">一、二叉树的基础知识</h1><h2 id="1-1_二叉树">1.1 二叉树</h2><p>　　二叉树(Binary Tree)是n个结点的有限集合，该集合或者为空集，或者由一个根节点和两棵互不相交的、分别称为根节点的左子树和右子树的二叉树组成，且二叉树的左右要求是有顺序的。</p>
+<h3 id="1-1-1_特殊种类的二叉树">1.1.1 特殊种类的二叉树</h3><p>　　(1). 斜树：所有的结点都只有左子树的二叉树称为左斜树，所有结点都只有右子树的二叉树称为右斜树。<br>　　(2). 满二叉树：在一棵二叉树中，如果所有分支节点都存在左子树和右子树，而且所有叶子都在同一层上，称为满二叉树。<br>　　(3). 完全二叉树：对一棵具有n个节点的二叉树按层序编号，如果编号为i的结点与同样深度的满二叉树中编号为i的结点在二叉树中位置完全相同，称为完全二叉树。在实际操作上，就是按照从上到下、从左到右这种层次顺序遍历各个元素，如果该出现元素的位置出现了空档，则不是完全二叉树。<br>　　根据定义我们可知，满二叉树是完全二叉树的一种特殊情况。</p>
+<h3 id="1-1-2_二叉树的性质">1.1.2 二叉树的性质</h3><p>　　这里主要总结了二叉树结构中，数据元素、高度、父子节点位置的信息：<br>　　(1). 在二叉树的第i层上至多有2^(i-1)个结点。<br>　　(2). 深度为k的二叉树最多有2^k-1个结点。<br>　　(3). 对任何一棵二叉树T，如果其终端结点数为n0，度为2的结点数为n2，则n0=n2+1。<br>　　(4). 具有n个结点的完全二叉树的深度为[log2(n)]+1，其中[x]表示不大于x的最大整数。满二叉树的度数k=log2(n+1)。<br>　　(5). 对一棵有n个结点的完全二叉树按照层序编号(从1层到[log2(n)]+1层，每层从左到右)，对任意一节点i，则有：<br>　　　　a. 如果i=1，则i是二叉树的根，无双亲；<br>　　　　b. 如果i&gt;1，则其双亲是结点[i/2]；<br>　　　　c. 如果2i&gt;n，则结点i无左孩子(结点i为叶子节点)，否则其左孩子是节点2i；<br>　　　　d. 如果2i+1&gt;n，则节点i无右孩子，否则其右孩子为结点2i+1。<br>　　通常顺序方式(数组)存储二叉树结构也是十分的常见的，如果按照完全二叉树从顶部分层遍历的，所以上面列出的二叉树的孩子和父亲之间的位置关系，也就对应了在数组中元素的索引值，这在堆排序中会被应用的最为典型。</p>
+<h3 id="1-1-3_遍历二叉树">1.1.3 遍历二叉树</h3><p>　　二叉树的遍历是指从根结点出发，按照某种次序依次访问二叉树中的所有结点，使得每个结点都被访问到一次且仅被访问一次。<br>　　(1). 前序遍历：先访问根节点，然后前序遍历左子树，再前序遍历右子树；<br>　　(2). 中序遍历：从根节点开始，中序遍历根节点的左子树，然后访问根节点，最后中序遍历右子树；<br>　　(3). 后序遍历：从左到右先叶子后结点的方式遍历访问左右子树，最后访问根节点；<br>　　(4). 层序遍历：从树的第一层开始，从上而下逐层遍历，在同一层次中，按照从左到右的顺序对结点逐个访问。<br>　　二叉树的遍历虽然在语言上描述起来较为的复杂，其实代码实现上极为的简单，就是左树递归、右树递归、根元素访问三种操作顺序的排列组合的结果而已；而且，对于前序递归，其输出则是得到的元素从小到大排列的：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">pre_order</span><span class="params">(SmartAvlNodePtr node)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!node) <span class="keyword">return</span>;</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span>&lt;&lt;node-&gt;data_&lt;&lt;<span class="string">", "</span>;</div><div class="line">    pre_order(node-&gt;left_);</div><div class="line">    pre_order(node-&gt;right_);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　当给定条件需要重建二叉树的时候，已知前序遍历序列和中序遍历序列，就可以唯一确定一棵二叉树；已知后序遍历序列和中序遍历序列，业可以唯一确定一棵二叉树；但是已知前序遍历序列和后序遍历序列，不能确定一棵二叉树。<br><a id="more"></a></p>
+<h2 id="1-2_二叉排序树(Binary_Sort_Tree,_BST)">1.2 二叉排序树(Binary Sort Tree, BST)</h2><h3 id="1-2-1_二叉排序树的性质">1.2.1 二叉排序树的性质</h3><p>　　二叉排序树又称为二叉查找树，其如果不是空树，BST其具有以下性质(很显然，这是一个二叉树组织的递归定义)：<br>　　(1). 如果左子树不为空，则左子树上所有的节点都小于它的根结构的值；<br>　　(2). 若右子树不为空，则右子树上所有的节点都大于它的根结构的值；<br>　　(3). 其左右子树也分别是二叉排序树。</p>
+<h3 id="1-2-2_二叉排序树的操作">1.2.2 二叉排序树的操作</h3><p>　　二叉排序树的操作包括查找、插入和删除，其中查找就是根据当前给定的键值和每个节点比较是否相等，如果不相等根据大小关系递归在左右子树上面去查找，这里我想到C++的很多标准库中表明，当查找某个值如果没有找到的话，其返回就是该值可以被插入的位置，此时想来不无道理。<br>　　插入操作和查找比较类似，也比较的简单，而删除的时候需要根据删除节点的情况分类来对待：<br>　　(1). 如果要删除的节点是叶子节点，其没有任何子树，那么就直接删除之；<br>　　(2). 如果要删除的节点仅有左子树或者仅有右子树，那么就将其对应的左子树或者右子树这个非空子树整个移动到删除节点的位置，以完成独子承父业；<br>　　(3). 如果要删除的节点其左右子树都有节点，具体的做法可以选择：<br>　　　　a. 要么沿着要删除节点的左子树，一直向右走，找出最右的节点，取出来替换该删除节点；<br>　　　　b. 或者沿着删除节点的右子树，一直向左走，找出最左的节点，然后替换之。<br>　　上面最后一种情况的删除原理，其实就是寻找待删除节点大小最相临的前驱或后驱来直接替代它，替代后整个二叉树还是保持有序的状态，同时替换的节点由于是选择的最左或者最右节点，其最多也就只有一个子数，所以替换节点的删除本身也是十分方便的，采用上面(2)的情况处理就可以了。<br>　　二叉树的性能取决于二叉树的层数，最好的情况是O(logn)，存在于完全二叉树情况下，其访问性能近似于折半查找；最差时候会是O(n)，比如在斜树的情况下，需要逐个遍历二叉树的元素才行。</p>
+<h2 id="1-3_自平衡二叉树(AVL)">1.3 自平衡二叉树(AVL)</h2><p>　　前面说到，二叉树的查找、插入、删除操作的性能十分依赖于树的高度，所以如果能把树维持在一个完全二叉树的情况下，当然是最理想最高效的情况，所以在增加和删除这种会修改二叉树结构的操作中，能检测修改后的二叉树状态并修正之，限制二叉树的高度，即为平衡二叉树。<br>　　现实中绝对完全二叉树结构是很难维持的，而AVL作为最先发明的自平衡二叉树，通过对每个节点的左、右子树之间的高度差作出限定，同时在插入、删除的时候对不满足限定的子树进行一定的操作，以达到限制树的高度，从而保证其最优的查找性能。<br>　　AVL自平衡二规定每一个节点的左子树和右子树的高度差至多等于1，同时将二叉树上节点左子树高度减去右子树高度的值称为平衡因子BF，所以平衡的二叉树所有节点的平衡因子取值只可能是-1、0、1。<br>　　其它关于AVL自平衡二叉树的相关详细信息，将在下面实现部分再予以描述。</p>
+<h1 id="二、实现平衡二叉树">二、实现平衡二叉树</h1><p>　　首先说道，AVL自平衡二叉树其本质上还是一个BST，所以AVL树的查找、添加和删除的基础操作都是上面描述到的BST的操作，只是在这些操作之后，需要修正节点的高度信息，在必要的情况下进行适当的操作来保证AVL树的约束。<br>　　本文借助于<a href="http://kukuruku.co/hub/cpp/avl-trees" target="_blank" rel="external">AVL Trees</a>的实现，探究AVL树的插入、删除的维护过程。</p>
+<h2 id="2-1_旋转操作">2.1 旋转操作</h2><h3 id="2-1-1_基本旋转">2.1.1 基本旋转</h3><p>　　不仅仅是AVL，几乎所有的平衡二叉树都是通过旋转调整来实现的。在树的旋转中有左旋和右旋两个最基本的操作，而实际中针对左右左、右左右等结构采用的双旋转，其实也是这种原子操作的组合而已。<br><img src="/post_images/images/201611/71ad5dc7e6cd6c10b5fc683333257b73.jpg" alt="avl旋转"><br>　　看上面的图可知，左旋和右旋虽然结构表示不一，但是都保持了A&lt;x&lt;B&lt;y&lt;C的大小结构，两者可以互相旋转得到。比如在右图到左图的左旋操作中，则得到：y将成为新的根节点、原先的根节点x将成为y的左子树、y的右子树C不变，同时根据大小关系可知A&lt;q&lt;B，所以A和B分别成为q的左右子树；右旋情况也是类似的。<br>　　此时，A、B、C的子树都没有修改，而p、q的子树发生了变化，所以需要基于他们的子树修正p、q的高度。在传统学术上，AVL节点用一个字段保留记录平衡因子，但是这篇参考文章的作者建议保留树的高度信息height，因为一方面通过两个子树的height可以在需要的时候方便的计算出平衡因子，二来树的高度信息更新起来比较的方便明了，看看<a href="http://oopweb.com/Algorithms/Documents/AvlTrees/Volume/AvlTrees.htm" target="_blank" rel="external">AvlTrees</a>中维护平衡因子的分析就知道直接更新平衡因子是有多么麻烦了。不过这里的高度是一个绝对值，每次有修改的时候都必须让直接或者间接涉及到的节点全部更新调整，不过Nikolai Ershov的操作主要都是用递归方式来实现的，代码中绝大多数的操作都是返回修改或者平衡后的子树根节点，在递归函数中调用fix-height/rebalance会从最底层的修改节点一直检查处理到根节点去。</p>
+<h3 id="2-1-2_双旋转">2.1.2 双旋转</h3><p>　　双旋转通常在我们所称为的“左右左”或者“右左右”的情形下会发生，而这里也有专业的结论表示出来：当高度h(s)&lt;=h(D)的时候，只需要一次旋转就可以了，否则就需要两次旋转才能达到平衡(原文章作者的配图容易被误导，一定要仔细思考+想象！！！！)<br>　　(1). h(s)&lt;=h(D)，单次旋转<br><img src="/post_images/images/201611/baac94cdf73a6b6b2530c267f3ff3653.jpg" alt="一次旋转"><br>　　(2). h(s)&gt;h(D)，两次旋转<br><img src="/post_images/images/201611/71ad5dc7e6cd6c10b5fc683333257b73.jpg" alt="两次旋转"></p>
+<p>　　比如下面左旋操作的代码，这里一定要注意操作的顺序，同时在修复高度的时候父节点的高度是根据子节点直接计算出来的，所以修复的时候一定要先修复子节点，再修复当前节点。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function">SmartAvlNodePtr <span class="title">rotate_left</span><span class="params">(SmartAvlNodePtr node)</span> </span>&#123;</div><div class="line">    SmartAvlNodePtr tmp_root = node-&gt;right_;</div><div class="line">    node-&gt;right_ = tmp_root-&gt;left_;</div><div class="line">    tmp_root-&gt;left_ = node;</div><div class="line">    </div><div class="line">    fix_height(node);</div><div class="line">    fix_height(tmp_root);</div><div class="line">    <span class="keyword">return</span> tmp_root; </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="2-2_插入操作">2.2 插入操作</h2><p>　　插入操作先是进行常规的BST插入，通过递归的方式查找插入点，然后创建新的节点，修改指针完成插入。<br>　　插入完成后，要沿着插入链沿着修改节点向树根的方向，递归调用rebalance调整树高度、计算平衡因子，并在必要的时候进行旋转修复操作。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="function">SmartAvlNodePtr <span class="title">insert</span><span class="params">(SmartAvlNodePtr node, <span class="keyword">int</span> data)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!node) &#123;</div><div class="line">        node = <span class="built_in">std</span>::make_shared&lt;AvlNode&gt;(data);</div><div class="line">        <span class="keyword">return</span> node;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    assert(data != node-&gt;data_);</div><div class="line">    <span class="keyword">if</span> (data &lt; node-&gt;data_) &#123;</div><div class="line">        node-&gt;left_ = insert(node-&gt;left_, data);</div><div class="line">        node = rebalance(node);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (data &gt; node-&gt;data_)&#123;</div><div class="line">        node-&gt;right_ = insert(node-&gt;right_, data);</div><div class="line">        node = rebalance(node);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> node;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function">SmartAvlNodePtr <span class="title">rebalance</span><span class="params">(SmartAvlNodePtr node)</span> </span>&#123;</div><div class="line">    </div><div class="line">    fix_height(node);</div><div class="line">    <span class="keyword">int</span> bal_factor = get_bal_factor(node);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (bal_factor &gt; <span class="number">1</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (get_bal_factor(node-&gt;right_) &lt; <span class="number">0</span>) <span class="comment">//rotate right first</span></div><div class="line">            node-&gt;right_ = rotate_right(node-&gt;right_);</div><div class="line">        <span class="keyword">return</span> rotate_left(node);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (bal_factor &lt; <span class="number">-1</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (get_bal_factor(node-&gt;left_) &gt; <span class="number">0</span>) <span class="comment">//rotate right first</span></div><div class="line">            node-&gt;left_ = rotate_left(node-&gt;left_);</div><div class="line">        <span class="keyword">return</span> rotate_right(node);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> node;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="2-3_删除操作">2.3 删除操作</h2><p>　　平衡二叉树最复杂的就是删除操作了(包括后面的红黑树，其删除更加的复杂)，首先根据BST的基本删除方法，进行左右子树递归查找要删除的节点，当找到待删除的节点的时候：<br>　　(1). 如果要删除的当前节点没有右子树，那么用其左孩子代替它的方式来直接删除之；否则<br>　　(2). 查找右子树中最小节点，用这个最小节点替代当前节点的方式来删除该节点，同时从替代节点原位置开始，递归修复树的高度和平衡关系。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function">SmartAvlNodePtr <span class="title">remove_right_min</span><span class="params">(SmartAvlNodePtr node)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!node-&gt;left_)</div><div class="line">        <span class="keyword">return</span> node-&gt;right_;</div><div class="line">    node-&gt;left_ = remove_right_min(node-&gt;left_);</div><div class="line">    <span class="keyword">return</span> rebalance(node);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function">SmartAvlNodePtr <span class="title">remove</span><span class="params">(SmartAvlNodePtr node, <span class="keyword">int</span> data)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (data &lt; node-&gt;data_)</div><div class="line">        node-&gt;left_ = remove(node-&gt;left_, data); </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (data &gt; node-&gt;data_)</div><div class="line">        node-&gt;right_ = remove(node-&gt;right_, data);</div><div class="line">    <span class="keyword">else</span></div><div class="line">    &#123;</div><div class="line">        <span class="keyword">if</span> (!node-&gt;right_)</div><div class="line">            <span class="keyword">return</span> node-&gt;left_;</div><div class="line"></div><div class="line">        SmartAvlNodePtr repl = find_right_min(node-&gt;right_);</div><div class="line">        repl-&gt;right_ = remove_right_min(node-&gt;right_);</div><div class="line">        repl-&gt;left_  = node-&gt;left_;</div><div class="line">        <span class="keyword">return</span> rebalance(repl);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> rebalance(node);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　上面remove操作实际进行的步骤为:<br>　　a. find_right_min采用遍历的方式，实现在待删除节点的右子树种寻求最小的节点，作为选定的替换种子节点；<br>　　b. 调用一个remove_right_min的函数，注意这个函数也是一个递归函数，递归找到最小节点后用其右子树(无论是否为空)来替换这个节点以删除之，同时调用rebalance不断平衡直到待删除节点的右子树根部位置；<br>　　c. 修改repl的指针，接管待删除节点的左右子树资源；<br>　　d. 这个函数一旦返回(repl)，就用于顶替待删除节点在其父节点对齐引用，此时待删除节点智能指针引用递减(并被析构释放)；<br>　　e. 从删除节点的父节点开始，递归调用rebalance()到整个树的根，完成删除操作。</p>
+<h2 id="2-4_小结">2.4 小结</h2><p>　　自认为讲清楚了，其实AVL还算是比较简单的自平衡二叉树了。<br>　　这里所有的节点都是使用智能指针管理的，所以看不到传统实现中那么多的new delete了，通过析构函数打印调试信息，发现删除的时候对象是被析构了，智能指针大法好！</p>
+<p>整理后的代码已经上传了，欢迎各位大佬Review和拍砖!</p>
+<div class="github-widget" data-repo="taozhijiang/learncpp"></div>
+
+<p>本文完！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="http://kukuruku.co/hub/cpp/avl-trees" target="_blank" rel="external">AVL Trees</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/AVL%E6%A0%91" target="_blank" rel="external">AVL树</a></li>
+<li><a href="http://www.sanfoundry.com/cpp-program-implement-avl-trees/" target="_blank" rel="external">C++ Program to Implement AVL Trees</a></li>
+<li><a href="http://oopweb.com/Algorithms/Documents/AvlTrees/Volume/AvlTrees.htm" target="_blank" rel="external">AVL Trees: Tutorial and C++ Implementation</a></li>
+<li><a href="http://www.geeksforgeeks.org/avl-tree-set-1-insertion/" target="_blank" rel="external">AVL Tree | Set 1</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/%E4%BA%8C%E5%85%83%E6%90%9C%E5%B0%8B%E6%A8%B9" target="_blank" rel="external">二叉搜索树</a></li>
+<li><a href="https://www.cs.usfca.edu/~galles/visualization/AVLtree.html" target="_blank" rel="external">visualization/AVLtree</a></li>
+<li><a href="https://book.douban.com/subject/26713270/" target="_blank" rel="external">算法之美——隐匿在数据结构背后的原理（C++版）</a></li>
+<li><a href="https://book.douban.com/subject/6424904/" target="_blank" rel="external">大话数据结构</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></p>
+        <p><span>最后更新:</span>2016-12-18, 15:58:56</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201611/data-structure-and-algorithm-(2)-avl.html" title="数据结构和算法（二）：AVL自平衡二叉树">https://taozj.org/201611/data-structure-and-algorithm-(2)-avl.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201611/data-structure-and-algorithm-(2)-avl.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201611/data-structure-and-algorithm-(3)-rbtree.html">
+                    数据结构和算法（三）：红黑二叉树
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201611/data-structure-and-algorithm-(1)-hash.html">
+                    数据结构和算法（一）：hash散列容器
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201611/data-structure-and-algorithm-(2)-avl.html" data-title="数据结构和算法（二）：AVL自平衡二叉树" data-url="https://taozj.org/201611/data-structure-and-algorithm-(2)-avl.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201611/data-structure-and-algorithm-(3)-rbtree.html" title="上一篇: 数据结构和算法（三）：红黑二叉树">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201611/data-structure-and-algorithm-(1)-hash.html" title="下一篇: 数据结构和算法（一）：hash散列容器">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

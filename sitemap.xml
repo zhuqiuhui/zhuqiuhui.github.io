@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://taozj.org/201702/study-note-of-scalable-backend-(5)-message-queue.html</loc>
+    <lastmod>2017-02-28T15:47:25.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/design-patterns-(2)-structural.html</loc>
+    <lastmod>2017-02-28T08:33:35.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/design-patterns-(3)-behavioral.html</loc>
+    <lastmod>2017-02-28T08:33:29.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/design-patterns-(1)-creational.html</loc>
+    <lastmod>2017-02-28T08:33:11.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201604/server-prog-port-from-windows-to-linux.html</loc>
+    <lastmod>2017-02-28T04:55:31.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201702/study-note-of-scalable-backend-(3)-storage.html</loc>
+    <lastmod>2017-02-28T00:37:12.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/study-conclusion-stage.html</loc>
+    <lastmod>2017-02-24T15:49:48.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201702/study-note-of-scalable-backend-(4)-cache.html</loc>
+    <lastmod>2017-02-24T15:18:04.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201701/blog-collection.html</loc>
+    <lastmod>2017-02-24T10:14:09.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/http2-spec.html</loc>
+    <lastmod>2017-02-24T08:55:44.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201701/linux-performance-basic.html</loc>
+    <lastmod>2017-02-24T08:39:30.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201702/study-note-of-scalable-backend-(1)-front.html</loc>
+    <lastmod>2017-02-24T08:35:43.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201702/cmake-cheatsheet.html</loc>
+    <lastmod>2017-02-23T06:57:24.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/transform-work-env-to-mac-os.html</loc>
+    <lastmod>2017-02-22T15:28:53.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201702/study-note-of-scalable-backend-(2)-web-service.html</loc>
+    <lastmod>2017-02-22T01:37:46.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201701/gnu-gdb-debug.html</loc>
+    <lastmod>2017-02-15T14:52:25.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201702/little-thoughts-at-the-begin-of-2017.html</loc>
+    <lastmod>2017-02-10T15:21:12.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201701/rpc-principle-and-tips.html</loc>
+    <lastmod>2017-02-08T08:10:03.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/about/index.html</loc>
+    <lastmod>2017-02-05T15:07:04.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/about-multi-process-thread-dev-manage.html</loc>
+    <lastmod>2017-02-05T07:45:39.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201701/https-principle.html</loc>
+    <lastmod>2017-01-18T13:15:17.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201701/learn-note-of-distributed-system-(6)-application.html</loc>
+    <lastmod>2017-01-14T15:57:20.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201701/learn-note-of-distributed-system-(5)-zab-consensus.html</loc>
+    <lastmod>2017-01-14T06:26:28.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201603/encrypt-safe-your-file-and-email-gpg.html</loc>
+    <lastmod>2017-01-08T10:05:56.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201509/rpmbuild-package-example-(1).html</loc>
+    <lastmod>2017-01-08T10:02:14.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201608/some-refined-and-modification-this-site.html</loc>
+    <lastmod>2017-01-04T09:44:44.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/forkp-mulit-process-manage-framework.html</loc>
+    <lastmod>2017-01-04T02:19:21.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201604/linux-env-program-(1)-async-blocking-io-model.html</loc>
+    <lastmod>2017-01-02T14:08:50.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html</loc>
+    <lastmod>2016-12-31T16:09:34.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/cmd-tools-sed-awk.html</loc>
+    <lastmod>2016-12-30T08:57:50.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/learn-note-of-distributed-system-(4)-raft-consensus.html</loc>
+    <lastmod>2016-12-29T07:55:35.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/libto-coroutine-library-base-on-boost-context2.html</loc>
+    <lastmod>2016-12-29T01:47:50.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/nginx-load-balancing.html</loc>
+    <lastmod>2016-12-26T01:46:42.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html</loc>
+    <lastmod>2016-12-25T14:36:42.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201604/linux-env-program-(2)-difference-select-poll-epoll.html</loc>
+    <lastmod>2016-12-25T02:56:54.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201603/blog-site-under-https.html</loc>
+    <lastmod>2016-12-25T00:50:45.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201510/mail-server-based-on-postfix-dovecot.html</loc>
+    <lastmod>2016-12-18T14:18:56.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201510/docker-examples.html</loc>
+    <lastmod>2016-12-18T14:18:54.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201509/rpmbuild-package-example-(2).html</loc>
+    <lastmod>2016-12-18T14:18:52.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201509/generate-makefile-through-autotools.html</loc>
+    <lastmod>2016-12-18T14:18:47.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201508/learning-and-debug-linux-kernel-under-windows.html</loc>
+    <lastmod>2016-12-18T14:18:45.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201508/keepass-pass-save.html</loc>
+    <lastmod>2016-12-18T14:18:42.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201601/read-(the-mystery-of-silicon-valley).html</loc>
+    <lastmod>2016-12-18T14:14:42.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201601/gentoo-overlay-and-software-recommend.html</loc>
+    <lastmod>2016-12-18T14:14:40.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201601/conclusion-of-machine-learning.html</loc>
+    <lastmod>2016-12-18T14:14:38.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201602/learn-note-of-numpy.html</loc>
+    <lastmod>2016-12-18T14:14:36.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201602/read-(i-am-in-taobao-these-ten-years).html</loc>
+    <lastmod>2016-12-18T14:14:34.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201602/leave-tp-link-at-2015.html</loc>
+    <lastmod>2016-12-18T14:14:32.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201602/setup-dev-env-for-pebble-smartphone.html</loc>
+    <lastmod>2016-12-18T14:14:28.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201602/usage-and-optimize-of-zfs.html</loc>
+    <lastmod>2016-12-18T14:14:26.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201603/one-year-old-of-my-zaizai.html</loc>
+    <lastmod>2016-12-18T14:06:08.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201603/learn-note-of-spark-(3)-relative-modules.html</loc>
+    <lastmod>2016-12-18T14:06:06.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201603/learn-note-of-spark-(2)-read-official-doc.html</loc>
+    <lastmod>2016-12-18T14:06:04.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html</loc>
+    <lastmod>2016-12-18T14:06:02.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201603/learn-note-of-pro-git.html</loc>
+    <lastmod>2016-12-18T14:05:59.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201603/interesting-cases-of-machine-learning.html</loc>
+    <lastmod>2016-12-18T14:05:57.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201603/how-to-survive-from-info-ocean.html</loc>
+    <lastmod>2016-12-18T14:05:54.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201603/how-to-love-dog.html</loc>
+    <lastmod>2016-12-18T14:05:52.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201605/fastcgi-support-for-http-server-libmicrohttpd.html</loc>
+    <lastmod>2016-12-18T13:57:13.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201604/statistics-frequency-bayesian.html</loc>
+    <lastmod>2016-12-18T13:57:07.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201604/recommend-system-cases.html</loc>
+    <lastmod>2016-12-18T13:57:05.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201604/recommend-system-algorithm.html</loc>
+    <lastmod>2016-12-18T13:57:03.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201604/random-sampling-method.html</loc>
+    <lastmod>2016-12-18T13:57:01.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201604/oversee-of-http-based-on-libmicrohttpd.html</loc>
+    <lastmod>2016-12-18T13:56:58.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201604/how-to-calc-svd.html</loc>
+    <lastmod>2016-12-18T13:56:50.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201604/fulltext-search-based-on-lsi-lda.html</loc>
+    <lastmod>2016-12-18T13:56:47.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201604/conclusion-of-machine-learning-algorithm.html</loc>
+    <lastmod>2016-12-18T13:56:43.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201605/usage-of-apache-lucy-fulltext-index.html</loc>
+    <lastmod>2016-12-18T13:47:55.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201605/principle-of-oauth2.html</loc>
+    <lastmod>2016-12-18T13:47:10.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201605/data-type-and-index-of-mysql-database.html</loc>
+    <lastmod>2016-12-18T13:42:54.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201605/auto-answer-recommend-conclusion.html</loc>
+    <lastmod>2016-12-18T13:41:38.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201606/port-expose-based-on-libevent-(1)-basic-impl.html</loc>
+    <lastmod>2016-12-18T13:39:08.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html</loc>
+    <lastmod>2016-12-18T13:39:05.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html</loc>
+    <lastmod>2016-12-18T13:39:00.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html</loc>
+    <lastmod>2016-12-18T13:38:57.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201606/read-(the-art-of-sober-thinking).html</loc>
+    <lastmod>2016-12-18T13:38:52.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html</loc>
+    <lastmod>2016-12-18T13:36:55.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html</loc>
+    <lastmod>2016-12-18T13:36:47.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201605/learn-note-of-libevent-(1)-basic-usage.html</loc>
+    <lastmod>2016-12-18T13:30:47.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html</loc>
+    <lastmod>2016-12-18T13:30:44.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html</loc>
+    <lastmod>2016-12-18T13:30:19.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201607/construct-running-close-of-tcp.html</loc>
+    <lastmod>2016-12-18T13:29:07.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201607/simple-digit-recong-base-on-tesseract.html</loc>
+    <lastmod>2016-12-18T13:28:56.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html</loc>
+    <lastmod>2016-12-18T13:28:30.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201607/design-and-impl-of-minicached-base-on-memcached.html</loc>
+    <lastmod>2016-12-18T13:27:14.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201609/talk-about-io-seperation-design.html</loc>
+    <lastmod>2016-12-18T08:51:39.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201609/read-(linux-mulit-thread-server-develop).html</loc>
+    <lastmod>2016-12-18T08:51:15.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201609/lockless-in-multi-thread.html</loc>
+    <lastmod>2016-12-18T08:48:46.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201608/feeling-of-cpp-11-and-two-ticks.html</loc>
+    <lastmod>2016-12-18T08:46:08.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201609/learn-note-of-protobuf.html</loc>
+    <lastmod>2016-12-18T08:43:31.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201609/cpp11-atomic-and-memory-model.html</loc>
+    <lastmod>2016-12-18T08:43:02.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201609/basics-of-boost-asio-(1)-read-the-docs.html</loc>
+    <lastmod>2016-12-18T08:41:56.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201609/basics-of-boost-asio-(2)-overview-of-the%20async-framework.html</loc>
+    <lastmod>2016-12-18T08:41:55.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201609/basics-of-boost-asio-(3)-strand.html</loc>
+    <lastmod>2016-12-18T08:41:53.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201609/usage-of-boost-coroutine.html</loc>
+    <lastmod>2016-12-18T08:13:42.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201610/talk-about-singleton.html</loc>
+    <lastmod>2016-12-18T08:09:31.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/learn-note-of-tencent-libco-coroutine.html</loc>
+    <lastmod>2016-12-18T08:06:55.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html</loc>
+    <lastmod>2016-12-18T08:06:11.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html</loc>
+    <lastmod>2016-12-18T08:05:38.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/introduction-of-boost-context-and-new-coroutine-library.html</loc>
+    <lastmod>2016-12-18T08:03:50.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/tcp-connection-keep-alive.html</loc>
+    <lastmod>2016-12-18T08:00:37.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/read-note-of-amazon-dynamo.html</loc>
+    <lastmod>2016-12-18T08:00:18.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/data-structure-and-algorithm-(4)-sort.html</loc>
+    <lastmod>2016-12-18T07:59:07.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/data-structure-and-algorithm-(3)-rbtree.html</loc>
+    <lastmod>2016-12-18T07:59:01.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/data-structure-and-algorithm-(2)-avl.html</loc>
+    <lastmod>2016-12-18T07:58:56.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201611/data-structure-and-algorithm-(1)-hash.html</loc>
+    <lastmod>2016-12-18T07:58:45.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/learn-note-of-google-grpc.html</loc>
+    <lastmod>2016-12-18T07:48:21.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/201612/consistent-hashing.html</loc>
+    <lastmod>2016-12-18T07:45:47.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/search.html</loc>
+    <lastmod>2016-07-13T15:48:21.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/post_images/README.html</loc>
+    <lastmod>2016-07-13T14:50:46.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/404.html</loc>
+    <lastmod>2016-04-05T10:17:11.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/categories/index.html</loc>
+    <lastmod>2016-02-14T23:57:52.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://taozj.org/tags/index.html</loc>
+    <lastmod>2016-02-14T23:57:52.000Z</lastmod>
+  </url>
+  
+</urlset>

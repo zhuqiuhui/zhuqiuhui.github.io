@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>MacbookPro上基于ZFS的Gentoo双系统安装 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="实在没想到，买了Macbook Pro还是避免不了折腾的命，原本很大程度买Macbook Pro就是不想折腾滴。　　或许上层开发程序员无所谓，但无奈对于对做Linux底层开发者来说，涉及到macOS和Linux操作系统的差异性太大了；即使macOS命令行程序无比丰富，但是BSD风格和Linux那一套相比有时候差异还挺大的；8G内存用虚拟机太吃力了——总之，这种情况唯有双系统可解～　　至于发行版">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MacbookPro上基于ZFS的Gentoo双系统安装">
+<meta property="og:url" content="https://taozj.org/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="实在没想到，买了Macbook Pro还是避免不了折腾的命，原本很大程度买Macbook Pro就是不想折腾滴。　　或许上层开发程序员无所谓，但无奈对于对做Linux底层开发者来说，涉及到macOS和Linux操作系统的差异性太大了；即使macOS命令行程序无比丰富，但是BSD风格和Linux那一套相比有时候差异还挺大的；8G内存用虚拟机太吃力了——总之，这种情况唯有双系统可解～　　至于发行版">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/11bbad51.jpg">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/2312e6e7.png">
+<meta property="og:updated_time" content="2016-12-31T16:09:34.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MacbookPro上基于ZFS的Gentoo双系统安装">
+<meta name="twitter:description" content="实在没想到，买了Macbook Pro还是避免不了折腾的命，原本很大程度买Macbook Pro就是不想折腾滴。　　或许上层开发程序员无所谓，但无奈对于对做Linux底层开发者来说，涉及到macOS和Linux操作系统的差异性太大了；即使macOS命令行程序无比丰富，但是BSD风格和Linux那一套相比有时候差异还挺大的；8G内存用虚拟机太吃力了——总之，这种情况唯有双系统可解～　　至于发行版">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201612/11bbad51.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-install-gentoo-root-zfs-on-macbookpro-2015-early" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html" class="article-date">
+      <time datetime="2016-12-25T04:55:00.000Z" itemprop="datePublished">2016-12-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MacbookPro上基于ZFS的Gentoo双系统安装
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/生活/">生活</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/软件/">软件</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>　　实在没想到，买了Macbook Pro还是避免不了折腾的命，原本很大程度买Macbook Pro就是不想折腾滴。<br>　　或许上层开发程序员无所谓，但无奈对于对做Linux底层开发者来说，涉及到macOS和Linux操作系统的差异性太大了；即使macOS命令行程序无比丰富，但是BSD风格和Linux那一套相比有时候差异还挺大的；8G内存用虚拟机太吃力了——总之，这种情况唯有双系统可解～<br>　　至于发行版，自从遇到Gentoo之后，就对其他发行版无爱了，而文件系统也一直坚持着ZFS装系统，XFS保存数据。这次是macOS+Gentoo了，原理和步骤差异不大，这里总结一下，给需要的人做个参考吧！<br><img src="/post_images/images/201612/11bbad51.jpg" alt="gentoo"></p>
+<ol>
+<li><strong>EFI启动引导rEFInd</strong><br>　　因为macOS系统使用GPT分区和EFI引导模式，所以要安装的Gentoo也必须使用这种引导模式。rEFInd是一个优秀的EFI引导器，支持Windows/macOS/Linux平台，所以这里需要使用rEFInd来接管，然后用来引导macOS和Gentoo。<br>　　安装rEFInd的方式十分简单，按照<a href="http://www.rodsbooks.com/refind/sip.html" target="_blank" rel="external">教程</a>几步就可以了。从EI Capitan开始，macOS启用了SIP特性，所以必须在恢复模式下安装rEFInd。<a id="more"></a></li>
+<li><p><strong>Linux引导盘准备</strong><br>　　Gentoo的安装和其他系统很不一样，必须先用一个LiveCD/DVD首先启动，然后通过chroot模式安装。<br>　　之前自己都是使用带有zfs支持的<a href="http://ftp.osuosl.org/pub/funtoo/distfiles/sysresccd/" target="_blank" rel="external">system-rescue-cd</a>来安装的，但这次funtoo的示例教程用了Ubuntu。我也采用了Ubuntu LiveCD的方式，主要是考虑到Ubuntu一直对各种硬件支持良好(主要是考虑到MacbookPro没有有线网络支持)。通过dd if=ubuntu-16.04.1-desktop-amd64.iso of=/dev/sdb bs=4K写入U盘后，就可以用rEFInd来引导它了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ubuntu@ubuntu:~$ sudo -i</div><div class="line">root@ubuntu:~<span class="comment"># apt-add-repository universe</span></div><div class="line">root@ubuntu:~<span class="comment"># apt update</span></div><div class="line">root@ubuntu:~<span class="comment"># apt install --yes debootstrap zfs-initramfs</span></div><div class="line">root@ubuntu:~<span class="comment"># dmesg | grep ZFS</span></div><div class="line">[  377.595348] ZFS: Loaded module v0.6.5.6-0ubuntu10, ZFS pool version 5000, ZFS filesystem version 5</div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>系统分区</strong><br>　　幸亏当时买了个次乞丐版的256GB的硬盘，把160GB留给了macOS，剩下的就丢给了Gentoo。<br>　　因为采用了EFI引导方式且ESP分区已经存在，所以只需要创建root、swap和数据分区就可以了。大家都是在macOS下使用磁盘工具释放了部分的空闲空间的，而macOS默认已经把硬盘的空闲部分创建了一个分区了，所以在parted中需要首先rm 4那个分区。<br>　　至于分区的大小，首先交换分区需要大于物理内存8G的大小，因为休眠suspend to disk需要使用它；rootfs需要大一些，主要是zfs后面快照备份的时候也会占用空间；这里对于数据是创建了store不是创建home分区，主要是考虑到后面很多软件和系统的设置都会保留在用户的home分区，如果把home放到rootfs备份会方便些，而真正的数据放到store分区，软连接到home目录下面就可以。最终的分区结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~<span class="comment"># parted -a optimal /dev/sda</span></div><div class="line">GNU Parted 3.2</div><div class="line">Using /dev/sda</div><div class="line">Welcome to GNU Parted! Type <span class="string">'help'</span> to view a list of commands.</div><div class="line">(parted) <span class="built_in">print</span>                                                            </div><div class="line">Model: ATA APPLE SSD SM0256 (scsi)</div><div class="line">Disk /dev/sda: 251GB</div><div class="line">Sector size (logical/physical): 512B/4096B</div><div class="line">Partition Table: gpt</div><div class="line">Disk Flags: </div><div class="line"></div><div class="line">Number  Start   End    Size    File system     Name                  Flags</div><div class="line"> 1      20.5kB  210MB  210MB   fat32           EFI System Partition  boot, esp</div><div class="line"> 2      210MB   161GB  160GB   hfs+            Customer</div><div class="line"> 3      161GB   161GB  650MB   hfs+            Recovery HD</div><div class="line"> 4      161GB   172GB  10.7GB  linux-swap(v1)  swap</div><div class="line"> 5      172GB   220GB  48.3GB  zfs             rootfs</div><div class="line"> 6      220GB   250GB  29.6GB  xfs             store</div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>创建zfs分区</strong><br>　　以前自己都是这么做的，主要是参考Richard Yao的<a href="https://github.com/ryao/zfs-overlay/blob/master/zfs-install" target="_blank" rel="external">zfs-install</a>操作，他是gentoo中zfs部分的开发和维护者。关注他之前有段时间沉寂了，gentoo的zfs好久没更新，但最近又再次活跃起来了。<br>　　Richard Yao的那篇文章引导和启动使用的是grub和openrc，而本文用的是EFI和systemd，所以会有一些细微的差异。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~<span class="comment"># mkdir /mnt/gentoo</span></div><div class="line">root@ubuntu:~<span class="comment"># zpool create -f -o ashift=12 -o cachefile=/tmp/zpool.cache -O normalization=formD -O atime=off -m none -R /mnt/gentoo zroot /dev/sda5</span></div><div class="line">root@ubuntu:~<span class="comment"># zpool status</span></div><div class="line">root@ubuntu:~<span class="comment"># zfs create -o mountpoint=none -o canmount=off zroot/ROOT</span></div><div class="line">root@ubuntu:~<span class="comment"># zfs create -o mountpoint=/ zroot/ROOT/gentoo</span></div><div class="line">root@ubuntu:~<span class="comment"># zfs create -o mountpoint=/usr/portage -o atime=off zroot/ROOT/portage</span></div><div class="line">root@ubuntu:~<span class="comment"># zfs create -o mountpoint=/usr/portage/distfiles zroot/ROOT/distfiles</span></div><div class="line">root@ubuntu:~<span class="comment"># zfs create -o mountpoint=/var/tmp/portage -o sync=disabled -o compression=lz4 zroot/ROOT/build-dir</span></div><div class="line">root@ubuntu:~<span class="comment"># zfs list -t all</span></div><div class="line">root@ubuntu:~<span class="comment"># zpool set bootfs=zroot/ROOT/gentoo zroot</span></div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>系统安装准备</strong><br>　　上面的步骤已经为新系统创建好了rootfs，并且挂在了/mnt/gentoo的目录下面。下面就是将基系统stage解压到这个分区上面去，并做出一些配置更新后，chroot到这个新系统中去。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~<span class="comment"># wget http://mirrors.ustc.edu.cn/gentoo/releases/amd64/autobuilds/current-stage3-amd64/stage3-amd64-20161215.tar.bz2</span></div><div class="line">root@ubuntu:~<span class="comment"># tar -xvjpf stage3-amd64-*.tar.bz2 -C /mnt/gentoo</span></div><div class="line">root@ubuntu:~<span class="comment"># mkdir -p /mnt/gentoo/etc/zfs</span></div><div class="line">root@ubuntu:~<span class="comment"># cp /tmp/zpool.cache /mnt/gentoo/etc/zfs/zpool.cache</span></div><div class="line">root@ubuntu:~<span class="comment"># cp -L /etc/resolv.conf /mnt/gentoo/etc/resolv.conf</span></div><div class="line">root@ubuntu:~<span class="comment"># mount -t proc none /mnt/gentoo/proc  </span></div><div class="line">root@ubuntu:~<span class="comment"># mount --rbind /dev /mnt/gentoo/dev &amp;&amp; mount --rbind /sys /mnt/gentoo/sys</span></div><div class="line">root@ubuntu:~<span class="comment"># mount --make-rslave /mnt/gentoo/dev &amp;&amp; mount --make-rslave /mnt/gentoo/sys</span></div><div class="line">root@ubuntu:~<span class="comment"># chroot /mnt/gentoo /bin/bash</span></div><div class="line">root@ubuntu:~<span class="comment"># env-update; source /etc/profile; export PS1="(chroot) $PS1"; cd</span></div><div class="line">(chroot) ubuntu ~ <span class="comment">#</span></div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>系统基础安装</strong><br>　　到了这里已经chroot到目标系统中了，所做的任何操作都会保留在新系统中。不过基本系统组件，很多都没有，包含内核。<br>　　首先需要更新portage，设置profile，更新make.conf。敝人用的<a href="/upload/make.conf">make.conf</a>已经共享了，大家可以借鉴使用，酌情修改相关USE。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">(chroot) ubuntu ~ <span class="comment"># emerge-webrsync</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># emerge --sync</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># eselect profile list</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># eselect profile set 12 #default/linux/amd64/13.0/systemd</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># emerge --info | grep ^USE</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># nano -w /etc/portage/make.conf</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># emerge -auDN @world</span></div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>编译kernel和zfs模块</strong><br>　　到这里，系统关键的kernel还没有产生，一般来说gentoo-sources都是比较稳定的，可以安心开启~amd64。<br>　　虽然自4.9内核发布后，各位基佬吵扰着要升级内核尝试TCP BBR拥塞控制算法，但是看了zfs目前只支持4.8的内核分支，所以这里就只用了4.8.15版本内核。内核配置是个细心活，既要支持硬件的驱动，又要删除不必要的部分精简内核(尤其对有洁癖的人来说)，还需要根据使用情况调测相应地参数。个人的<a href="/upload/kernel_4.8.15">内核配置</a>也贴出来了，虽然还没细调，但是可以工作使用。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">(chroot) ubuntu ~ <span class="comment"># emerge sys-kernel/genkernel-next</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># emerge sys-kernel/gentoo-sources:4.8.15</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># genkernel kernel --no-clean --no-mountboot --makeopts=-j4 --menuconfig</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># echo "sys-kernel/spl ~amd64" &gt;&gt; /etc/portage/package.accept_keywords</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># echo "sys-fs/zfs-kmod ~amd64" &gt;&gt; /etc/portage/package.accept_keywords</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># echo "sys-fs/zfs ~amd64" &gt;&gt; /etc/portage/package.accept_keywords</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># emerge sys-fs/zfs</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># systemctl preset zfs-import-cache zfs-import-scan zfs-mount zfs-share zfs-zed zfs.target</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># echo 1 &gt; /proc/sys/vm/drop_caches</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># genkernel all --no-clean --no-mountboot --makeopts=-j4 --zfs --callback="emerge @module-rebuild" --menuconfig</span></div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>配置rEFInd引导</strong><br>　　由于使用EFI引导，这里就不需要安装grub类似的软件了。由于macOS已经有了ESP分区了，这里就只需要将内核和initramfs拷贝到ESP分区中新建的gentoo目录就可以了，不过要注意内核名字的修改，否则可能不能被识别。而且后面有其他版本的内核，也可以用相同的方式拷贝进多个内核和initramfs，rEFInd会自动识别并在引导的时候给出启动内核的选项。<br>　　此外，还需要增加refind_linux.conf文件，设置如下参数以供内核启动的生活使用。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">(chroot) ubuntu ~ <span class="comment"># mkdir tmp</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># mount /dev/sda1 tmp</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># cp /boot/kernel-genkernel-x86_64-4.8.15-gentoonicol tmp/EFI/gentoo/vmlinuz-genkernel-x86_64-4.8.15-gentoonicol </span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># cp /boot/initramfs-genkernel-x86_64-4.8.15-gentoonicol /tmp/EFI/gentoo/initramfs-genkernel-x86_64-4.8.15-gentoonicol </span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># cat /mnt/EFI/gentoo/refind_linux.conf </span></div><div class="line"><span class="string">"Default"</span>       <span class="string">"dozfs root=ZFS=zroot/ROOT/gentoo init=/usr/lib/systemd/systemd ro quiet"</span></div><div class="line"><span class="string">"Console"</span>       <span class="string">"dozfs root=ZFS=zroot/ROOT/gentoo init=/usr/lib/systemd/systemd ro quiet nox"</span></div><div class="line"><span class="string">"Emergency"</span>     <span class="string">"dozfs root=ZFS=zroot/ROOT/gentoo init=/usr/lib/systemd/systemd ro 1"</span></div><div class="line">(chroot) ubuntu ~ <span class="comment">#</span></div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>安装gnome桌面环境</strong><br>　　如果直接使用emerge gnome会安装上gnome全家桶，这里可以使用gnome-light安装简洁的gnome环境，然后再根据自己的需要安装其他的gnome应用程序和组件。<br>　　重启之后就可以看见gdm的登录窗口了，而且对于retina高清屏gnome本身适配的很好，这确实超过了我的预期啊。<br>　　人家在苹果本上安装Linux后，据说调测好了，电池的续航是能够和macOS不相上下的。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">(chroot) ubuntu ~ <span class="comment"># useradd -m -G users,wheel,audio -s /bin/bash taozj</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># passwd taozj</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># eselect profile set 5 #default/linux/amd64/13.0/desktop/gnome/systemd</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># emerge -auDN @world</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># emerge --ask x11-base/xorg-drivers</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># emerge --ask gnome-light</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># systemctl enable gdm.service</span></div><div class="line">(chroot) ubuntu ~ <span class="comment"># systemctl enable NetworkManager</span></div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>备份和优化</strong><br>　　这里主要是ZFS的一些参数调优、备份、迁移、挂载等操作，作为记录后续查找方便的目的，请<strong>不要操作之！！！</strong>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">root@ubuntu:~<span class="comment"># echo "options zfs zfs_arc_max=536870912" &gt;&gt; /etc/modprobe.d/zfs.conf</span></div><div class="line">root@ubuntu:~<span class="comment"># echo PORTAGE_NICENESS=19 &gt;&gt; /etc/make.conf</span></div><div class="line">root@ubuntu:~<span class="comment"># zfs set compression=lz4 zroot/GENTOO/build-dir</span></div><div class="line">root@ubuntu:~<span class="comment"># zfs snapshot -r zroot@20161223_install</span></div><div class="line">root@ubuntu:~<span class="comment"># zfs list -t snapshot</span></div><div class="line">root@ubuntu:~<span class="comment"># zfs send -Rv zroot@20161223_install | gzip &gt; /mnt/20161223_install.snap.gz</span></div><div class="line">root@ubuntu:~<span class="comment"># gzcat /mnt/20161223_install.snap.gz | zfs receive -Fv zroot</span></div><div class="line">root@ubuntu:~<span class="comment"># zpool import -f -o cachefile= -R /mnt/gentoo zroot</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>　　MacbookPro是Retina高清屏，默认在Gentoo安装后dpi自动翻倍成96*2=192，整体的Gnome显示效果不很理想，而且还有很多的程序不兼容(比如wiznote)，字体显示的十分小。最简单的方式是放弃retina，将显示分辨率降低:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">➜  ~ cat /etc/X11/xorg.conf.d/40-monitor.conf  </div><div class="line">Section <span class="string">"Monitor"</span></div><div class="line">  Identifier  <span class="string">"eDP1"</span></div><div class="line">  Option      <span class="string">"PreferredMode"</span> <span class="string">"1680x1050"</span></div><div class="line">EndSection</div><div class="line">➜  ~</div></pre></td></tr></table></figure></p>
+<p>　　经过上面的设定，再加上之前的<a href="/201601/gentoo-overlay-and-software-recommend.html">文章</a>中使用infinitely进行字体显示和优化设置，最终的效果还是十分的清晰可人的。安装后还有一个问题就是键盘的~键无法使用，fn键默认是功能键盘，对此的纠正方法是对hd_apple模块参数：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">echo</span> 0 &gt; /sys/module/hid_apple/parameters/iso_layout</div><div class="line"><span class="built_in">echo</span> 2 &gt; /sys/module/hid_apple/parameters/fnmode</div></pre></td></tr></table></figure></p>
+<p>　　为了避免每次这么操作麻烦，可以将其写成一个systemd service，每次开机自动设置就可以了。</p>
+<ol>
+<li><strong>其他软件安装</strong><br>　　关于其他软件、插件的推荐，请参考之前整理的文档《<a href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a>》。因为gentoo是滚动更新版，而又有ZFS保驾护航，希望这个系统能战上几年！！！<br><img src="/post_images/images/201612/2312e6e7.png" alt="系统桌面"></li>
+</ol>
+<p>本文完！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="http://www.funtoo.org/ZFS_Install_Guide" target="_blank" rel="external">ZFS_Install_Guide</a></li>
+<li><a href="https://github.com/ryao/zfs-overlay/blob/master/zfs-install" target="_blank" rel="external">zfs-install</a></li>
+<li><a href="https://wiki.gentoo.org/wiki/Apple_Macbook_Pro_Retina" target="_blank" rel="external">Apple Macbook Pro Retina</a></li>
+<li><a href="http://cloud-atlas.huatai.me/os/linux/gentoo/install_gentoo_on_macbook.html" target="_blank" rel="external">install_gentoo_on_macbook</a></li>
+<li><a href="http://www.rodsbooks.com/refind/sip.html" target="_blank" rel="external">The rEFInd Boot Manager: rEFInd and System Integrity Protection</a></li>
+<li><a href="https://github.com/coldnew/macbookpro-2015-config" target="_blank" rel="external">macbookpro-2015-config</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></p>
+        <p><span>最后更新:</span>2017-01-01, 00:09:34</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html" title="MacbookPro上基于ZFS的Gentoo双系统安装">https://taozj.org/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201612/cmd-tools-sed-awk.html">
+                    文本处理利器sed与awk使用总结
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">
+                    分布式系统入门笔记（四）：Raft一致性算法
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html" data-title="MacbookPro上基于ZFS的Gentoo双系统安装" data-url="https://taozj.org/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201612/cmd-tools-sed-awk.html" title="上一篇: 文本处理利器sed与awk使用总结">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html" title="下一篇: 分布式系统入门笔记（四）：Raft一致性算法">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

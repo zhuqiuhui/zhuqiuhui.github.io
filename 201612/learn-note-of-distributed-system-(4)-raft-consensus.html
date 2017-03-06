@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>分布式系统入门笔记（四）：Raft一致性算法 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一、前言　　Paxos在分布式系统中地位是不容置疑的，现代分布式系统的实现基本都直接或者间接依赖于Paxos算法。不过Paxos算法有着固有的缺陷：原始的BasicPaxos原理还是比较容易理解的，整个算法无非被分为Prepare和Accept两个阶段，但是要把这种算法工程化实现，各个节点的角色是对等的，系统的效率(可用性)将会非常的低，所以常用的也就是MultiPaxos变体版本以提高性能，这也">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式系统入门笔记（四）：Raft一致性算法">
+<meta property="og:url" content="https://taozj.org/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="一、前言　　Paxos在分布式系统中地位是不容置疑的，现代分布式系统的实现基本都直接或者间接依赖于Paxos算法。不过Paxos算法有着固有的缺陷：原始的BasicPaxos原理还是比较容易理解的，整个算法无非被分为Prepare和Accept两个阶段，但是要把这种算法工程化实现，各个节点的角色是对等的，系统的效率(可用性)将会非常的低，所以常用的也就是MultiPaxos变体版本以提高性能，这也">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/b0c484d0.jpg">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/978287ea.jpg">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/d255f8d6.jpg">
+<meta property="og:updated_time" content="2016-12-29T07:55:35.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分布式系统入门笔记（四）：Raft一致性算法">
+<meta name="twitter:description" content="一、前言　　Paxos在分布式系统中地位是不容置疑的，现代分布式系统的实现基本都直接或者间接依赖于Paxos算法。不过Paxos算法有着固有的缺陷：原始的BasicPaxos原理还是比较容易理解的，整个算法无非被分为Prepare和Accept两个阶段，但是要把这种算法工程化实现，各个节点的角色是对等的，系统的效率(可用性)将会非常的低，所以常用的也就是MultiPaxos变体版本以提高性能，这也">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201612/b0c484d0.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-learn-note-of-distributed-system-(4)-raft-consensus" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html" class="article-date">
+      <time datetime="2016-12-19T12:46:55.000Z" itemprop="datePublished">2016-12-19</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      分布式系统入门笔记（四）：Raft一致性算法
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/分布式/">分布式</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h1 id="一、前言">一、前言</h1><p>　　Paxos在分布式系统中地位是不容置疑的，现代分布式系统的实现基本都直接或者间接依赖于Paxos算法。不过Paxos算法有着固有的缺陷：原始的BasicPaxos原理还是比较容易理解的，整个算法无非被分为Prepare和Accept两个阶段，但是要把这种算法工程化实现，各个节点的角色是对等的，系统的效率(可用性)将会非常的低，所以常用的也就是MultiPaxos变体版本以提高性能，这也就隐含的包含了leader的概念了，然后MultiPaxos还允许一个提交窗口，窗口中允许发起多个提案，但是这种情况下考虑到服务器随时可能崩溃的情况，算法将会变得极端复杂。Lamport爷爷就此也是简明说了几句不清不楚的优化，没有具体的实现细节，算是挖了一个巨坑吧。所以说了解BasicPaxos只是一个皮毛，将其推送到工程化可不是件容易的事情。<br>　　Raft算法是斯坦福两位博士生提出的分布式一致性系统，从其论文的题目《<a href="https://raft.github.io/raft.pdf" target="_blank" rel="external">In Search of an Understandable Consensus Algorithm</a>》可以看出，作者以Paxos过于复杂为出发点，力求得到一个正常智商的大学生都能看懂，且工程上也容易实现的分布式系统一致性算法为目标。Raft算法借鉴了Paxos的原理，但最大不同是显式强化了Leader这个角色(虽然很多Paxos算法的实现也会产生Leader角色，但这不是Paxos算法本身所必须的)，并添加了各种约束条件(比如日志的连续性)，让算法更加容易理解和实现。虽然吾等草根屁民尚且不能从理论上审视这个算法的正确性，不过短短时间内美国很多著名大学分布式教学都将Raft算法列入教学课程，且基于Raft协议的项目也越来越多，这些事实已经足以证明一切了。<br>　　学习Raft算法，一篇<a href="https://raft.github.io/raft.pdf" target="_blank" rel="external">普通论文</a>和一篇<a href="https://ramcloud.stanford.edu/~ongaro/thesis.pdf" target="_blank" rel="external">博士学位论文</a>算是不得不读的经典，而前者网上发现了翻译好的中文版本，简单对比了一下原文，发现翻译的质量还是挺高的，很值得参考，但有些原理中文理解困难的话可以对比英文方便理解。作为正规论文，按照论文八股需求难免有些啰嗦拖沓，本文就是按照前面论文阅读摘抄一些重点要点出来，而后面那篇两百多页的博士论文，后面可以慢慢评鉴一下作为补充吧，当然最好的方式还是——一言不合就读<a href="https://github.com/logcabin/liblogcabin" target="_blank" rel="external">代码</a>，毕竟作者说就两千多行！<br>　　还有，论文对状态机的描述比较的好，算是归纳了分布式系统的本质——复制状态机的基础是通过复制日志来实现的：当每个副本的初始状态相同，只要保证各个副本得到的日志都是顺序且一致的，那么按照相同的顺序执行这些日志中的指令，所有副本必然可以进行相同的状态转移得到相同的结果。所以分布式系统解决的根本问题，就是一致性问题，具体就是日志一致性问题，在这个基础上，上层就可以方便实现分布式日志、分布式数据库(bin log)、分布式存储等具体业务了。<br><img src="/post_images/images/201612/b0c484d0.jpg" alt="raft-stat"></p>
+<h1 id="二、Raft算法">二、Raft算法</h1><h2 id="2-1_Raft算法基础">2.1 Raft算法基础</h2><p>　　Raft算法保证和Paxos算法具有相同的安全性，当集群中绝大多数服务器是正常的，则集群即可以正常工作，比如5个节点的集群，允许2个节点的失效。Raft算共有三种角色、需要处理三个问题，三个角色分别是Leader、Candidate、Follower，三个问题是Leader选举、日志复制和安全性，三个问题将会在后面详细阐述。<br>　　任何服务器只能处于上述三种角色中的一种，正常工作的集群具有一个Leader，剩余的节点都是Fellower，系统保证任何时候至多只有一个Leader，也有可能在选举的过程中尚未产生Leader，而在选举新Leader的时候会产生Candidate这个角色。<br><a id="more"></a><br>　　a. <strong>Leader</strong><br>　　Raft算法强化了一个领导者(Leader)的角色。一旦被选举成为Leader，就会发送空的AppendEntries RPC作为心跳给所有其他服务器，并且这个心跳会在一定空余时间后不停的发送，这样可以阻止选取超时而阻止其他服务器重新发起选举操作；<br>　　Leader负责接收客户端的请求(如果客户端和Fellower联系，那么这个请求会被重新定向给Leader)，然后附加entry到本地日志存储中，并负责把日志<em>安全地</em>复制到其他服务器上面，entry被用于Leader本地状态机后给客户端发送响应；<br>　　对于任何一个Fellower，如果已存储的日志比较旧，还会向Leader不断减小nextIndex要求发送之前的日志条目；<br>　　如果日志被安全地复制到了大多数节点上面，则增加提交索引号commitIndex，表明日志已经被安全复制；<br>　　b. <strong>Follower</strong><br>　　通常的服务器角色状态，只响应来自Candidate和Leader的请求；<br>　　如果在选举超时到达后还没收到Leader的心跳消息，或者是候选人发起投票请求，则自己变成Candidate；<br>　　c. <strong>Candidate</strong><br>　　当转变成Candidate后就立即开始选举过程——增加当前term、给自己投票、重置选举超时定时器、发送RequestVote给所有的服务器；<br>　　如果在超时之前收到绝大多数服务器的投票，就成为Leader；当一个节点收到RequestVote RPC的时候，如果请求投票节点的term不比自己旧，其日志也不比自己少，则投票给他；<br>　　如果收到来自新Leader的AppendEntries RPC，则退变成Fellower；<br>　　如果选举过程超时，则再次发起新一轮选举；</p>
+<p>　　Raft中使用term表示Leader的任期，使用连续递增的整数来标记区分，在Raft中充当了逻辑时钟的作用，很多操作和记录会打上这个“逻辑时间戳”；每个服务器存储自己的term，服务器之间通信也会交换各自当前term，通过比较term可以确定哪些信息已经过期；当Candidate或Leader发现自己的term过期之后，会立即退变成Fellower的角色；如果服务器收到包含过期term的请求，就会直接拒绝这个请求返回false。<br>　　Raft算法中节点之间的通信使用RPC的方式，主要包括RequestVote、AppendEntries以及InstallSnapshot三种，RPC可以并行的被发起，而当没有及时收到响应的时候会进行重试，同时RPC只需要在绝大多数快速的节点上完成就可以了，少部分比较慢的节点不会影响到系统的整体性能。
+　　</p>
+<h2 id="2-2_Leader选举">2.2 Leader选举</h2><p>　　很显然以Leader为中心可以大大简化系统的设计和实现，但是分布式系统中任何一个服务器都可能随时崩溃不可用，那么必须使用选举机制来解决Leader出错导致的单点故障。<br>　　Raft中Leader地位的维持和心跳机制密切相关。集群中所有服务器默认都是Fellower的角色，如果Fellower在一段时间中没有收到任何消息(无论是正常消息还是心跳消息)，就会触发选举超时，从而认为系统中没有可用的领导者，进而开始进行选举。选举开始的时候，Fellower会增加当前term并切换为Candidate角色，然后并行向集群中所有其他服务器节点发送RequestVote RPC来给自己投票，候选人等待直到三种情况之一发生：<br>　　a. <strong>该Candidate赢得该次选举成为新Leader</strong><br>　　当某个Candidate从集群中绝大多数服务器获得针对该term的选票，则其赢得该次选举成为Leader，因为按照先来先得的原则，每个服务器最多会对一个term投出一张选票，获得绝大多数选票确保了至多只有一个候选人赢得该次选举。<br>　　一旦Candidate成为Leader，就会向其他服务器发送心跳消息维护自己Leader的地位，并且阻止产生新的Leader。<br>　　b. <strong>其他服务器成为新Leader</strong><br>　　Candidate在收集选票的时候，很可能收到其他服务器发送的声明自己是Leader的AppendEntries RPC消息，此时如果收到的AppendEntries RPC的term不小于该Candidate当前的term，则Candidate承认发送该AppendEntries RPC的服务器的Leader合法地位，自己退化为Fellower角色。否则会拒绝这个RPC并维持自己Candidate的角色。<br>　　c. <strong>一段时间后没有任何Candidate胜出</strong><br>　　一般出现在多个Fellower变成Candidate，然后同时发出RequestVote RPC请求，导致选票被瓜分后，没有任何一个Candidate获得绝大多数选票。此时Candidate会增加term并开始新一轮的Leader选举。<br>　　通常情况下这种选票瓜分的恶性竞争会持续下去。Raft采用随机选举超时的机制来减少这种情况的发生，选举超时设置为某个固定时间区域中的随机值(比如150-300ms)，这样当现有Leader挂掉之后，通常也只有一个Fellower会首先超时，然后迅速切换为Candidate、发出RequestVote RPC并赢得选举，然后快速发送心跳包；同时在发生选票瓜分的情况下，每次在Candidate开始新一轮的选举时候，会重置一个随机的选举超时时间。通过这机制，发生选票瓜分的几率被大大降低了。</p>
+<h2 id="2-3_日志复制">2.3 日志复制</h2><p>　　一旦Leader的角色被确定，就可以接受客户端的请求并提供服务了。客户端的每一个请求都包含状态机的执行指令，Leader负责刚其作为一个entry追加到自己本地日志中，然后并行的向其他服务器发送附含执行指令的AppendEntries RPC，使其他服务器都复制这个日志entry。当该条日志被安全的复制后(即通过AppendEntries RPC调用的结果得知，该日志被安全地复制到绝大多数服务器上面了)，Leader会应用这条日志到自己的状态机中，并将执行的结果返回给客户端。如果(少部分)Fellower崩溃或者运行缓慢，或者因为网络等问题，即使Leader已经回复了客户端，Leader仍然会不断的重试AppendEntries RPC直到所有的Fellower都最终存储了所有的日志条目。<br>　　在Raft算法中，日志是有序序号标记的entry组成的，每个entry包含该创建时候的term、状态机需要执行的指令、在所有日志中的位置索引组成。Raft保证当日志条目被复制到绝大多数服务器上面的时候，该日志entry就会被提交，即更新commitIndex，Raft算法同时也保证所有已提交的日志都是持久化的并且最终会被所有的可用状态机执行。<br><img src="/post_images/images/201612/978287ea.jpg" alt="raft-log"><br>　　Leader跟踪了最大将会被提交日志entry的索引，并且该索引值会被包含在未来所有的AppendEntries RPC中(包含附加日志内容为空的心跳包)，这可以方便的让其他服务器知道Leader的提交位置，一旦Fellower知道一条日志已经被提交，就会按照日志的顺序将其应用到本地的状态机中去执行。<br>　　和Paxos不同的是，Raft的日志约束为连续的、中间不允许有空洞，而且相同索引的日志在各个服务器上面指令完全相同，这样的设计可以减少很多不必要的麻烦，具体来说：<br>　　(1) 如果在不同服务器的日志中拥有相同的索引和Term，那么他们存储了相同的指令；<br>　　(2) 如果不同服务器中两个日志具有相同的索引和Term，那么他们之前所有的日志条目也都全部相同。<br>　　对于上面第二点，通过每次RPC简单一致性检查就可以确保。每当Leader发送AppendEntries RPC的时候，会包含新entry紧接之前条目的索引位置和term附加在里面，当Fellower接收到的时候会进行一致性检查，如果发现索引及term指定的日志找不到，就会拒绝接收该AppendEntries RPC请求。这种一致性通过强制Fellower复制Leader日志的方式来解决，领导者对每一个Fellower都维护了一个nextIndex，表示下一个需要发送给Fellower日志条目的索引位置，Leader通过不断减少nextIndex后退的方式尝试最终会找到和Fellower日志不一致位置开始的地方，然后从这个地方开始Leader将自己的日志同步给Fellower就可以了。不过这种大规模的日志不一致性通常在服务器接连崩溃的情况下更容易产生，当新选出了Leader之后，该Leader也会强制所有服务器的nextIndex为自己本地最后一条日志索引值+1，这样在后续正常发送AppendEntries RPC请求后，所有的Fellower就会自动进行本地日志一致性检查并在必要情况下进行同步操作了。<br>　　通过这种方式，只需Leader向Fellower单方面同步日志就可以完成，而且只需要Leader正常发送AppendEntries RPC请求，Fellower自己进行一致性检查，Leader得到失败的反馈信息后，再同Fellower进行不断交互以使得两者日志最终趋于一致，而且这种操作不会影响到其他的Fellower，因而也不会影响到系统整体的性能。</p>
+<h2 id="2-4_安全性">2.4 安全性</h2><p>　　上面的内容都比较的理想化，但是在现实环境中Leader、Fellower各个服务器随时都可能崩溃不可用，如果没有额外的约束整个系统的工作是不安全的，比如当只有少量日志的Fellower被选取成了新Leader的情况。<br>　　简单来说，此处就是要实现即使发生了Leader重新选取，也要让任何新Leader对于给定的term，都必须有前任Leader所有已经被提交的日志条目，那么上面的机制就仍然可以正常工作。</p>
+<h3 id="2-4-1_增加选举限制">2.4.1 增加选举限制</h3><p>　　如果任何的Fellower都可以成为新人Leader，那么这个新Leader很有可能缺失前Leader的部分提交日志，很多一致性算法确实是这样的，然后通过某些方法识别出新Leader缺失日志，并在选举阶段或者成为新Leader之后快速的将这些缺失日志补齐，这些方法实现起来比较复杂。Raft算法通过很简单的限制解决了这个问题：<strong><em>在RequestVote RPC 中包含了Candidate的日志信息，然后投票人会拒绝掉那些日志没有自己新的请求</em></strong>。<br>　　上面的这条约束肯定是有效的：对于一个被提交的日志，那么这个日志肯定是被大多数服务器所见而被存储的，而一个Candidate要想成为Leader就必须和集群中的大多数服务器所通信，这样一来新Leader肯定会遇到至少一个记录着最新提交日志的服务器。再加上上面的限制条件，那么一个新当选的Leader至少会和大多数的服务器节点一样新，其肯定持有了所有已经提交了的日志条目。</p>
+<h3 id="2-4-2_提交前term内的日志条目">2.4.2 提交前term内的日志条目</h3><p>　　在Raft算法中，当一个日志被安全的复制到绝大多数的机器上面，即AppendEntries RPC在绝大多数服务器正确返回了，那么这个日志就是被提交了，然后Leader会更新commitIndex。<br>　　这里书中描述的比较复杂，其实本质就是通过上面的选举机制和提交限制，让Raft算法是安全的，即使是针对前term的日志：如果日志被复制到绝大多数服务器上面，那么含有较少日志的S5服务器就不会被选举成Leader，也就不会发生描述的entry-2日志即使被复制到绝大多数服务器上面，也最终被覆盖的情况；而当含有被复制的绝大多数日志entry-2的服务器被选为新节点的时候，提交entry-4也会让前面的entry-2被隐式提交。</p>
+<h3 id="2-4-3_Candidate和Fellower崩溃">2.4.3 Candidate和Fellower崩溃</h3><p>　　Candidate和Fellower崩溃的情况处理要简单的多。如果这类角色崩溃了，那么后续发送给他们的 RequestVote和AppendEntries的所有RCP都会失败，Raft算法中处理这类失败就是简单的无限重试的方式。<br>　　如果这些服务器重新可用，那么这些RPC就会成功返回。如果一个服务器完成了一个RPC，但是在响应Leader前崩溃了，那么当他再次可用的时候还会收到相同的RPC请求，此时接收服务器负责检查，比如如果收到了已经包含该条日志的RPC请求，可以直接忽略这个请求，确保对系统是无害的。</p>
+<h1 id="三、集群成员变更">三、集群成员变更</h1><p>　　集群成员的变更和成员的宕机与重启不同，因为前者会修改成员个数进而影响到Leader的选取和决议过程，因为在分布式系统这对于majority这个集群中成员大多数的概念是极为重要的。<br>　　在集群中成员变更的NEW配置不可能立即在所有成员中生效，所以必须采用两阶段的方式来保证安全性，传统方式是将集群暂停工作，让其不再接受新客户的请求，更新配置完成后在让集群继续正常运行。<br>　　Raft中集群成员的变更是全自动的，通过产生一个“共同一致状态”来过渡传播NEW配置，并且做到在集群成员变更过程中仍然支持客户端请求，依靠在临界状态下达成一致的操作(针对选取和提交)需要分别在新旧两种配置上都获得绝大多数服务器投票才可以。成员变更请求在日志中以特殊的configuration entry来存储和通信，主要通过C-old,new和C-new这两个特殊日志entry来实现。<br>　　在Leader接收到成员变更请求后，会创建C-old,new日志entry，然后Leader会首先将其添加到自己本地日志中，并通过之前描述的普通日志复制提交流程，确保在OLD、NEW两个配置下的在绝大多数服务器上复制成功并提交；接下来Leader会创建一个C-new并在NEW配置下的绝大多数机器上复制成功并提交，创建C-new之后NEW配置就可以单独做出决议了。此外，这里还有一个关键性的约定——所有的服务器一旦存储了C-old,new日志条目后(实际就是见到NEW配置后)，就总是会用NEW配置而无论这个配置日志条目是否已经被提交，通过这种方式实现NEW配置在集群成员中快速传播。一旦C-old,new被提交后，OLD和NEW配置都不能单方面的产生决议(只能在新旧两个配置下都完成绝大多数投票)以保证安全，直到NEW配置下的C-new日志条目被产生，NEW配置就可以单独决议了。<br><img src="/post_images/images/201612/d255f8d6.jpg" alt="raft-member"><br>　　至于在C-old,new提交和C-new创建之间为什么会有间隙，原文没有说清楚。其实也很容易理解：在C-old,new日志entry的创建和提交之间，Leader还可能有其他新的决议发起(比如客户端请求)，按照日志顺序一旦C-old,new被提交，那么集群中绝大多数主机都更新成NEW配置了，但是在NEW配置传播的过程中，为了保证安全在这个期间产生的所有日志都必须在新老配置中都得到绝大多数投票才允许真正被提交。至于C-new的产生，是为了表明Leader承诺从这个时候起所有的日志都不再会发给OLD配置主机，所以这个点之后NEW配置就可以独立工作了，由于Raft序列化日志的特性，一旦这个C-new日志条目被提交，集群配置中被删除的服务器就可以安全下线了。<br>　　新加入的机器日志都是空白的，起始阶段都在进行日志追赶(catch up)，Raft算法为了减少可能的性能损耗，对新加入的机器都是以旁观者的状态一直追赶旧日志而不会追加新日志参与投票，只有到了追赶日志和Leader对齐了，再参与新日志追加投票以行使正常集群成员的职能。还有NEW配置可能会把现任Leader删除掉，那么当C-new被提交后，该Leader将会卸任并退化成Fellower的角色，此时在NEW配置下会发生新Leader的选举，选举得到的新Leader一定是NEW配置下的主机，而在这之前由于一致性状态的约束，如果发生Leader选举那么选出来只可能是OLD配置中的服务器，因为一致性状态选举操作必须在新旧配置中都得到绝大多数选票才行。</p>
+<h1 id="四、日志压缩">四、日志压缩</h1><p>　　日志会随着系统的不断运行会无限制的增长，这会给存储带来压力，几乎所有的分布式系统(Chubby、ZooKeeper)都采用快照的方式进行日志压缩，做完快照之后快照会在稳定持久存储中保存，而快照之前的日志和快照就可以丢弃掉。<br>　　Raft算法中快照所需保存的数据有：快照点时候状态机的状态信息；最后被快照所取代的日志条目在日志中的索引值；上面被取代条目所属的任期term，此外为了支持成员更新，快照还会将当前最新的成员配置写入上面描述的那个日志索引中。<br>　　Raft采用让服务器独立创建快照，而不是只让Leader负责创建快照，主要考虑到在所有服务器本地已经具有了创建快照所需的全部信息，而且本地创建快照代替Leader创建快照，就免除了Leader要向各个节点传输快照的额外任务、带宽和性能损耗，而且在Leader负责客户端响应、发送RPC的任务外如果还需维护快照的任务，其角色就会更加复杂。<br>　　在Raft中快照都是各个服务器独立创建的，但是有时候需要Leader向其他服务器发送快照，比如某些服务器跟随的速度缓慢，或者新加入集群的服务器，此时需要向Leader同步日志的时候，如果Leader创建了快照并将之前的日志都删除掉了，那么此时就必须通过快照的方式发送了。<br>　　Raft中采用一个额外的InstallSpanshot RPC的调用来实现日志传输，虽然名曰快照，其实也就算是一个特殊的日志entry。当接收到快照的时候，通常情况下快照会包含接受者中没有的信息，即快照代表的日志entry会比接受者当前本地含有的日志要新，此时接收者会丢弃掉自己所有的日志，并在指定位置写入该快照作为最新状态；如果因为网络或其他因素，接收者含有比快照更新的日志，那么接收者负责把快照位置之前的数据全部删除，同时比快照新的数据需要保留下来。</p>
+<h1 id="五、Client交互">五、Client交互</h1><p>　　Client只向Leader发送请求，当Client开始的时候会随机向集群中的任何一个服务器发送请求，如果Client挑中的恰巧不是Leader，那么该服务器会拒绝Client的请求，并将其最近获得的Leader信息(包括通信用的IP:Port)返回给Client，接下来Client根据这个信息直接向Leader重新发送请求；如果此时Leader恰巧崩溃了，那么Client的请求就会超时出错，Client会再次重新随机挑选服务器再次发送请求。<br>　　Raft算法要求Client的请求是线性化语义的，即每次请求会被立即执行，在请求和响应中只会被执行一次(也就是RESTful中的等幂性，同一个请求发起一次或者多次，最终的效果是相同的)，而要确保这个效果的方式是客户端负责对每条指令都赋予一个唯一的序列号，然后状态机跟踪每条指令最新序列号和其响应结果，如果后面收到一条指令具有相同的序列号但是该序列号已经被执行了，那么就直接返回结果而不重新执行该指令。<br>　　对于只读操作可以直接处理而不需要记录日志，但是会有读取脏数据的风险。在Leader稳定运行的时态，Leader肯定知道当前已经提交的entry，但是在新Leader选取刚上任的时候，虽然肯定是含有最完整的日志信息的，但是还不知道提交到哪条entry了(可以参看上面提交前term日志条目的情况)，所以在新Leader上任的时候会发起一个no-op的entry来刷新得到最新commit信息。然后，Leader在响应只读请求的时候，需要向绝大多数服务器发送一个心跳信息，确保当前自己还是合法的Leader。</p>
+<h1 id="总结">总结</h1><p>　　如果在工程化的水平上考虑，Raft算法的确比MultiPaxos要简单容易的多，而且对比PhxPaxos中做出的诸如Master选举与心跳、Master负责所有客户端请求(允许普通节点响应脏数据除外)、日志压缩与快照等等操作，在这里看来也是那么的熟悉，只不过Raft对于整个分布式的设计和实现要更清晰、更系统，而不会让人感觉是在MultiPaxos的基础上缝缝补补拼凑出来的一个怪物吧。<br>　　眼观这么多论文，大家对Paxos的工程化实现，感觉都是相互借鉴啊，哈哈！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="https://raft.github.io/raft.pdf" target="_blank" rel="external">In Search of an Understandable Consensus Algorithm</a></li>
+<li><a href="https://raft.github.io/" target="_blank" rel="external">raft.github.io</a></li>
+<li><a href="https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md" target="_blank" rel="external">找一种易于理解的一致性算法（扩展版）</a></li>
+<li><a href="https://ramcloud.stanford.edu/~ongaro/thesis.pdf" target="_blank" rel="external">CONSENSUS: BRIDGING THEORY AND PRACTICE</a></li>
+<li><a href="https://raft.github.io/slides/raftuserstudy2013.pdf" target="_blank" rel="external">Raft: A Consensus Algorithm for Replicated Logs</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></p>
+        <p><span>最后更新:</span>2016-12-29, 15:55:35</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html" title="分布式系统入门笔记（四）：Raft一致性算法">https://taozj.org/201612/learn-note-of-distributed-system-(4)-raft-consensus.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201612/learn-note-of-distributed-system-(4)-raft-consensus.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">
+                    MacbookPro上基于ZFS的Gentoo双系统安装
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201612/read-note-of-amazon-dynamo.html">
+                    Amazon Dynamo论文阅读笔记
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201612/learn-note-of-distributed-system-(4)-raft-consensus.html" data-title="分布式系统入门笔记（四）：Raft一致性算法" data-url="https://taozj.org/201612/learn-note-of-distributed-system-(4)-raft-consensus.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html" title="上一篇: MacbookPro上基于ZFS的Gentoo双系统安装">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201612/read-note-of-amazon-dynamo.html" title="下一篇: Amazon Dynamo论文阅读笔记">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

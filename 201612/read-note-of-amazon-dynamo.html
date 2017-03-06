@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>Amazon Dynamo论文阅读笔记 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="其实个人一直比较喜欢读Google、Amazon、Facebook这类科技公司工程化的paper，一方面是这类文章通常不会夹杂着让人看着眼花缭乱的数学公式(而且很多文章往往很简单的道理也会被装饰的神神叨叨滴)；二来这些系统用到的技术都比较的大众成熟，可以很容易的在网上搜到相关资料，让你在短短时间就知道大概是个什么意思；还有最主要的是这些论文是进行实实在在工程化并用于生产环境了，方案可行性自然不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazon Dynamo论文阅读笔记">
+<meta property="og:url" content="https://taozj.org/201612/read-note-of-amazon-dynamo.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="其实个人一直比较喜欢读Google、Amazon、Facebook这类科技公司工程化的paper，一方面是这类文章通常不会夹杂着让人看着眼花缭乱的数学公式(而且很多文章往往很简单的道理也会被装饰的神神叨叨滴)；二来这些系统用到的技术都比较的大众成熟，可以很容易的在网上搜到相关资料，让你在短短时间就知道大概是个什么意思；还有最主要的是这些论文是进行实实在在工程化并用于生产环境了，方案可行性自然不">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/3a93058f.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/e2821ae0.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201612/e5241d11.png">
+<meta property="og:updated_time" content="2016-12-18T08:00:18.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazon Dynamo论文阅读笔记">
+<meta name="twitter:description" content="其实个人一直比较喜欢读Google、Amazon、Facebook这类科技公司工程化的paper，一方面是这类文章通常不会夹杂着让人看着眼花缭乱的数学公式(而且很多文章往往很简单的道理也会被装饰的神神叨叨滴)；二来这些系统用到的技术都比较的大众成熟，可以很容易的在网上搜到相关资料，让你在短短时间就知道大概是个什么意思；还有最主要的是这些论文是进行实实在在工程化并用于生产环境了，方案可行性自然不">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201612/3a93058f.png">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-read-note-of-amazon-dynamo" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201612/read-note-of-amazon-dynamo.html" class="article-date">
+      <time datetime="2016-12-16T14:15:34.000Z" itemprop="datePublished">2016-12-16</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Amazon Dynamo论文阅读笔记
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>　　其实个人一直比较喜欢读Google、Amazon、Facebook这类科技公司工程化的paper，一方面是这类文章通常不会夹杂着让人看着眼花缭乱的数学公式(而且很多文章往往很简单的道理也会被装饰的神神叨叨滴)；二来这些系统用到的技术都比较的大众成熟，可以很容易的在网上搜到相关资料，让你在短短时间就知道大概是个什么意思；还有最主要的是这些论文是进行实实在在工程化并用于生产环境了，方案可行性自然不用多说，在实现的过程中遇到的各种现实、细节问题也是很值得学习揣摩和借鉴的。比如，接下来要说的<a href="http://s3.amazonaws.com/AllThingsDistributed/sosp/amazon-dynamo-sosp2007.pdf" target="_blank" rel="external">《Dynamo: Amazon’s Highly Available Key-value Store》</a>这篇论文要算是分布式系统设计实现中的必读经典了，虽然该套系统没有开源，而且由于商业机密部分内容没能够详细阐述，但丝毫没有影响到它对分布式系统设计实现的重要指导作用。<br><img src="/post_images/images/201612/3a93058f.png" alt="aws"></p>
+<h1 id="一、前言">一、前言</h1><p>　　Amazon Dynamo系统的设计和实现从最开始就比较的实用主义：首先Amazon作为全球最领先的电商企业，其丰富的经验让其可以洞悉到绝大多数互联网公司的需求点和关切点，其次Dynamo是作为服务出售的，所以其并没有设计实现成一个至臻完美的分布式存储模型，它只支持K-V非关系型键值存储，就像是一个巨大的dict/map结构，只支持get()、put()两种简单访问方式，优化成高可写入性要求，存储的对象尺寸大多小于1M，成本考虑上支持99.9%级别的可用性(百毫秒读写响应)，但依据Amazon在云计算领域的强大实力，该系统在性能、可靠性、效能、伸缩性等方面没有丝毫的妥协。<br>　　和绝大多数分布式系统一样，Dynamo使用最终一致性获取性能从而保证可用性的，然后通过现有各项成熟的技术手段解决项目中的各种问题：数据使用一致性hashing进行分区，同时提供数据副本保证安全；通过NWR和对象vector lock版本机制有限的解决冲突并实现最终一致性；Merkle tree数据结构可以实现节点间数据的高效同步；整个系统完全去中心化，采用Gossip协议实现成员变更的同步。</p>
+<h1 id="二、背景知识">二、背景知识</h1><h2 id="2-1_系统假设和设计需求">2.1 系统假设和设计需求</h2><p>　　a. 访问模式：数据项通过key唯一确定，且只提供读、写两个操作接口，对象采用二进制方式存储。这种K-V的存储符合绝大多数互联网海量对象的存储需求，对象的读取写入只支持单个对象的操作，任何多对象、关系性的操作都不支持；<br>　　b. ACID：就是分布式系统中的原子性、一致性、隔离性和持久性，强一致性模型虽然实现简单，但是可用性的最大杀手，所以该系统只提供最终一致性保证；同时也不支持隔离性，只提供单个元素的更新操作。<br>　　c. 有效性：服务必须提供稳定可靠的延时和吞吐量，根据在性能、价格、可用性和持久化各个因素的考量和妥协中，提供99.9%的可访问性；<br>　　由于在内部使用，所以不用考虑授权、鉴权操作，整个假设在一个可信环境的内网中执行的，不考虑拜占庭通信模型。<a id="more"></a></p>
+<h2 id="2-2_设计考虑的问题">2.2 设计考虑的问题</h2><p>　　在商业系统领域，传统方式都是采用强一致性的数据访问，数据会在各个节点之间进行同步，在数据不确定是否正确的情况下通常设置该数据将是不可用的状态。这种模型虽然从编程角度很容易实现，但是这种情况下一旦出现问题(比如脑裂)，整个系统的可用性就必然会受到影响甚至处于不可用状态。<br>　　对于易于出现主机和网络系统的情况，可以通过优化同步操作来提高系统的可用性，比如后台异步化、并行传输，只要实现最终一致性就可以，但是异步化之后很容易导致修改和访问冲突和失败的情况，这时就需要确定何时、何人负责解决冲突问题(背锅问题)了，针对这个问题：<br>　　a. 很多传统的系统是在写阶段解决冲突和失败，这样读的时候操作会很简单，而如果比如因为冲突而不能顺利写入，写入操作就会被驳回返回失败。而Dynamo设计就是最强的可写入性，比如文中反复出现的购物车情形，即使网络不可用的情况下也不会驳回客户的请求，否则会很影响用户体验，为了保证这样高的可写入性，就必须在读阶段承担起这个解决冲突和失败的任务。<br>　　b. 解决冲突的角色可以是数据中心也可以是用户应用程序，前者是自动化解决冲突，通常只能用简单的机制来解决，比如“使用最新写入值(last write win)”，而用户程序处理会更加的灵活，比如多个版本共同求交集结果等方式。<br>　　除此之外，Dynamo还需要考虑：系统的高伸缩性；节点的对称性，所有的节点都一视同仁；去中心化，采用P2P的发现和同步技术，这一直是分布式系统追求的目标(比如避免单点故障)。</p>
+<h1 id="三、系统架构">三、系统架构</h1><p>　　系统的工程化会涉及到相当多的细节，比如：数据持久性存储、可伸缩性、负载均衡、成员管理和错误探测、错误恢复、复制备份同步、过载处理、状态迁移、并发和任务调度、请求安排、请求路由、系统监测和报警、配置管理。篇幅限制，这篇论文没有对上面所有内容都展开论述。</p>
+<h2 id="3-1_系统接口">3.1 系统接口</h2><p>　　Dynamo的数据类型是K-V，只支持最简单的get()和put()读和更新接口。Dynamo的底层会将key进行MD5 hash处理得到128bit的索引值，通过其确定底层实际的存储节点。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">get(key);</div><div class="line">put(key, context, object);</div></pre></td></tr></table></figure></p>
+<p>　　get(key)正常情况下会返回key锁关联的object，而如果发生冲突(且底层无法解决冲突)的话，会返回一个列表，包含各个冲突的版本和context信息，用户可以用自己的机制解决这些冲突，并将结果写回更新成最新版本；put(key, context, object)会进行存储更新操作，其context参数通常是之前get读返回的。</p>
+<h2 id="3-2_分区算法">3.2 分区算法</h2><p>　　对于节点出错和删除，以及添加节点的时候，必须采用一致性hashing的方式保证对其他节点最小影响。一致性hashing的知识在<a href="/201612/consistent-hashing.html">《一致性hash原理》</a>已经详细描述过了，主要也是基于hash环分区的方式实现的，而且相似地，为了让存储节点均匀分布、实现负载均衡，采用了虚拟节点的改进方式，这样不仅在平常访问的时候，而且在增加和删除节点的时候，都会将影像平均分布到其他节点上去，而不会对少数节点造成加大影响。</p>
+<h2 id="3-3_副本">3.3 副本</h2><p>　　因为Dynamo实现的是存储系统，而不是前面介绍到的缓存系统，所以为了数据的安全必须使用产生多副本(Replication)机制。Dynamo会让每个数据产生N个副本，关于这些副本的分布，是用到前面通过一致性hash根据key计算出该数据属于哪个虚节点，然后沿着顺时针的方向在接下来的N-1个节点上产生该数据的额外副本。<br>　　上面负责存储key的节点和副本节点共同组成了preference list列表。考虑到有些节点会出错不能访问的情况，这个列表的长度通常会大于N。而且在使用了虚拟节点机制后，物理节点会在hash环中出现多次，所以如果不加挑选的话，很有可能N个虚拟节点会映射到底层少于N个实际的物理存储节点上，显然这样的话单个物理节点可能会出现多个虚拟节点副本的丢失，所以系统在选择节点组成preference list的时候，都是采用跳跃的方式，确保列表中保存的都是物理节点各不相同的虚拟节点。</p>
+<h2 id="3-4_数据版本机制">3.4 数据版本机制</h2><p>　　Dynamo只保证最终一致性，采用异步的机制进行读写操作。<br>　　Dynamo采用vector clocks的机制，vector clock记录了某节点对该key更改的版本记录，是一个(node, counter)的结构，那么所有节点对该对象的修改将可以组成一个vector clock的列表。系统可以根据检查两个节点上某个对象的vector clock列表，而判断该对象在各节点上的副本，是序列化的因果关系还是并行分支的关系：如果是前者(大多数正常情况)，系统就可以自动进行语法冲突合并(syntactic reconciliation)，新版本的数据覆盖旧版本的数据；后者冲突情况则需要返回包含所有冲突版本等信息的context，然后由client端负责解决这个冲突，并最后用context更新写会最新结果，称为语义冲突合并(semantic reconciliation)。<br><img src="/post_images/images/201612/e2821ae0.png" alt="aws-1"><br>　　比如上图的过程，D1[(Sx, 1)]、D2[(Sx, 2)]都是由同一个节点X做的修改，所以不可能产生版本冲突，而当因为节点出错、前端负载均衡等因素影响，后面的更新都基于D2但发生在了Y、Z两个节点上，接下来客户读取的时候会发现D3、D4之间没有因果关系，因此将所有结果都罗列返回给客户端，client负责合并后并通过X节点更新写入，且相应地增加Sx的版本号。<br>　　看到这里可能会想到，如果所有的写请求都发向某个固定的节点，难么版本冲突的概率不就会大大降低了么？如果该节点一直可用，那么这种序列化的修改肯定是可以大大降低冲突的概率的，但是论文指出这样的操作负载是不均衡的，那么不均衡的节点请求会导致可用性降低。实际上，通常的写都是紧跟在读操作之后(难道是必须的？put需要一个context啊)，通常写会发送到读响应最快的那个节点上面去，这样的优化就可以保证较好的写入性能，同时也间接实现了”READ-YOUR-WRITE”这读己之所写级别的一致性。<br>　　如果记录每个节点的更新版本的话，通常情况不会产生问题，因为更新都是在preference list的前N个节点，但是在发生脑裂或某些节点出错后，后续节点会依次代替不可用节点响应写入请求，那么这个vector clock列表长度必然会不断增加。为了防止这种情况，实践中的vector clock会加上时间戳以记录该节点最后修改的时间，当vector list列表的长度超过固定长度(比如10)的时候，将时间戳最旧的节点版本信息剔除出去。</p>
+<h2 id="3-5_get()和put()操作">3.5 get()和put()操作</h2><p>　　用户的请求都是在HTTP层之上发起的，将用户请求分派到特定节点，分派的方式有两种：<br>　　a. 通用的负载均衡分配，这时分配是通用的基于后端节点的负载信息确定的；<br>　　b. 通过将客户端链接上节点发现(partition-aware)程序库，那么客户端就知道分布式节点的信息，请求会直接瞄准到对应的节点上面去。<br>　　两者各有优缺点，第一种方式应用程序不用链接额外的库，第二种方式更加的高效，会跳过一些无畏的请求转发，所以大多情况下请求会有更小的延迟。<br>　　通过客户端方式定位节点，客户端会以10s周期性的随机从一个节点下载集群的节点成员列表(这个列表是通过Gossip协议方式同步，并保证所有节点最终一致性的)，有了这些信息客户端就直接可以向目标节点发送请求，而不会产生一次可能的请求转发了。这里成员列表更新是客户端主动pull模式，而不是节点主动push模式，很显然前者模型更简单方便，但是可能得到的列表是旧的，此时客户端如果请求失败的话，会立即请求刷新成员列表。<br>　　通常的读写操作都会在preference list的前top-N节点上操作的，如果是以客户端链接节点发现库的方式，负载均衡可能会将请求随机分配到任意节点，如果分配的节点不在该key的preference list的top-N中，那么该请求会自动转发到top-N的第一个节点(任何节点本地都含有整个系统完整的成员列表)。这里所说的top-N节点都是指健康可用的节点，系统会自动跳过那些出错或者不可访问节点，使用排在后面的低rank节点替补上来。<br>　　Dynamo采用NWR的机制来维护多个节点上数据副本的一致性，R和W表示读、写请求最少完成节点数目就可以表示本次操作成功，因而读写请求的延迟由最后一个完成读写操作的节点所决定，配置上要求R+W&gt;N就形成了一个Quorum的机制，而R/W两者相对大小也代表了这个系统读/写性能之间的权衡。所以对于put()请求，当接收到请求的那个节点首先产生新版本的vector clock，本且本地写入该更新值，同时将新版本的值连同新vector clock发送给top-N的其他节点，当最后一个第(W-1)节点完成写入后，该更新操作被认为成功；对于get()请求，收到请求的节点会向top-N的所有节点发送读请求，然后等待收到R个响应后，如果节点收到的R个请求中会有多个版本的数据且无法因果合并冲突，则返回所有版本，冲突合并后的数据会更新并写回节点上去，如果超时后还没返回R个响应，则会做出错处理。</p>
+<h2 id="3-6_出错处理：Hinted_Handoff">3.6 出错处理：Hinted Handoff</h2><p>　　Dynamo中的Quorum成员不是固定的。之前说道为了考虑节点会出错的情况，preference list的长度通常会大于N，而top-N通常都是在hash环中按照顺时针方向依次选取的N-1个在不同物理节点上的虚拟节点，当出现脑裂或者部分节点宕机、不可访问的时候，就会依序访问接下来preference list中的接下来的节点。<br><img src="/post_images/images/201612/e5241d11.png" alt="dynamo-2"><br>　　对于上图中，假设N=3且preference list成员依次包含A、B、C、D节点，此时节点A临时不可访问，那么发送到A的数据将会被发送给D，同时会在元数据中标明hint信息，指明这个消息本来是要发送给A节点的。当D收到带有hint消息的数据时候，会在本地单独开辟一个数据库用于存储该类信息，在代替A节点响应请求的同时，还会周期性的检查节点A是否已经恢复，如果恢复了将会把这些副本同步给A节点，然后D节点再把这些本地存储给删除掉。<br>　　现实中，可能因为供电、网络、制冷系统、自然灾害等因素导致整个数据中心挂掉，Dynamo会配置成每个key的preference list会夸数据中心存储，数据中心之间采用高速网络连接，以保证在单个数据中心无法访问的时候整个系统仍然可用。</p>
+<h2 id="3-7_永久出错处理：同步恢复">3.7 永久出错处理：同步恢复</h2><p>　　上面的情况主要用于临时性、短暂性的节点不可访问的情况，对于其他永久性出错的情况，Dynamo采用副本同步(replica synchronization)的机制来处理。<br>　　Dynamo使用了Merkle trees的方式，该数据结构是个hash tree，这种数据结构的叶子节点都是单独key对应value的hash值，而父节点都是子节点的hash值，这样的好处是两个父节点的hash值一致，那么就不用逐个比较他们的子树了。当比较两个根节点的hash值的时候如果不一致，就需要不断的交换比较子节点的hash值，一直查找到不相等的叶子节点从而查找到需要同步的key，然后同步更新之。虽然这样操作麻烦一些，但是不需要在节点之间同步整个树结构或者整个数据集，减少了传输量从而增加了同步效率。<br>　　在Dynamo中，每个节点都为其所承担的hash virtual node的key范围建立一个Merkle树，那么当任意两个节点存储了相同数据(副本)的时候，这两个节点交换root节点的hash值看两者是否是已同步的状态，如果不相同采用树遍历的方式检查到未同步的部分。麻烦的是，当新加入节点的生活，需要重新建立Merkle树结构。</p>
+<h2 id="3-8_成员管理和错误探测">3.8 成员管理和错误探测</h2><h3 id="3-8-1_Ring_Membership">3.8.1 Ring Membership</h3><p>　　管理员可以通过命令行或者浏览器的方式连接到某个节点上面去，然后发送添加、删除节点的指令，接受处理请求的节点会把这个成员变更事件和时间记录固化下来，然后通过Gossip协议不断地传播这个事件(就是每个节点每秒会随机地选择peer节点，然后两者通信交换自己的本地的全局节点成员信息，并合更新并两者的成员列表)，虽然没有具体时间的保证，但是Gossip协议会保证最后某个时间集群中，所有node都会就成员列表达成最终一致性。<br>　　当一个新的节点添加进来的时候，根据一致性hash和虚拟节点的原理，会产生多个虚拟节点和其hash space的对应关系(tokens)，并固化到本地磁盘上面，虽然新加入的节点起始只含有自己的token信息，然后根据前面相同Gossip协议传播机制，最终所有节点都会在本地存储这种虚拟节点的分区信息，所以这种本地存储也使得任何一个节点都可以快速的将目的key的读写请求进行精准转发。</p>
+<h3 id="3-8-2_External_Discovery">3.8.2 External Discovery</h3><p>　　论文描述了逻辑分区的Dynamo环的情况，但是我想主要可能考虑新加入多个节点不能快速互相发现和传播吧。Dynamo会选择一些节点作为种子(seed)的角色，这些种子是通过配置或者其他服务方式产生的，对所有的节点都可见，那么新加入的节点就可以快速的和这些种子节点进行交互和同步，传播的效率大大提高了。</p>
+<h3 id="3-8-3_Failure_Detection">3.8.3 Failure Detection</h3><p>　　错误检测主要是防止节点尝试和不能访问的节点进行交互，尽量避免通信失败的情况。其实只要B节点不响应A节点的消息，那么A节点就认为B节点出错了，此时A节点就会选择和B节点具有相同数据副本的节点发送请求，同时A节点还会周期性地探测B节点是否恢复可用了。<br>　　最初的Dynamo设计使用去中心化的方式，维护一个全局的最终一致性的节点失败状态信息，后来发现这种设计是多余的：通过前面的增加或者删除节点的操作，然后通过Gossip协议节点的存在性会达到最终一致性，而临时性的节点不可用直接根据请求是否响应就可以探测出来，候选的节点会自动接替之用于响应服务。</p>
+<h2 id="3-9_存储节点(物理节点)的添加和删除">3.9 存储节点(物理节点)的添加和删除</h2><p>　　当一个节点加入到hash环中的时候，比如节点X，考虑到上面的分区问题外，还会涉及到数据副本的问题，会有至多N个节点会和这个变动的hash区间相关联。在这个分区划分出来之后，一些节点不需要再负责这部分区域的keys的时候，会把这部分keys的数据传输到这个新加入的节点上来。<br>　　比如对于上面的图，当节点X加入到节点A-节点B中间的时候且N=3的时候，节点X就需要存储(F,G]、(G,A]、(A,X]区域的数据，而对应的节点B、C、D就不需要保存对应部分的数据副本，因此他们会将这部分数据传输给节点X。</p>
+<h1 id="四、后言">四、后言</h1><p>　　Dynamo的基本实现算是理解完了。说到这里，之前看到腾讯微信后台出了PaxosStore的分布式存储，用以替代之前的QuorumKV存储，而后者恰巧是基于NWR(N为3，W/R为2)协议实现的分布式存储系统。他们给出的最终测试结数据看来，QuorumKV和PaxosStore两者的性能(延迟)差距并不大，而是在请求失败率的指标上有较大的改进。<br>　　没有QuorumKV的实现细节，Dynamo和PaxosStore也没有过正面PK，所以这里也不好乱喷。只不过从原理上来说，NWR只是保证异步修改多个副本，协议本身并没有保证最终一致性，那么冲突肯定是更容易发生的；而Paxos协议在更新的时候就需要多个Acceptor进行表决，并达成最终一致性(如果此轮表决没有达成一致还会继续Propose再表决)，这种情况下冲突的概率肯定是很低的，所以得到他们的测试结果也是情理之中的事情，毫无悬念。<br>　　Paxos的论文过于的理论，工业实现确实不容易，坑点很多。感觉Raft虽然添加了一些假设，但是将整个系统实现会方便一大截，有机会要好好拜读一下那篇著名的斯坦福博士论文，你懂得！</p>
+<p>本文完！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="http://s3.amazonaws.com/AllThingsDistributed/sosp/amazon-dynamo-sosp2007.pdf" target="_blank" rel="external">Dynamo: Amazon’s Highly Available Key-value Store</a></li>
+<li><a href="http://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&amp;mid=2650994526&amp;idx=1&amp;sn=255dd87bd8601919bda3d597c65439f3" target="_blank" rel="external">微信PaxosStore内存云揭秘：十亿Paxos/分钟的挑战</a></li>
+<li><a href="http://the-paper-trail.org/blog/consistency-and-availability-in-amazons-dynamo/" target="_blank" rel="external">Consistency and availability in Amazon’s Dynamo</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></p>
+        <p><span>最后更新:</span>2016-12-18, 16:00:18</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201612/read-note-of-amazon-dynamo.html" title="Amazon Dynamo论文阅读笔记">https://taozj.org/201612/read-note-of-amazon-dynamo.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201612/read-note-of-amazon-dynamo.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">
+                    分布式系统入门笔记（四）：Raft一致性算法
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201612/consistent-hashing.html">
+                    一致性hashing的原理解析
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201612/read-note-of-amazon-dynamo.html" data-title="Amazon Dynamo论文阅读笔记" data-url="https://taozj.org/201612/read-note-of-amazon-dynamo.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html" title="上一篇: 分布式系统入门笔记（四）：Raft一致性算法">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201612/consistent-hashing.html" title="下一篇: 一致性hashing的原理解析">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

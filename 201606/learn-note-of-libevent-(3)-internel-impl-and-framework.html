@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>Libevent学习笔记（三）：内部实现原理初探 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Libevent确实方便了开发人员，对于定时器、信号处理、关心的文件或者套接字，只需要挂载到event_base上面，设置好对应的回调函数和参数就可以了，当对应的事件发生时，Libevent会自动调度相应的回调函数进行处理。　　本文就按照之前在sshinner中使用Libevent的过程，以这些接口函数作为突破点，沿着代码走了一朝，尝试探究一下Libevent的内部工作流程是怎样的。由于本人能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Libevent学习笔记（三）：内部实现原理初探">
+<meta property="og:url" content="https://taozj.org/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="Libevent确实方便了开发人员，对于定时器、信号处理、关心的文件或者套接字，只需要挂载到event_base上面，设置好对应的回调函数和参数就可以了，当对应的事件发生时，Libevent会自动调度相应的回调函数进行处理。　　本文就按照之前在sshinner中使用Libevent的过程，以这些接口函数作为突破点，沿着代码走了一朝，尝试探究一下Libevent的内部工作流程是怎样的。由于本人能">
+<meta property="og:image" content="https://taozj.org/post_images/images/201605/4ba4cf01515ad01fd5f9403f6460d578.png">
+<meta property="og:updated_time" content="2016-12-18T13:30:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Libevent学习笔记（三）：内部实现原理初探">
+<meta name="twitter:description" content="Libevent确实方便了开发人员，对于定时器、信号处理、关心的文件或者套接字，只需要挂载到event_base上面，设置好对应的回调函数和参数就可以了，当对应的事件发生时，Libevent会自动调度相应的回调函数进行处理。　　本文就按照之前在sshinner中使用Libevent的过程，以这些接口函数作为突破点，沿着代码走了一朝，尝试探究一下Libevent的内部工作流程是怎样的。由于本人能">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201605/4ba4cf01515ad01fd5f9403f6460d578.png">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-learn-note-of-libevent-(3)-internel-impl-and-framework" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html" class="article-date">
+      <time datetime="2016-06-30T04:33:59.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Libevent学习笔记（三）：内部实现原理初探
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/软件/">软件</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>　　Libevent确实方便了开发人员，对于定时器、信号处理、关心的文件或者套接字，只需要挂载到event_base上面，设置好对应的回调函数和参数就可以了，当对应的事件发生时，Libevent会自动调度相应的回调函数进行处理。<br>　　本文就按照之前在<a href="https://github.com/taozhijiang/sshinner" target="_blank" rel="external">sshinner</a>中使用Libevent的过程，以这些接口函数作为突破点，沿着代码走了一朝，尝试探究一下Libevent的内部工作流程是怎样的。由于本人能力有限，有些东西可能不够详尽或者准确，还望不吝指出。<br><img src="/post_images/images/201605/4ba4cf01515ad01fd5f9403f6460d578.png" alt="libevent"></p>
+<h1 id="一、创建event_base">一、创建event_base</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> event_base * main_base = event_base_new(<span class="keyword">void</span>);</div></pre></td></tr></table></figure>
+<p>　　主要是根据参数，创建event_base结构体，然后初始化一些数据，如果对默认的参数不满意需要个性化配置的话，可以先创建event_config，然后调用event_base_new_with_config来创建。其中在eventops这个变量中，按照优先级顺序排序罗列了常见的IO复用模型，比如kqueue、epoll、poll、select等，由于Libevent是跨平台的，这些IO复用在有些平台可能是不可用的，同时你还可以在event_config中选择过滤某些不想要的模型。<br>　　当选定了某个IO复用模型之后，其操作结构eventop就被添加到base-&gt;evsel中，然后调用其特定的init初始化函数。这些操作跟文件系统file_operations结构极为的类似。<br>　　那我们接着跟下去，看看大名鼎鼎的epoll类提供了哪些操作吧：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> <span class="keyword">struct</span> eventop epollops = &#123;</div><div class="line">    <span class="string">"epoll"</span>,</div><div class="line">    epoll_init,</div><div class="line">    epoll_nochangelist_add,</div><div class="line">    epoll_nochangelist_del,</div><div class="line">    epoll_dispatch,</div><div class="line">    epoll_dealloc,</div><div class="line">    <span class="number">1</span>, <span class="comment">/* need reinit */</span></div><div class="line">    EV_FEATURE_ET|EV_FEATURE_O1|EV_FEATURE_EARLY_CLOSE,</div><div class="line">    <span class="number">0</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>　　在初始化函数epoll_init当中，基本就类似epoll使用时候标准化的准备工作：首先调用epoll_create创建epfd，然后预先创建INITIAL_NEVENT(32)个空间用于存放epoll_event，如果使用了timerfd，则再调用timerfd_create创建对应的timerfd。最后这些fd以及epoll_event都存放在struct epollop当中，然后作为epoll_init函数的返回保存在base-&gt;evbase上。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> epollop &#123;</div><div class="line">    <span class="keyword">struct</span> epoll_event *events;    <span class="comment">//数组</span></div><div class="line">    <span class="keyword">int</span> nevents;</div><div class="line">    <span class="keyword">int</span> epfd;</div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> USING_TIMERFD</span></div><div class="line">    <span class="keyword">int</span> timerfd;</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>　　在创建event_base的最后，还调用了event_base_priority_init进行了一个初始化操作，如果有多个优先级，就有对应的多个等待队列挂靠在base-&gt;activequeues上面，而base-&gt;nactivequeues记录了优先级的数目。<br><a id="more"></a></p>
+<h1 id="二、创建listen套接字，并建立connect事件侦听">二、创建listen套接字，并建立connect事件侦听</h1><h2 id="2-1_基本过程">2.1 基本过程</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">listener = evconnlistener_new_bind(srvopt.main_base, accept_conn_cb, <span class="literal">NULL</span>,</div><div class="line">            LEV_OPT_CLOSE_ON_FREE|LEV_OPT_REUSEABLE, <span class="number">-1</span><span class="comment">/*backlog*/</span>,</div><div class="line">            (<span class="keyword">struct</span> sockaddr*)&amp;<span class="built_in">sin</span>, <span class="keyword">sizeof</span>(<span class="built_in">sin</span>));</div></pre></td></tr></table></figure>
+<p>　　这个算是个简化版的函数，你可以自己先手动建立和绑定socket，然后再调用evconnlistener_new建立connect事件侦听。这个函数给socket设置了一个高大上的符号SO_KEEPALIVE（SO_KEEPALIVE 保持连接检测对方主机是否崩溃，避免服务器永远阻塞于TCP连接的输入），SOCKET开发还是有很多参数的，比如之前sshinner网络一直出问题，消息不能及时的被发送接收，最后跟踪shadowsockets-libev发现，是要给socket添加TCP_NODELAY参数，问题才得以解决。<br>　　在evconnlistener_new函数中，首先调用listen，然后分配evconnlistener_event这个数据结构，base作为struct evconnlistener类型传递给用户空间，而listener主要作为内部隐藏的数据结构，为通用的struct event数据类型。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> evconnlistener_event &#123;</div><div class="line">    <span class="keyword">struct</span> evconnlistener base;</div><div class="line">    <span class="keyword">struct</span> event listener;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">struct</span> evconnlistener &#123;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">struct</span> evconnlistener_ops *ops;</div><div class="line">    <span class="keyword">void</span> *lock;</div><div class="line">    evconnlistener_cb cb;</div><div class="line">    evconnlistener_errorcb errorcb;</div><div class="line">    <span class="keyword">void</span> *user_data;</div><div class="line">    <span class="keyword">unsigned</span> flags;</div><div class="line">    <span class="keyword">short</span> refcnt;</div><div class="line">    <span class="keyword">int</span> accept4_flags;</div><div class="line">    <span class="keyword">unsigned</span> enabled : <span class="number">1</span>;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">struct</span> event &#123;</div><div class="line">    <span class="keyword">struct</span> event_callback ev_evcallback;</div><div class="line">    <span class="comment">/* for managing timeouts */</span></div><div class="line">    <span class="keyword">union</span> &#123;</div><div class="line">        TAILQ_ENTRY(event) ev_next_with_common_timeout;</div><div class="line">        <span class="keyword">int</span> min_heap_idx;</div><div class="line">    &#125; ev_timeout_pos;</div><div class="line">    <span class="keyword">evutil_socket_t</span> ev_fd;</div><div class="line">    <span class="keyword">struct</span> event_base *ev_base;</div><div class="line"> </div><div class="line">    <span class="keyword">union</span> &#123;</div><div class="line">        <span class="comment">/* used for io events */</span></div><div class="line">        <span class="keyword">struct</span> &#123;</div><div class="line">            LIST_ENTRY (event) ev_io_next;</div><div class="line">            <span class="keyword">struct</span> timeval ev_timeout;</div><div class="line">        &#125; ev_io;</div><div class="line"> </div><div class="line">        <span class="comment">/* used by signal events */</span></div><div class="line">        <span class="keyword">struct</span> &#123;</div><div class="line">            LIST_ENTRY (event) ev_signal_next;</div><div class="line">            <span class="keyword">short</span> ev_ncalls;</div><div class="line">            <span class="comment">/* Allows deletes in callback */</span></div><div class="line">            <span class="keyword">short</span> *ev_pncalls;</div><div class="line">        &#125; ev_signal;</div><div class="line">    &#125; ev_;</div><div class="line"> </div><div class="line">    <span class="keyword">short</span> ev_events;</div><div class="line">    <span class="keyword">short</span> ev_res;        <span class="comment">/* result passed to event callback */</span></div><div class="line">    <span class="keyword">struct</span> timeval ev_timeout;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>　　通过上面的数据结构可以清晰的发现，调用evconnlistener_new_bind函数作为参数提供的回调函数和参数，都被赋值给了evconnlistener_event-&gt;base.cb和base.user_data上面。接下来调用了两个比较重要的函数：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">event_assign(&amp;lev-&gt;listener, base, fd, EV_READ|EV_PERSIST,</div><div class="line">        listener_read_cb, lev);</div><div class="line">evconnlistener_enable(&amp;lev-&gt;base);</div></pre></td></tr></table></figure></p>
+<p>　　evconnlistener_enable(&amp;lev-&gt;base)通过追根述源是调用了event_listener_enable，最后调用了event_add(&amp;lev_e-&gt;listener, NULL)。而event_assign和event_add都是比较重要的函数，event_assign类似于event_new的作用，只不过参数是一个已经初始化了的struct event，而event_add则是把event由initialized状态变成pending状态，以便开始接收事件，其实后面可以发现，bufferevent_enable等接口，底层也是调用的event_add实现的。<br>　　接下来把上面这两个函数慢慢品读。</p>
+<h2 id="2-2_event_assign调用">2.2 event_assign调用</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">event_assign(&amp;lev-&gt;listener, base, fd, EV_READ|EV_PERSIST,</div><div class="line">        listener_read_cb, lev);</div></pre></td></tr></table></figure>
+<p>　　初看上面比较奇怪，在evconnlistener_new这个函数的上半部分已经设置了一个base.cb和base.user_data了，怎么下面又调用一个event_assign来设置一个listener_read_cb回调呢？其实上面是用户提供的callback和args，但是这并没有直接跟某个事件相关联，而下面的event_assign却是设置了&amp;lev-&gt;listener(标准的struct event类型)为固定的listener_read_cb回调函数，当发生了EV_READ就会被自动调用。然后在listener_read_cb中，我们发现：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cb = lev-&gt;cb;    <span class="comment">//</span></div><div class="line">user_data = lev-&gt;user_data;    <span class="comment">//</span></div><div class="line">cb(lev, new_fd, (<span class="keyword">struct</span> sockaddr*)&amp;ss, (<span class="keyword">int</span>)socklen,  user_data);</div><div class="line">errorcb(lev, user_data);</div></pre></td></tr></table></figure></p>
+<p>　　所以说，其实Libevent内部根本没有什么诸如LISTEN的事件，还是用的标准EV_READ(因为最最底层的epoll异步只能监听read/write/except事件)，只是做了个封装，当连接之后激活EV_READ(为什么呢？为什么呢？)的回调函数，而出错了就调用err_callback函数，所以accept_conn_cb实际是被手动调用的。</p>
+<h2 id="2-3_event_add调用">2.3 event_add调用</h2><p>　　evconnlistener_enable的调用被翻译到event_add函数，其实不光光是这里，后面最常用的bufferevent_enable这类函数，其实也是翻译到底层的event_add函数(event_add_nolock_)上面。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> evconnlistener_event *lev_e =</div><div class="line">        EVUTIL_UPCAST(lev, <span class="keyword">struct</span> evconnlistener_event, base);    <span class="comment">//这个宏比较好看</span></div><div class="line">    <span class="keyword">return</span> event_add(&amp;lev_e-&gt;listener, <span class="literal">NULL</span>);</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> EVUTIL_UPCAST(ptr, type, field)                \</span></div><div class="line">    ((type *)(((char*)(ptr)) - evutil_offsetof(type, field)))</div></pre></td></tr></table></figure></p>
+<p>　　event_add有两个参数，后面一个参数是struct timeval的超时参数，如果是NULL就表示无限期等待，这里先就不考虑这种情况。其中最主要做的事情就是调用evmap_io_add_/evmap_signal_add_函数将事件加入到base当中：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 对照上面，返回-1 error, 0 没有实际操作, 1 真实添加了</span></div><div class="line">res = evmap_io_add_(base, ev-&gt;ev_fd, ev);</div><div class="line">res = evmap_signal_add_(base, (<span class="keyword">int</span>)ev-&gt;ev_fd, ev);</div><div class="line"></div><div class="line"><span class="comment">// 上面函数的核心操作</span></div><div class="line">GET_IO_SLOT_AND_CTOR(ctx, io, fd, evmap_io, evmap_io_init,</div><div class="line">                         evsel-&gt;fdinfo_len);</div><div class="line">evsel-&gt;add(base, ev-&gt;ev_fd,</div><div class="line">            old, (ev-&gt;ev_events &amp; EV_ET) | res, extra);</div></pre></td></tr></table></figure></p>
+<p>　　首先，由于Libevent的设计是跨平台的，而Windows和Linux对socket和fd的表达和处理方式不同，GET_IO_SLOT_AND_CTOR的行为也有差异：Windows使用的是hashtable维护着struct event_map_entry结构，而Linux平台就直接是用的指针数组（数组，元素类型是指针），用fd作为偏移来索引，指针指向的结构按需分配，十分的简洁高效。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Used to map signal numbers to a list of events.  If EVMAP_USE_HT is not</span></div><div class="line">   defined, this structure is also used as event_io_map, which maps fds to a</div><div class="line">   list of events.</div><div class="line">*/</div><div class="line"><span class="keyword">struct</span> event_signal_map &#123;</div><div class="line">    <span class="comment">/* An array of evmap_io * or of evmap_signal *; empty entries are</span></div><div class="line">     * set to NULL. */</div><div class="line">    <span class="keyword">void</span> **entries;</div><div class="line">    <span class="comment">/* The number of entries available in entries */</span></div><div class="line">    <span class="keyword">int</span> nentries;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">/** Mapping from file descriptors to enabled (added) events */</span></div><div class="line"><span class="keyword">struct</span> event_io_map io;</div><div class="line"><span class="comment">/** Mapping from signal numbers to enabled (added) events. */</span></div><div class="line"><span class="keyword">struct</span> event_signal_map sigmap;</div></pre></td></tr></table></figure></p>
+<p>　　在每一个event_base结构体中，都定义了struct event_signal_map类型的两个成员io和sigmap(Linux平台)，用于信号量和FD与events之间的事件映射。然后看GET_IO_SLOT_AND_CTOR(GET_SIGNAL_SLOT_AND_CTOR)这个宏，查询或者创建fd对应的struct evmap_io对象ctx，将当前的事件和之前的事件进行合并，并调用evsel-&gt;add进行更新(最终反应到底层epoll上面就是epoll_ctl命令进行操作了)，并把当前的event结构体插入到前面找到的ctx-&gt;events链表当中。</p>
+<h1 id="三、建立主事件循环">三、建立主事件循环</h1><p>　　无论是主线程，还是对于每个线程池用自己的event_base，最终都会调用这个函数作为主循环进行事件处理。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">event_base_loop(main_base, <span class="number">0</span>);</div></pre></td></tr></table></figure></p>
+<p>　　先不考虑那些FLAG(控制何时推出啊啥的)，在event_base_loop主要做的事情是：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* F1 */</span> event_queue_make_later_events_active(base);</div><div class="line"><span class="comment">/* F2 */</span> res = evsel-&gt;dispatch(base, tv_p);</div><div class="line"><span class="comment">/* F3 */</span> timeout_process(base);</div></pre></td></tr></table></figure></p>
+<p>　　F1的函数主要是在Libevent中引用了Deferred Callback机制，操作上就是从event_base的active_later_queue队列中将事件取出来，然后添加到activequeues[evcb-&gt;evcb_pri]对应优先级队列上面。<br>　　F2对于epoll类型，就是调用epoll_dispatch函数：首先调用epoll_apply_changes(base);对event_base-&gt;changelist上面挂靠的所有对fd的事件修改都执行底层修改使之生效；然后用res = epoll_wait(epollop-&gt;epfd, events, epollop-&gt;nevents, timeout);获取被激活的事件；对获取到的每个fd的事件，提取被激活的事件类型，然后调用evmap_io_active_(base, events[i].data.fd, ev | EV_ET);函数处理。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">evmap_io_active_(<span class="keyword">struct</span> event_base *base, <span class="keyword">evutil_socket_t</span> fd, <span class="keyword">short</span> events)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">struct</span> event_io_map *io = &amp;base-&gt;io;</div><div class="line">    <span class="keyword">struct</span> evmap_io *ctx;</div><div class="line">    <span class="keyword">struct</span> event *ev;</div><div class="line"></div><div class="line">    GET_IO_SLOT(ctx, io, fd, evmap_io);</div><div class="line"></div><div class="line">    LIST_FOREACH(ev, &amp;ctx-&gt;events, ev_io_next) &#123;</div><div class="line">        <span class="keyword">if</span> (ev-&gt;ev_events &amp; events)</div><div class="line">            event_active_nolock_(ev, ev-&gt;ev_events &amp; events, <span class="number">1</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　执行的结果就是，这个fd对应的evmap_io上的所有事件，以及Deferred Callback事件，都被收集添加到event_base-&gt;activequeues[evcb-&gt;evcb_pri]队列中去。<br>于是乎，最后的好戏就是：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (N_ACTIVE_CALLBACKS(base)) &#123;</div><div class="line">       <span class="keyword">int</span> n = event_process_active(base);</div></pre></td></tr></table></figure></p>
+<p>　　在event_process_active中调用了event_process_active_single_queue。当然作者考虑的细节还是比较细腻的：如果当前被调度的活动事件过多，就考虑在timer和maxcb两个维度上限制本轮的事件处理量，而在event_process_active_single_queue中，会不断从事件链表中取出事件处理（包括执行对应的回调函数）。从实现方式上看来，按照优先级从高到低的顺序，每一轮只处理一个最高优先级非空事件队列中的事件，然后就返回了。这样看来，如果高优先级的事件太多太活跃，那么低优先级的事件还是会有被饿死的风险。</p>
+<h1 id="四、基于bufferevent的普通socket读写事件">四、基于bufferevent的普通socket读写事件</h1><p>　　bufferevent使得网络的开发变的很方便，无论是从事件还是底层的evbuffer都提供了一套丰富灵活的接口。但是需要注意的是bufferevent目前只能用于TCP连接的类型，对于UDP只能手动建立struct event事件，然后设置事件和回调函数了，而且在回调函数中，一般也只能调用sendto/recvfrom等操作接口。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> event_base *base = evconnlistener_get_base(listener);</div><div class="line"><span class="keyword">struct</span> bufferevent *bev = </div><div class="line">bufferevent_socket_new(base, fd, <span class="number">0</span> <span class="comment">/*BEV_OPT_CLOSE_ON_FREE*/</span>);</div><div class="line">bufferevent_setcb(bev, bufferread_cb, <span class="literal">NULL</span>, bufferevent_cb, <span class="literal">NULL</span>);</div><div class="line">bufferevent_enable(bev, EV_READ|EV_WRITE);</div></pre></td></tr></table></figure></p>
+<p>　　上面算是在网络开发中用的最频繁的了，比如在listener的connection回调函数中，接收到一个新的套接字fd，那么就对这个套接字设置bufferevent事件，设置对应的回调函数。<br>在bufferevent_socket_new函数中：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> bufferevent_private *bufev_p;</div><div class="line"><span class="keyword">struct</span> bufferevent *bufev;</div><div class="line"></div><div class="line">bufferevent_init_common_(bufev_p, base, &amp;bufferevent_ops_socket, options);</div><div class="line">bufev_p-&gt;bev;</div><div class="line"></div><div class="line">event_assign(&amp;bufev-&gt;ev_read, bufev-&gt;ev_base, fd,</div><div class="line">    EV_READ|EV_PERSIST|EV_FINALIZE, bufferevent_readcb, bufev);</div><div class="line">event_assign(&amp;bufev-&gt;ev_write, bufev-&gt;ev_base, fd,</div><div class="line">    EV_WRITE|EV_PERSIST|EV_FINALIZE, bufferevent_writecb, bufev);</div><div class="line">evbuffer_add_cb(bufev-&gt;output, bufferevent_socket_outbuf_cb, bufev);</div><div class="line"> </div><div class="line">evbuffer_freeze(bufev-&gt;input, <span class="number">0</span>);</div><div class="line">evbuffer_freeze(bufev-&gt;output, <span class="number">1</span>);</div></pre></td></tr></table></figure></p>
+<p>　　跟之前的struct evconnlistener_event一样，这里返回给用户空间可用的struct bufferevent也是struct bufferevent_private的一部分，不过相比listener的单个struct event，这里的bufferevent内容成员要复杂的多，其中我们比较熟悉的有：input、output两个evbuffer，可以调用evbuffer的族函数进行相关的高级处理；此外还设置了be_ops为bufferevent_ops_socket，而enabled使能的时间中默认为EV_WRITE，所以EV_READ需要手动enable；接下来设置bufev_private-&gt;deferred的callback回调函数和调用参数为bufferevent_run_deferred_callbacks_locked和bufev_private。<br>　　最后的两个event_assign分别将ev_read和ev_write两个event的回调函数设置为了bufferevent_readcb/bufferevent_writecb。由于EV_WRITE默认是使能的，所以还调用了evbuffer_add_cb设置其默认的回调函数为bufferevent_socket_outbuf_cb。为了安全，还将两个evbuffer先冻结起来，准备工作还未就绪，所以此时还不允许数据传输。<br>　　其实，正如上面的例子，对于bufferevent，通常的写操作就使用其默认的callback就可以了，实际开发当中我们最关心的是读事件，因为我们要接收数据处理数据（即便只是转发操作），而写数据只要准备好要发送的数据，底层的写就让其自动处理就可以了。<br>　　说到底，这里的bufferevent和evconnlistener类似，也是采用了两段式设计：在bufferevent中的ev_read/write被激活调度的时候，其自动执行的是bufferevent_readcb/writecb函数，在这些标准函数中会做一些的预先处理操作，比如evbuffer_read/evbuffer_write_atmost的读写，到最后通过bufferevent_trigger_nolock_调用用户设定的回调函数。然后你可能感兴趣EV_WRITE默认的bufferevent_socket_outbuf_cb干了啥？查看其代码，其实也就是：检查确保当前ev_write是否是pending的，如果不是就bufferevent_add_event_变成pending状态就好了。我们知道，epoll事件最底层是操作系统直接驱动的，所以如果底层驱动发现socket是可写的，就可以调度底层发送数据了，因此这个函数实际上其实啥都没做。<br>　　最后的bufferevent_enable(bev, EV_READ|EV_WRITE);跟之前的evconnlistener_enable也大差不差的，最终都是通过be_socket_enable-&gt;bufferevent_add_event_-&gt;event_add方式，将event加入到对应的event_base上面去，使之变为pending状态。</p>
+<h1 id="五、小结">五、小结</h1><p>　　Libevent的代码实现的十分精妙，注释也比较多，当然也有一些参数和符号尚无注释，自己暂时也没能意会，本文尚有很多需要补充之处。<br>　　哎，想想自己epoll+线程池两个c文件搞定，而Libevent把这个做的如此之精妙（且尚无线程池模型），不得不由衷的让人敬佩：牛人怎么就那么牛呢？这也使得我坚信，初学者和企业应用之间总隔着一条沟沟需要跨越，如果没有项目带着你走，那就可以靠读这些开源项目的代码来弥合，希望大家都能愉快的玩耍和成长！</p>
+<p>本文完！</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></p>
+        <p><span>最后更新:</span>2016-12-18, 21:30:19</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html" title="Libevent学习笔记（三）：内部实现原理初探">https://taozj.org/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201607/design-and-impl-of-minicached-base-on-memcached.html">
+                    基于memcached原理实现的单机轻量级通用缓存库
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">
+                    基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html" data-title="Libevent学习笔记（三）：内部实现原理初探" data-url="https://taozj.org/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201607/design-and-impl-of-minicached-base-on-memcached.html" title="上一篇: 基于memcached原理实现的单机轻量级通用缓存库">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html" title="下一篇: 基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

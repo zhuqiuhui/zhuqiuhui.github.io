@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>统计学之边角料——频率派和贝叶斯派 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="第一章 频率学派和贝叶斯学派　　虽然我们在大学的时候概率统计课程只有一门，教材只有一本，在后面查阅资料后发现，其实在概率界一只有两个长期对立的统计学派：频率派和贝叶斯派，两个相持两百年了，还打的水生火热滴。
+1.1 频率派　　基本依托于大数定律和中心极限定理，其贵在于得到越多越好的样本，然后计算其频率来逼近该事件的真实概率。所以频率派讲求该事件可以被独立重复，因为只有这样才能进行大规模的实验来求取">
+<meta property="og:type" content="article">
+<meta property="og:title" content="统计学之边角料——频率派和贝叶斯派">
+<meta property="og:url" content="https://taozj.org/201604/statistics-frequency-bayesian.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="第一章 频率学派和贝叶斯学派　　虽然我们在大学的时候概率统计课程只有一门，教材只有一本，在后面查阅资料后发现，其实在概率界一只有两个长期对立的统计学派：频率派和贝叶斯派，两个相持两百年了，还打的水生火热滴。
+1.1 频率派　　基本依托于大数定律和中心极限定理，其贵在于得到越多越好的样本，然后计算其频率来逼近该事件的真实概率。所以频率派讲求该事件可以被独立重复，因为只有这样才能进行大规模的实验来求取">
+<meta property="og:image" content="https://taozj.org/post_images/images/201604/4c3b57240f358781a05c02b2b7387918.jpg">
+<meta property="og:image" content="https://taozj.org/post_images/images/201604/bf8d073c6b6d42d5ecdbc1cb9f343bfd.jpg">
+<meta property="og:image" content="https://taozj.org/post_images/images/201603/2f42e3a50fdca79cc8ac5cba693efaf0.jpg">
+<meta property="og:updated_time" content="2016-12-18T13:57:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="统计学之边角料——频率派和贝叶斯派">
+<meta name="twitter:description" content="第一章 频率学派和贝叶斯学派　　虽然我们在大学的时候概率统计课程只有一门，教材只有一本，在后面查阅资料后发现，其实在概率界一只有两个长期对立的统计学派：频率派和贝叶斯派，两个相持两百年了，还打的水生火热滴。
+1.1 频率派　　基本依托于大数定律和中心极限定理，其贵在于得到越多越好的样本，然后计算其频率来逼近该事件的真实概率。所以频率派讲求该事件可以被独立重复，因为只有这样才能进行大规模的实验来求取">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201604/4c3b57240f358781a05c02b2b7387918.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-statistics-frequency-bayesian" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201604/statistics-frequency-bayesian.html" class="article-date">
+      <time datetime="2016-03-31T16:43:58.000Z" itemprop="datePublished">2016-04-01</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      统计学之边角料——频率派和贝叶斯派
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/机器学习/">机器学习</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数学/">数学</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习/">机器学习</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h1 id="第一章_频率学派和贝叶斯学派">第一章 频率学派和贝叶斯学派</h1><p>　　虽然我们在大学的时候概率统计课程只有一门，教材只有一本，在后面查阅资料后发现，其实在概率界一只有两个长期对立的统计学派：频率派和贝叶斯派，两个相持两百年了，还打的水生火热滴。</p>
+<h2 id="1-1_频率派">1.1 频率派</h2><p>　　基本依托于大数定律和中心极限定理，其贵在于得到越多越好的样本，然后计算其频率来逼近该事件的真实概率。所以频率派讲求该事件可以被独立重复，因为只有这样才能进行大规模的实验来求取概率逼近真实分布。<br>　　大数定律：对随机变量$X$（比如投硬币100次向上的次数）进行观察不断的n次采样得到$X_1,X_2,……,X_n$，然后求取这n个样本的平均值$\bar{X}$，当样本数目n趋向于无穷大的时候的，其均值$\bar{X}$趋近于其数学期望$E(X)$。<br>　　中心极限定理：大量相互独立的随机变量，其均值/和的分布以正态分布为极限，并且这个定理与随机变量的具体分布类型无关（无论离散还是连续，以及具体的分布类型），也就是各个随机变量的分布类型未知，只需要满足独立同分布的前提就可以，他们的均值总体符合正态分布。</p>
+<h2 id="1-2_贝叶斯派">1.2 贝叶斯派</h2><p>　　在课本上最常见的就是条件概率和贝叶斯公式了，可以从如下最常见到的贝叶斯公式来考察。而所谓的贝叶斯框架，就是无论具体是什么样的分布，都可以按照这么样的一个模式来求参数的估计。</p>
+<blockquote>
+<pre><code>后验概率posterior = (似然度likelihood * 先验概率<span class="built_in">prior</span>)/标准化常量
+posterior ∝ likelihood × <span class="built_in">prior</span>
+</code></pre></blockquote>
+<p>　　贝叶斯讲求引入一个先验概率，表现了对该事件的知识了解，然后再用似然度去修正之前的知识了解，如果当前的观测值越符合我们的先验知识，那么似然度就越大，得到的后验概率也就越大，反之亦然。看似贝叶斯框架比较的完美，而且可以客服一些频率派困难（比如投骰子次数不多，那么计算的频率显然与真实的分布想去甚远，但是贝叶斯的先验知识可以缓和这种极端情况）。但是贝叶斯的先验知识没有具体、规则化的获得方法，每个人的先验知识都可能是不一样的，而不良的先验概率甚至会使得最终的估计偏离真实的值。对此，贝叶斯的先验知识最好是客观计算出来的，抑或者拿不准时候用弱信息甚至无信息的先验假设来尽可能避免这类问题。<br><a id="more"></a></p>
+<h2 id="1-3_区别和联系：">1.3 区别和联系：</h2><p>$$p(w|D) = \frac{p(D|w)p(w)}{p(D)}$$<br>　　考量上面的式子，其实似然度 $p(D|w)$在两者都扮演了一个重要的位置，表示了当前的观测与之前的假设所相似的程度。在本质上：频率派认为参数w是一个存在且固定的参数（当然虽然知道他存在但不知道他是多少，不然还估计个毛啊），其可以通过某种方式的估计得到的（比如最大似然估计，就是让观测集D出现的概率最大化时候的w作为估计值，而$-log(p(D|w))$被称为误差函数，和似然度成反比关系）；贝叶斯派认为w是不固定的，在先验知识得到w的时候，用后续的观测D来不断的修正w得到后验估计。</p>
+<h2 id="1-4_假设检验（hypothesis_testing）">1.4 假设检验（hypothesis testing）</h2><p>　　在统计中，通过用样本对一个假设进行接受或者拒绝的过程，称之为假设检验，需要注意，假设检验和p是频率派中才使用的东西。一般的假设有Z检验和t检验两种，前者用于样本数目大于30的情况下，目标函数呈正态分布，查询正态分布表得到样本均值在零假设成立的概率，而当样本数量小于30的情况下，目标函数服从t分布，查询t表得到其假设成立的概率。</p>
+<ul>
+<li>Z-score：描述的是某个采样值$X_i$同总体均值$\mu$所相差的标准方差数，$Z-score= \frac{(X_i-\mu)}{\sigma}$。需要说明的是，Z-score的计算同$X$的具体分布类型无关，只要有均值和方差，就可以计算Z-score；</li>
+<li>样本均值抽样分布：其类似于中心极限定理，只是给出了具体的正态分布结果：随着样本数目的增加，样本均值$(\bar{X}-\mu)$符合均值为0，标准方差为远方差除以样本个数开方的正态分布！</li>
+</ul>
+<p>　　有了上面的预备知识，下面罗列Z-假设和t-假设这两种假设的步骤：</p>
+<ul>
+<li>先做零假设(null hypothesis)$H_0$和备择假设(alternative hypothesis)$H_1$，比如零假设为药品无效，那么备选假设就是药品有效；</li>
+<li>根据上述样本均值抽样分布规律，$F=\frac{\bar{X} - \mu}{\frac{\sigma}{\sqrt{N}}}$作为目标函数。当样本数目大于30的时候，F为正态分布，而总体标准方差未知的时候，可以用样本的标准差代替；如果样本数目小于30，F满足t分布规律。</li>
+<li>上述目标函数F计算得到$\bar{X}$与$\mu$相距离的标准差个数，然后查表（正态分布表、t分布表），得到零假设成立时候，样本的概率p，然后据此决定是否肯定还是否定零假设。<br><img src="/post_images/images/201604/4c3b57240f358781a05c02b2b7387918.jpg" alt="假设检验"></li>
+</ul>
+<h2 id="1-5_根据可信度，求置信区间">1.5 根据可信度，求置信区间</h2><p>　　其实跟上面是一个逆运算，知道可行度，就可以查Z/t-表看临界均值相对总体均值的偏移单位数目，带入上面的F公司，就可以求得置信区间的范围了<br><img src="/post_images/images/201604/bf8d073c6b6d42d5ecdbc1cb9f343bfd.jpg" alt="求置信区间"></p>
+<h2 id="1-6_举个栗子">1.6 举个栗子</h2><p>　　举个现实点的例子，比如预测明天4月2号的气温，频率派可能抓取历史N年的4月2日的气温数据（为了稳定，可能也会4月2日前后一周的气温数据），然后得到均值和方差，然后得到一个温度范围及其置信度。贝叶斯学派可能根据之前的先验知识（地理位置，经济状况，政策……）估计到一个先验温度分布，然后根据当前这些因素的采样数据，用相似度去修正先验概率，得到一个修正后的后验概率分布。</p>
+<h1 id="第二章_置信区间（Confidence）与可信区间（Credible）">第二章 置信区间（Confidence）与可信区间（Credible）</h1><p>　　由于上文的频率派和贝叶斯派的区别——频率派认为真实的参数w是固定的，而显示能得到的w是根据观测集D用各种方式估计得到的w’；贝叶斯派认为w是不确定的，任何随机取的w都是参数的估计，只是有概率衡量他们可能性大小而已。</p>
+<h2 id="2-1_频率派">2.1 频率派</h2><p>　　由于相信有真实固定的参数存在，所以置信度表示的意思是，对于置信度p，假如进行100次参数估计，在得到的100个置信区间中，至少有100<em>p个置信区间将真实参数包含在内，就是100次inferences至少有p</em>100次是正确的，而对于某一次具体的实验，只有两种可能：置信区间包含真实参数或者不包含真实参数；<br>　　（95% Confidence Interval: 95% of the time, θ is in the 95% interval that is estimated each time，P(θ ∈ 95% CI) = 0 or 1）</p>
+<h2 id="2-2_贝叶斯派">2.2 贝叶斯派</h2><p>　　是假定某种方式得到参数的先验概率分布prior，其可信区间是固定的，然后用观测到的数据得到计算该参数的后验概率posterior，那么得到的后验概率的值，有p的概率落在这个可信区间中。<br>　　（95% Credible Interval: P(θ ∈ 95% CI) = 0.95）</p>
+<h1 id="第三章_机器学习模型评估与选择">第三章 机器学习模型评估与选择</h1><h2 id="3-1_训练集、验证集的划分">3.1 训练集、验证集的划分</h2><p>　　为了减少泛化误差，需要将数据集分为训练集合和验证集合，常用的划分方法有：</p>
+<ul>
+<li>留出法：分层抽取，保证验证数据分布和训练数据分布一致,一般$\frac23$~$\frac45$用于训练；</li>
+<li>交叉验证：将数据分为k份，每次用k-1个子集作为训练数据，1份用做训练数据；通常还需要随见用不同的k-1划分p次，称之为p次k折划分；</li>
+<li>自助法:将数据放回采样m次(某个数据一次不都不被选中的概率为1/e)得到采样D’作为训练集，D\D’作为测试集；通常勇于数据量小，无法方便拆分训练测试集的时候。</li>
+</ul>
+<h2 id="3-2_算法性能衡量指标">3.2 算法性能衡量指标</h2><ul>
+<li>回归任务<br>　　由于回归任务得到的结果是连续值，如果不将回归转化为分类任务（比如设置域值进行分类），那么常用的指标是均方误差。</li>
+<li>分类任务<br>　　错误率 = 分类错误样本数/样本总数<br>　　精度   = 分类正确样本数/样本总数 = 1 - 错误率</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>–</th>
+<th style="text-align:center">预测结果正例</th>
+<th>预测结果反例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>真实正例</td>
+<td style="text-align:center">TP(真正)</td>
+<td>FN(假反)</td>
+</tr>
+<tr>
+<td>真实反例</td>
+<td style="text-align:center">FP(假正)</td>
+<td>TN(真反)</td>
+</tr>
+</tbody>
+</table>
+<p>　　考虑上面的表格，那么<br>　　Precision 查准率 = TP / (TP + FP) ，描述的是预测出为正例中真正为正的比例<br>　　Recall    查全率 = TP / (TP + FN) ，描述的是所有为正例中被检查出来的比例</p>
+<ul>
+<li>P-R曲线<br>　　如果按照预测为正的概率从高到低排列下来,逐次增加选定正样本的数目,然后查准率、查全率分别为Y、X轴，即可得到P-R曲线。<br>　　由于在通常情况下，P和R是两个需要权衡的指标，当比较两个算法性能的时候，根据P和R的重要性不同，可以计算Fb值:$\frac1{Fb} = \frac1{1+b^2}<em>(\frac1P + \frac{b^2}R)$，重要性 b~R/P。<br>　　当b=1的时候，大名鼎鼎的F1就是$\frac{1}{F_1} = \frac{1}{2}</em>(\frac{1}{P} + \frac{1}{R})$</li>
+<li>ROC曲线/受试者工作特征曲线<br>　　TPR 真正率 = TP / (TP + FN)，等同于查全率<br>　　FPR 假正率 = FP / (TN + FP)，描述正式反例中被正确预测为反例的比例<br>　　ROC曲线以TPR为众轴，以FPR为横轴。图形越凸向西北越好。[???与PR的区别联系?]<br><img src="/post_images/images/201603/2f42e3a50fdca79cc8ac5cba693efaf0.jpg" alt="P-R &amp; ROC曲线"></li>
+</ul>
+<p>本文完！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="http://www.rmki.kfki.hu/~banmi/elte/Bishop%20-%20Pattern%20Recognition%20and%20Machine%20Learning.pdf" target="_blank" rel="external">Pattern Recognition and Machine Learning - Bayesian probabilities</a></li>
+<li><a href="http://www.amazon.cn/%E5%9B%BE%E4%B9%A6/dp/B01ARKEV1G?ie=UTF8&amp;keywords=%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0&amp;qid=1459397227&amp;ref_=sr_1_1&amp;sr=8-1" target="_blank" rel="external">机器学习 - 周志华著</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Confidence_interval#Credible_interval" target="_blank" rel="external">Credible interval</a></li>
+<li><a href="http://wiki.mbalib.com/wiki/%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C" target="_blank" rel="external">假设检验</a></li>
+<li><a href="http://open.163.com/movie/2011/6/O/I/M82IC6GQU_M83JCBUOI.html" target="_blank" rel="external">假设检验和p值</a></li>
+<li><a href="http://www.aiweibang.com/yuedu/52652665.html" target="_blank" rel="external">贝叶斯vs频率派：武功到底哪家强？</a>  </li>
+<li><a href="http://open.163.com/special/Khan/khstatistics.html" target="_blank" rel="external">网易公开课 可汗学院公开课：统计学</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></p>
+        <p><span>最后更新:</span>2016-12-18, 21:57:07</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201604/statistics-frequency-bayesian.html" title="统计学之边角料——频率派和贝叶斯派">https://taozj.org/201604/statistics-frequency-bayesian.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201604/statistics-frequency-bayesian.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201604/random-sampling-method.html">
+                    随机采样方法
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201603/learn-note-of-spark-(3)-relative-modules.html">
+                    Spark学习手册（三）：Spark模块学习摘读
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201604/statistics-frequency-bayesian.html" data-title="统计学之边角料——频率派和贝叶斯派" data-url="https://taozj.org/201604/statistics-frequency-bayesian.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201604/random-sampling-method.html" title="上一篇: 随机采样方法">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201603/learn-note-of-spark-(3)-relative-modules.html" title="下一篇: Spark学习手册（三）：Spark模块学习摘读">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

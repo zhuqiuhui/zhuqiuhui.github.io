@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>Google Protobuf数据交换格式的使用方法 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="现今，如果问什么格式的数据交互最红火，非Google家的protobuf莫属了。相比XML、Json，其有点就是使用接口简单、序列化和解析速度快、数据小传输效率高，同时其还具有向后兼容、跨平台、以及丰富的语言支持接口(居然js都支持，看来直逼Json了啊)的优势。当然，其缺点是不像XML、Json那种可读性和自解释性强，特别是在网络通信时候调试起来比较麻烦。　　翻墙照着Google的文档，把p">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Google Protobuf数据交换格式的使用方法">
+<meta property="og:url" content="https://taozj.org/201609/learn-note-of-protobuf.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="现今，如果问什么格式的数据交互最红火，非Google家的protobuf莫属了。相比XML、Json，其有点就是使用接口简单、序列化和解析速度快、数据小传输效率高，同时其还具有向后兼容、跨平台、以及丰富的语言支持接口(居然js都支持，看来直逼Json了啊)的优势。当然，其缺点是不像XML、Json那种可读性和自解释性强，特别是在网络通信时候调试起来比较麻烦。　　翻墙照着Google的文档，把p">
+<meta property="og:image" content="https://taozj.org/post_images/images/201609/0ea1b617424d9f2e8cd77b6dbc5dadfd.png">
+<meta property="og:updated_time" content="2016-12-18T08:43:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Google Protobuf数据交换格式的使用方法">
+<meta name="twitter:description" content="现今，如果问什么格式的数据交互最红火，非Google家的protobuf莫属了。相比XML、Json，其有点就是使用接口简单、序列化和解析速度快、数据小传输效率高，同时其还具有向后兼容、跨平台、以及丰富的语言支持接口(居然js都支持，看来直逼Json了啊)的优势。当然，其缺点是不像XML、Json那种可读性和自解释性强，特别是在网络通信时候调试起来比较麻烦。　　翻墙照着Google的文档，把p">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201609/0ea1b617424d9f2e8cd77b6dbc5dadfd.png">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-learn-note-of-protobuf" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201609/learn-note-of-protobuf.html" class="article-date">
+      <time datetime="2016-09-10T01:11:17.000Z" itemprop="datePublished">2016-09-10</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Google Protobuf数据交换格式的使用方法
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/分布式/">分布式</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>　　现今，如果问什么格式的数据交互最红火，非Google家的protobuf莫属了。相比XML、Json，其有点就是使用接口简单、序列化和解析速度快、数据小传输效率高，同时其还具有向后兼容、跨平台、以及丰富的语言支持接口(居然js都支持，看来直逼Json了啊)的优势。当然，其缺点是不像XML、Json那种可读性和自解释性强，特别是在网络通信时候调试起来比较麻烦。<br>　　翻墙照着Google的文档，把protobuf走了一遍，总体感觉不愧是大厂的作品，考虑到的是效率、多语言支持、兼容性以及分布式系统中多版本的兼容和演进，同时其内部是使用C++实现的，在proto“语法”设计上也会让C++用户感觉十分亲切。<br>　　老习惯还是顺便做个笔记吧。<br><img src="/post_images/images/201609/0ea1b617424d9f2e8cd77b6dbc5dadfd.png" alt="protobuf"></p>
+<h1 id="一、从例子说起">一、从例子说起</h1><p>　　protobuf的使用，需要事先写好.proto文件，这个文件规定了数据传输和接受方交换数据的字段、类型等信息。然后使用编译器protobuf-compiler编译这个文件，就可以产生指定语言类型所需的辅助性文件(比如C++的.h和.cc，然后对每一个message都会产生一个类进行描述)了，然后方便的集成到项目代码中使用，当然除了命令行模式的编译，也可以在源代码中读取.proto文件进行动态编译。</p>
+<h2 id="1-1_-proto文件的格式">1.1 .proto文件的格式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">message Person &#123;</div><div class="line">  required string name = 1; // Your name</div><div class="line">  required int32 id = 2;      // Your ID</div><div class="line">  optional string email = 3;</div><div class="line"></div><div class="line">  enum PhoneType &#123;</div><div class="line">    option allow_alias = true;</div><div class="line">    MOBILE = 0;</div><div class="line">    CELLPHONE = 0;</div><div class="line">    HOME = 1;</div><div class="line">    WORK = 2;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  message PhoneNumber &#123;</div><div class="line">    required string number = 1;</div><div class="line">    optional PhoneType type = 2 [default = HOME];</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  repeated PhoneNumber phone = 4;</div><div class="line"></div><div class="line">  reserved 2, 15, 9 to 11; // reserved保留</div><div class="line">  reserved &quot;foo&quot;, &quot;bar&quot;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>　　(1) 每个字段前面都必须有required、optional、repeated，分别表示后面的字段出现1次、0或1次、0或多次，对于repeated字段，其相同类型字段多个值出现的顺序会被保留。<br>　　(2) 数据类型可以是整形、string类型(支持的类型主要有float、double、[s|u| ]int[32|64]、bool、string)，同时还支持自定义类型的嵌套。每一个字段后面都有一个唯一的数字标号(number tag)，为了提高效率，1-15是用一个字节编码，16-2047是用的两个字节编码，所以根据霍夫曼编码的愿意应该把常用的字段用小于15的数字标号。<br>　　(3) 同一个.proto文件中可以定义多个message，尤其当他们在业务上逻辑相关时候更应该这样。.proto文件的注释支持用C/C++的//风格注释。<br>　　(4) 后续更新的时候，可能某些字段不想要了。为了兼容性起见，不应当仅仅注释或者删除掉，而应该用reserved字段尤其对数字标号进行保留，防止被别人再次使用，然后让老的程序错误解析这些字段。<br>　　(5) 对于optional的字段，可以使用default提供对应的默认值，这样当message解析发现没有这个字段时候，那么就会：如果设定有默认值，就使用这个默认值；否则其值是类型相关的——0、false、空string、枚举的第一个元素。<br>　　(6) enum枚举类型有一个选项allow_alias，打开它的时候，允许同一个枚举值有多个枚举的名字(比如上文的MOBILE和CELLPHONE)。<br><a id="more"></a></p>
+<h2 id="1-2_-proto文件其它相关">1.2 .proto文件其它相关</h2><p>　　(1) 导入定义<br>　　import可以将别的文件的定义导入到当前文件，默认的import行为是只能使用导入文件中的直接定义，如果需要嵌套使用导入文件的内容，达到类似递归的应用效果，可以使用import public语句。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// old.proto</span></div><div class="line">import <span class="keyword">public</span> <span class="string">"new.proto"</span>;</div><div class="line">import <span class="string">"other.proto"</span>;</div><div class="line"></div><div class="line"><span class="comment">// client.proto</span></div><div class="line">import <span class="string">"old.proto"</span>; </div><div class="line"> <span class="comment">//此时可以使用old.proto和new.proto中的内容，但是看不到other.proto内容</span></div></pre></td></tr></table></figure></p>
+<p>　　protobuf-compiler编译器对.proto文件搜索路径默认是执行protoc的当前路径，当然命令行可以使用-I/–proto_path来添加搜索路径。</p>
+<p>　　(2) 嵌套类型<br>　　可以使用Parent.Type这种语法来实现嵌message的使用，而且不限制嵌套的层次深度<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">message SearchResponse &#123;</div><div class="line">    message Result &#123;</div><div class="line">        required <span class="built_in">string</span> url = <span class="number">1</span>;</div><div class="line">        optional <span class="built_in">string</span> title = <span class="number">2</span>;</div><div class="line">    &#125;</div><div class="line">    repeated Result result = <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"> </div><div class="line">message SomeOtherMessage &#123;</div><div class="line">    optional SearchResponse.Result result = <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　(3) 更新消息类型<br>　　从整个文档看来，Google对于这种向后兼容性看的很重要，这也是一个大型系统逐渐演进所必需的。如果要修改一个.proto文件，那么需要遵守以下的一些守则和约定：<br>　　a. 对于一个已经存在的字段不要修改其数字标号；<br>　　b. 新增加的字段应该是optional或者repeated的；<br>　　c. 不再使用的字段，可以用OBSOLETE_等前缀命名表示废弃，但是绝对不要重用其数字标号，记得使用上面的reserved对这些数字标号保护起来；<br>　　d. 非required可以转为extension(保留给第三方在他们自己的.proto文件中使用)；<br>　　e. int32、uint32、int64、uint64、bool是兼容的，客户端可以进行结果的强制转换；<br>　　f. 修改default默认值是允许的，因为默认值不会真正的传输，只跟程序使用的.proto文件有关；</p>
+<p>　　(4) extension<br>　　上面的方式可以把特定的数字标号区域保留给扩展，扩展在自己的.proto文件中，先import原有的.proto，然后再次打开message，添加扩充自己的字段，比如<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// foo.proto</span></div><div class="line">message Foo &#123;</div><div class="line">    <span class="comment">// ...</span></div><div class="line">    extensions <span class="number">100</span> to <span class="number">199</span>; &#125;</div><div class="line"></div><div class="line"><span class="comment">// your.proto</span></div><div class="line">import foo.proto;</div><div class="line">extend Foo &#123;  optional int32 bar = <span class="number">126</span>; &#125;</div></pre></td></tr></table></figure></p>
+<p>但是跟前面基本字段不同，extension的访问需要使用特殊的接口来操作，比如设置值，需要调用<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">foo.SetExtension(bar, <span class="number">15</span>);</div><div class="line">其它这类操作接口包括：HasExtension()、ClearExtension()、GetExtension()、MutableExtension()、AddExtension()。</div><div class="line"></div><div class="line">　　(<span class="number">5</span>) oneof</div><div class="line">　　类似于C/C++中的<span class="keyword">union</span>类型，当oneof包围多个可选字段的时候，至多只能给一个字段赋值，当给某个字段设置的时候，会自动清除已存其它字段的值，因为这些字段都是共享同一内存的，为的就是节省内存。</div><div class="line">```cpp</div><div class="line">message SampleMessage &#123;</div><div class="line">    oneof test_oneof &#123;</div><div class="line">        <span class="built_in">string</span> name = <span class="number">4</span>;</div><div class="line">        SubMessage sub_message = <span class="number">9</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">SampleMessage message;</div><div class="line">message.set_name(<span class="string">"name"</span>);</div><div class="line">CHECK(message.has_name());</div></pre></td></tr></table></figure></p>
+<p>　　oneof中的字段定义不能有require、optional、repeated，然后具体使用的时候可以当作optional一样来使用了。<br>还有，如果一个message中有多个同名的oneof，只有最后一个可见的会被实际使用；extensions不支持oneof；oneof不能被repeated；C++中支持swap两个oneof，交换后可访问字段变成互为对方的那个。</p>
+<p>　　(6) maps<br>　　proto支持相关性容器map，其定义的格式是<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">map</span>&lt;key_type, value_type&gt; map_field = N;</div></pre></td></tr></table></figure></p>
+<p>　　其中的key_type除了不能是浮点和bytes，其它类型(整形、string)都可以作为key；针对map其wire format的排序和迭代顺序是未定义的，用户不应当依赖其顺序；当将其转成文本类型的时候，是按照整形从小到大或者字符串的升序来排序的；当解析或者合并map的时候，如果有重复的key，那么只有最后看见的那个key被使用，而当从文本中解析的时候，如果有重复的key会做报错处理。</p>
+<p>　　(7) Packages<br>　　proto的名字查找类似于C++，从最内层的类依次向外查找。有时候为了防止名字冲突，可以在.proto文件的开头声明package，起到类似名字空间的效果(实际上产生C++辅助代码的时候就是放到对应的namespace中的，比如foo.bar生成了foo::bar)。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">package foo.bar; <span class="comment">//namespace foo::bar</span></div><div class="line">message Open &#123; ... &#125;</div><div class="line"></div><div class="line"><span class="comment">// 另外一个proto中使用</span></div><div class="line">message Foo &#123;</div><div class="line">    required foo.bar.Open open = <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="1-3_将上面的例子用起来">1.3 将上面的例子用起来</h2><p>　　针对上面的.proto文件，使用protoc编译，可以根据语言产生对应的源代码文件(比如C++的.h和.cc)。实测发现，当前很多发行版还是默认打包的protobuf-compiler-2.6甚至更旧的版本，所以建议在GitHub上面下载源代码自己编译安装最新的3.0版本。<br>　　然后，3.0的版本今年才正式发布的，语法跟之前稳定版2.6差异还是挺大的，总体的感觉是让protobuf使用更简洁了。具体的修改日志可以看参考列表中的Release Note，包括：不再区分optional、required，默认都是optional；需要指定syntax版本，默认是proto2；不支持default默认值等。编译的格式，和上面实际用到的编译命令是：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">protoc --proto_path=IMPORT_PATH --cpp_out=DST_DIR path/to/file.proto</div><div class="line"></div><div class="line">➜  ~ protoc --cpp_out=./ msg.proto</div></pre></td></tr></table></figure></p>
+<p>　　如果DST_DIR使用.zip结尾，那么产生的文件会自动用.zip打包，同时输入的.proto文件可以一次指定一个或者多个。<br>　　编译结束后会生成msg.pb.cc和msg.pb.h两个文件，然后就可以轻松应用了！</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"msg.pb.h"</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span></span></div><div class="line">&#123;</div><div class="line">    Person person;</div><div class="line">    person.set_name(<span class="string">"Nicol TAO"</span>);</div><div class="line">    person.set_id(<span class="number">1234</span>);</div><div class="line">    person.set_email(<span class="string">"taozhijiang@126.com"</span>);</div><div class="line">    <span class="function">fstream <span class="title">output</span><span class="params">(<span class="string">"myfile"</span>, ios::out | ios::binary)</span></span>;</div><div class="line">    person.SerializeToOstream(&amp;output);</div><div class="line">    output.close();</div><div class="line"></div><div class="line">    <span class="function">fstream <span class="title">input</span><span class="params">(<span class="string">"myfile"</span>, ios::in | ios::binary)</span></span>;</div><div class="line">    Person person2;</div><div class="line">    person2.ParseFromIstream(&amp;input);</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"Name: "</span> &lt;&lt; person2.name() &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"E-mail: "</span> &lt;&lt; person2.email() &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"Test Finished!"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>　　然后，在命令行编译执行，就该得到你想要的结果了：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">➜  ~ g++ -c msg.pb.cc &amp;&amp; g++ -c main.cc                                         </div><div class="line">➜  ~ g++ msg.pb.o main.o -lprotobuf -o msg                                      </div><div class="line">➜  ~ ./msg</div><div class="line">Name: Nicol TAO</div><div class="line">E-mail: taozhijiang@126.com</div><div class="line">Test Finished!</div><div class="line">➜  ~</div></pre></td></tr></table></figure></p>
+<h1 id="二、CPP使用接口">二、CPP使用接口</h1><p>　　protobuf的手册中有一章是说Encoding的，主要是从原理说protobuf的编码效率为什么会这么高。因为这对用户来说是无所谓的，所以就跳过了，感兴趣的可以去瞄。其中128-Variant变长编码的思路还是不错的。</p>
+<h2 id="2-1_Messages">2.1 Messages</h2><p>　　上面使用message Foo生成的消息，最终都会产生一个public继承自google::protobuf::Message的类Foo，默认protobuf会以生成最快速度的版本，如果在.proto中设置了option optimize_for = CODE_SIZE;，就会实现最少必须函数，然后用反射的机制生成其它的；option optimize_for = LITE_RUNTIME;选项将会派生出google::protobuf::MessageLite的类型，只提供比原Message较少的一个操作子集，同时链接的库也是libprotobuf-lite.so。<br>对于嵌套类型<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">message Foo &#123; message Bar &#123; &#125; &#125;</div></pre></td></tr></table></figure></p>
+<p>　　在生成的代码中会有Foo和Foo_Bar两个类，同时还会自动生成typedef Foo_Bar Bar;的别名。可以使用Foo::Bar访问，但是C++不允许带作用域的前向声明，所以如果要前向声明，记得有Foo_Bar这个类。</p>
+<h2 id="2-2_Fields">2.2 Fields</h2><p>　　由于protobuf在传输的时候是使用数字的，所以在protobuf解码的时候，自动为这些数子生成了camel-case驼峰模式的常量，比如：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">optional int32 foo_bar = <span class="number">5</span>;</div><div class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int</span> kFooBarFieldNumber = <span class="number">5</span>;</div></pre></td></tr></table></figure></p>
+<p>　　对于Field的访问器accessor，如果得到的是const reference类型的，在下次modify access作用于这个message的时候，访问器可能会失效，尤其是调用了non-const的访问器类型；当accessor返回的是指针，记住：任何两次不同的accessor调用，返回的指针值都可能是不同的。<br>　　(1) Singular单个数字类型(枚举类型也跟此类似)<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">int32 foo = <span class="number">1</span>;</div><div class="line">===&gt;</div><div class="line"></div><div class="line">int32 foo() <span class="keyword">const</span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_foo</span><span class="params">(int32 value)</span></span>;</div><div class="line"><span class="function">oid <span class="title">clear_foo</span><span class="params">()</span></span>; <span class="comment">//清除，下次调用foo()会返回0</span></div></pre></td></tr></table></figure></p>
+<p>　　(2) Singular单个字符串类型<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">string</span> foo = <span class="number">1</span>;</div><div class="line">bytes foo = <span class="number">1</span>;</div><div class="line">===&gt;</div><div class="line"></div><div class="line"><span class="keyword">const</span> <span class="built_in">string</span>&amp; foo() <span class="keyword">const</span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_foo</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp; value)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_foo</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* value)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_foo</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* value, <span class="keyword">int</span> size)</span></span>;</div><div class="line"><span class="function"><span class="built_in">string</span>* <span class="title">mutable_foo</span><span class="params">()</span></span>; <span class="comment">//返回一个可以修改string值的指针</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">clear_foo</span><span class="params">()</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_allocated_foo</span><span class="params">(<span class="built_in">string</span>* value)</span></span>; <span class="comment">//吧value设置到foo，如果foo之前有string，则释放掉之前的string</span></div><div class="line">                       <span class="comment">//如果value==NULL，则等同于clear_foo()</span></div><div class="line"><span class="function"><span class="built_in">string</span>* <span class="title">release_foo</span><span class="params">()</span></span>; <span class="comment">//调用后foo释放string的控制权</span></div></pre></td></tr></table></figure></p>
+<p>　　(3) Singular嵌入message类型<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">message Bar &#123;&#125;</div><div class="line">Bar foo = <span class="number">1</span>;</div><div class="line">===&gt;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> has_foo(); <span class="comment">//检查foo是否已经set</span></div><div class="line"><span class="function"><span class="keyword">const</span> Bar&amp; <span class="title">foo</span><span class="params">()</span></span>; <span class="comment">//返回值，如果没有set，就返回一个没有设置的Bar，Bar::default_instance()</span></div><div class="line"><span class="function">Bar* <span class="title">mutable_foo</span><span class="params">()</span></span>; <span class="comment">//返回mutable指针，如果没有set，内部就会newly-allocated Bar并返回</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">clear_foo</span><span class="params">()</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_allocated_foo</span><span class="params">(Bar* bar)</span></span>; <span class="comment">//如果bar==NULL，等同于clear_foo()</span></div><div class="line"><span class="function">Bar* <span class="title">release_foo</span><span class="params">()</span></span>;</div></pre></td></tr></table></figure></p>
+<p>　　(4) Repeated数字类型<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">repeated int32 foo = <span class="number">1</span>;</div><div class="line">===&gt;</div><div class="line"></div><div class="line"><span class="keyword">int</span> foo_size() <span class="keyword">const</span>; <span class="comment">//元素的个数</span></div><div class="line"><span class="function">int32 <span class="title">foo</span><span class="params">(<span class="keyword">int</span> index)</span> <span class="keyword">const</span></span>; <span class="comment">//0-based索引对应的值</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_foo</span><span class="params">(<span class="keyword">int</span> index, int32 value)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">add_foo</span><span class="params">(int32 value)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">clear_foo</span><span class="params">()</span></span>; <span class="comment">//清除所有的元素</span></div></pre></td></tr></table></figure></p>
+<p>　　对于枚举、字符串、嵌入message，也有对应的repeated版本，可以参阅其手册，很容易理解和想到。</p>
+<p>　　(5) Oneof数字类型<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">oneof oneof_name &#123;</div><div class="line">    int32 foo = <span class="number">1</span>;</div><div class="line">    ... &#125;</div><div class="line">===&gt;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> has_foo() <span class="keyword">const</span>; <span class="comment">//检查当前oneof类型是kFoo</span></div><div class="line"><span class="function">int32 <span class="title">foo</span><span class="params">()</span> <span class="keyword">const</span></span>; <span class="comment">//如果当前是kFoo，返回其值，否则返回0</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_foo</span><span class="params">(int32 value)</span></span>; <span class="comment">//如果当前不是kFoo，调用clear_oneof_name()，然后设置其值，并且oneof_name_case()会返回kFoo</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">clear_foo</span><span class="params">()</span></span>; <span class="comment">//如果当前不是kFoo，则什么也不做；否则，清除其值，然后has_foo()==false，foo()==0，同时oneof_name_case()返回ONEOF_NAME_NOT_SET。</span></div></pre></td></tr></table></figure></p>
+<p>　　对于枚举、字符串、嵌入message，也有对应的Oneof版本，可以参阅其手册，很容易理解和想到。</p>
+<p>　　(6) Map类型<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">map</span>&lt;int32, int32&gt; weight = <span class="number">1</span>;</div><div class="line">===&gt;</div><div class="line"></div><div class="line"><span class="keyword">const</span> google::protobuf::Map&lt;int32, int32&gt;&amp; weight();</div><div class="line">google::protobuf::Map&lt;int32, int32&gt;* mutable_weight();</div></pre></td></tr></table></figure></p>
+<p>　　上面的weight()和mutable_weight()会得到可修改和不可修改两个map，其可以支持std::map和std::unorderd_map中常用的函数接口，包括：迭代器、元素访问、查找、修改(添加和删除)、拷贝等。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//这种插入会被insert要好，免除可能的元素深度拷贝</span></div><div class="line">(*my_enclosing_proto-&gt;mutable_weight())[my_key] = my_value;</div><div class="line"></div><div class="line"><span class="built_in">std</span>::<span class="built_in">map</span>&lt;int32, int32&gt; standard_map(message.weight().begin(),</div><div class="line">                                    message.weight().end());</div></pre></td></tr></table></figure></p>
+<p>　　同时如上面所示，如果不想用protobuf::Map的接口，可以像上面一样创建标准的std::map，不过构造这个map会产生所有元素的深度拷贝。</p>
+<p>本文完！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="https://developers.google.com/protocol-buffers/" target="_blank" rel="external">protocol-buffers</a></li>
+<li><a href="https://developers.google.com/protocol-buffers/docs/overview" target="_blank" rel="external">protocol-buffers/docs/overview</a></li>
+<li><a href="https://developers.google.com/protocol-buffers/docs/reference/cpp-generated" target="_blank" rel="external">C++ Generated Code</a></li>
+<li><a href="https://developers.google.com/protocol-buffers/docs/encoding" target="_blank" rel="external">Encoding</a></li>
+<li><a href="https://developers.google.com/protocol-buffers/docs/reference/arenas" target="_blank" rel="external">C++ Arena Allocation Guide</a></li>
+<li><a href="https://github.com/google/protobuf/releases" target="_blank" rel="external">protobuf-3-releases</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></p>
+        <p><span>最后更新:</span>2016-12-18, 16:43:31</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201609/learn-note-of-protobuf.html" title="Google Protobuf数据交换格式的使用方法">https://taozj.org/201609/learn-note-of-protobuf.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201609/learn-note-of-protobuf.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201609/talk-about-io-seperation-design.html">
+                    开发中IO分离设计的重构杂谈
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201609/read-(linux-mulit-thread-server-develop).html">
+                    《Linux多线程服务端编程》读摘
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201609/learn-note-of-protobuf.html" data-title="Google Protobuf数据交换格式的使用方法" data-url="https://taozj.org/201609/learn-note-of-protobuf.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201609/talk-about-io-seperation-design.html" title="上一篇: 开发中IO分离设计的重构杂谈">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201609/read-(linux-mulit-thread-server-develop).html" title="下一篇: 《Linux多线程服务端编程》读摘">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>

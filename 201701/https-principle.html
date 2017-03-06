@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  
+  <title>HTTPS原理简单介绍 | 桃子的博客铭</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="HTTPS在今后的互联网中必将扮演者越来越重要的角色了，国外互联网大佬对https部署也是竭力鼓吹呐喊，HTTP/2协议的推广更是逼着你不上也得上！在HTTPS普及化过程中，必然会损害某些集团的利益，但是这是互联网的趋势，历史的洪流是谁也阻挡不了的！　　这篇文章就是对HTTPS的大概做一个了解，力图宏观上掌握其基本原理和流程，而其中涉及到的具体加密算法的细节之流就留给那些博士title的人研究">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTPS原理简单介绍">
+<meta property="og:url" content="https://taozj.org/201701/https-principle.html">
+<meta property="og:site_name" content="桃子的博客铭">
+<meta property="og:description" content="HTTPS在今后的互联网中必将扮演者越来越重要的角色了，国外互联网大佬对https部署也是竭力鼓吹呐喊，HTTP/2协议的推广更是逼着你不上也得上！在HTTPS普及化过程中，必然会损害某些集团的利益，但是这是互联网的趋势，历史的洪流是谁也阻挡不了的！　　这篇文章就是对HTTPS的大概做一个了解，力图宏观上掌握其基本原理和流程，而其中涉及到的具体加密算法的细节之流就留给那些博士title的人研究">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/538d95ba.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/c934edcb.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/33152673.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/017b2915.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/e6719e16.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/eb4dc437.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/fa957bfb.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/4e7e2040.png">
+<meta property="og:image" content="https://taozj.org/post_images/images/201701/f1ded92d.png">
+<meta property="og:updated_time" content="2017-01-18T13:15:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTPS原理简单介绍">
+<meta name="twitter:description" content="HTTPS在今后的互联网中必将扮演者越来越重要的角色了，国外互联网大佬对https部署也是竭力鼓吹呐喊，HTTP/2协议的推广更是逼着你不上也得上！在HTTPS普及化过程中，必然会损害某些集团的利益，但是这是互联网的趋势，历史的洪流是谁也阻挡不了的！　　这篇文章就是对HTTPS的大概做一个了解，力图宏观上掌握其基本原理和流程，而其中涉及到的具体加密算法的细节之流就留给那些博士title的人研究">
+<meta name="twitter:image" content="https://taozj.org/post_images/images/201701/538d95ba.png">
+  
+    <link rel="alternative" href="/atom.xml" title="桃子的博客铭" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+  
+  
+      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/iconfont.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true,
+          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+  
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">taozj</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">高性能、高可用服务端开发</p>
+        
+        <br>
+        
+        <p class="header-subtitle">淡泊明志，宁静致远！</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="https://album.taozj.org">个人相册</a></li>
+                        
+                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                        
+                            <li><a href="/about">请你读我</a></li>
+                        
+                            <li><a href="/search.html">搜索本站</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">taozj</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/post_images/resources/avatar.jpeg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">taozj</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">高性能、高可用服务端开发</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="https://album.taozj.org">个人相册</a></li>
+                
+                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                
+                    <li><a href="/about">请你读我</a></li>
+                
+                    <li><a href="/search.html">搜索本站</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/taozhijiang" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/347714173" title="QQ"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-https-principle" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/201701/https-principle.html" class="article-date">
+      <time datetime="2017-01-17T16:39:59.000Z" itemprop="datePublished">2017-01-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      HTTPS原理简单介绍
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/协议/">协议</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>　　HTTPS在今后的互联网中必将扮演者越来越重要的角色了，国外互联网大佬对https部署也是竭力鼓吹呐喊，HTTP/2协议的推广更是逼着你不上也得上！在HTTPS普及化过程中，必然会损害某些集团的利益，但是这是互联网的趋势，历史的洪流是谁也阻挡不了的！<br>　　这篇文章就是对HTTPS的大概做一个了解，力图宏观上掌握其基本原理和流程，而其中涉及到的具体加密算法的细节之流就留给那些博士title的人研究去吧！<br>　　还是一样，要用Wireshark抓取和分析SSL/TLS的数据包，需要设置电脑的SSLKEYLOGFILE环境变量才可以。在Windows上面搞了好久，发现抓到的数据包还是不能解密，最后在Ubuntu下一次就完成了，看来搞开发的话还要Linux算是神器啊！抓取的数据包和Master-Secret也打包<a href="/upload/taozj.ssl.pcapng.zip">共享</a>给大家了。此外为了简单起见，客户端请求禁用了Diffie Hellman支持，这个算法是为了提高安全性考虑的，好处就是密钥可以独立于服务器的私钥，所以历史数据即使在私钥被窃取的情况下，会话的内容也无法被破解。<br><img src="/post_images/images/201701/538d95ba.png" alt="https"><br>　　上面展现的客户端和服务器整个通信过程尽收眼底：首先三次握手建立TCP连接，然后客户端发起HTTP请求并得到302跳转，客户端进行ACK确认后，转而向443端口进行TCP三次握手连接，接下来就是TLS协商，加密信道建立后采用加密方式进行数据的传输。流程中夹杂着TLS和TCP的数据包，这一点也不奇怪，因为ACK是TCP协议的特性哦！<br><a id="more"></a></p>
+<h1 id="一、HTTPS和TLS简介">一、HTTPS和TLS简介</h1><p>　　说到HTTPS，其实他代表着运行在SSL/TLS之上的HTTP，TLS是把SSL标准化之后的产物，因为SSL 3.0有安全漏洞，所以互联网大佬们都提倡禁用SSL 3.0，因此推荐在你的Apache/Nginx等ssl_protocols的配置中，取消对于SSLv3及其更低版本SSLv2的支持。在协议中，TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3，这点在抓取的数据包的头部可以看出来。<br>　　TLS协议的一个优势，就是它是与应用层协议独立无关的，他的目的就是在通信双方在不可信的网络之上建立一个加密的通道用来安全地传输数据，因此上层的HTTP、FTP、SMTP和IMAP(使用STARTTLS)等应用层协议都可以透明的建立在TLS之上以满足可信通信的需求。<br>　　互联网是开放的但也是不安全的，尤其是上个世纪设计出来的大量网络应用协议都是text模式的，这让心怀不轨的人随便截获数据包就可以查看分析，作恶的成本十分的低。曾经在以前公司做入职培训作业的时候，发现公司Exchange邮件服务器+Foxmail客户端的通信都是明文的，抓包中可以看到同网段中其他同事的邮箱账户和密码(不相信做网络的公司运维水平会如此之差，或者是某些目的故意而为之吧)。HTTP协议也是text模式的，所以如果你不用HTTPS上网，可能遇到的问题有：<br>　　(1). <strong>上网过程裸奔</strong>：你的上网记录可以被监控，HTTP头部信息和Cookie被一览无余，如果传输的内容没有经过加密处理，那么你的东西也会被别人截获查看，帐号密码啥的全都不保，而且你对此丝毫没有察觉。还有些防火墙样的东西，一旦发现你想看不该让你看到的东西，就可以直接把你的连接掐掉。<br>　　(2). <strong>返回数据被篡改</strong>：不知道这锅该不该甩给运营商，很多时候请求的资源总会弹出些乱七八糟的东西，下载个东西有时候是比葫芦娃还恐怖的木马，这点尤其在移动端更为的猖獗。因为HTTP的协议就这样，你给服务端一个请求，服务端就给你一个返回，而对返回的内容根本无法辨识和校验，就这么个东西爱要不要，这样在网页中插入几段广告，或者把下载的文件中途给换掉，你根本无法辨别。<br>　　不过有一点，HTTP请求的话很方便做缓存，好的缓存对大家都有益处，可以节省带宽，同时也加快访问者的响应速度；还有比如中间传递者可以针对访问用户进行特定的转码优化。不过这一切都基于良性驱动的，恶意插入和推广的行径应当被谴责！<br>　　所以负责任的网站在提供文件的下载连接的同时，还要提供MD5/SHA1散列码给用户验证，甚至对其进行数字签名。<br>　　(3). <strong>中间人攻击</strong>：这个就更恶劣了，你甚至不知道是不是在和真正的主机在通信，你只是发出请求然后接受应答，数据包通过明文不知中转了多少台设备，任何环节中间插入个第三者帮你和服务器之间中间传话，听着是不是就惊悚？<br>　　对此，你能做的就是保护自己，所有的网络通信都要加密：HTTP要加密，邮件本身要加密，邮件的传输也要加密，DNS也要加密……为的不是防君子，而是防小人。</p>
+<h1 id="二、TLS认证过程">二、TLS认证过程</h1><p>　　这个过程首先普及一点加密的知识。就像当初在GnuPG中描述的一样，加密机制可以分为非对称加密和对称加密两种：<br>　　<strong>非对称加密</strong>：会产生一对公钥和私钥，公钥公开发布到网上，私钥锁在自己保险柜中，用公钥加密的东西只能由私钥解密，用私钥签名的东西只能用公钥验证，注意我的措辞也概括了公钥和私钥的使用方式。一把非对称密钥只能实现一个方向的加密通信，要想实现双向加密通信，就必须通信的双方分别使用对方的公钥进行加密，然后再由对方用自己的私密接钥来实现。<br>　　<strong>对称加密</strong>：双方拥有相同的密钥，该密钥可以用于加密，也可以用于解密，所以这个密钥是不能被公开或者猜测到的。对称加密又分为块加密和流加密，前者只能对定长的数据块进行加密，所以通常要对待加密数据进行padding操作；流加密可以对任意长的数据进行加密，一般明文和加密结果是一样的长度。两者比较块加密的效率要高得多，可以使用CPU的高级指令高效运算，但是padding就需要记录原始数据的长度，实现起来麻烦一些。<br>　　老实说来，当时我一看完openssl支持的加密种类中，就<a href="https://raw.githubusercontent.com/taozhijiang/st_utils/master/source/st_openssl.c" target="_blank" rel="external">知道</a>先用非对称加密传输对称密钥，后续的通信使用对称加密(AES)的方式进行，后者的运算效率会比前者高很多(在一台每秒可进行千万次对称加密计算的电脑上，只能支持每秒几千次的非对称加密计算)，只要保证在每次会话中产生强随机性的密钥，就能让通信的可靠性大大的增加。如果通信双方都采用非对称加密的方式进行，那么服务端要收集庞大的用户公钥，这显然是不现实的。<br>　　下面这张图是从RFC中拷贝过来的，描述了TLS加密通信建立的过程：<br><img src="/post_images/images/201701/c934edcb.png" alt="https-step"><br>　　(1). <strong>Client Hello</strong><br>　　这个是客户端主动向服务端发送的第一个消息，主要产生的信息：Version、Random、Session ID、Cipher Suites、Compression Methods。<br><img src="/post_images/images/201701/33152673.png" alt="https-step"><br>　　Random由一个4字节的GMT Unix Time和28字节的随机串组成，前者是从Jan 1, 1970, UTC开始到现在所经过的秒数，不过奇怪的是访问我的Apache服务器返回的时间都像是随机的，而Google的服务器返回的值是正常的(不过RFC不强制该时间是准确的)，请忽略图中值，他们共同组成一个32位的随机串供后面使用；如果短时间之前连接过相同服务器，Session ID可以帮助快速恢复连接，或者根据当前连接快速创建新的连接，因为有了之前的基础只需修改会话随机部分就可以了，效率会高很多，但是这个Session ID的传输是没有加密的哦，这里是空的；Cipher Suites列出客户端支持的加密方式，使用4字节进行编码的，如前面说所我把高安全的Diffie Hellman禁用了，所以只支持上面三种方式；Compression基本都是空的。既然这个过程是两者协商的，所以恶意情况下中间人可以进行干扰，让加密通信回退到最差安全协议的情况下进行通信。<br>　　此处还需要注意扩展中有个server_name，SSL在最早的时候需要每个站点有不同的IP，但是在同一个IP下运行多个虚拟主机的情况下显然不合适，所以后面就增加了这个扩展来标识需要访问的主机域名。<br>　　(2). <strong>Server Hello</strong><br>　　服务端收到上述消息后，会进行一个回应，主要是根据客户端的情况，选择合适的协议版本和Cipher Suite。<br><img src="/post_images/images/201701/017b2915.png" alt="https-step"><br>　　上面服务端确认采用TLS 1.2，同时采用TLS_RSA_WITH_AES_128_CBC_SHA；除此之外，服务端跟客户端类似，也产生了一个总共长度32字节的随机串。TLS_RSA_WITH_AES_128_CBC_SHA称之为Cipher Suite，RSA用于签名校验和加密、AES_128_CBC用于对称数据加密解密、SHA用于消息完整性校验，openssl集成了大量的算法支持，所以这里的组合种类可能很多，但最终服务端会和客户端达成某种一致的Cipher Suite，而且往往服务端也不一定决定要用最安全的套件，因为越安全的算法往往对服务器性能消耗越大。<br>　　如果Client Hello的Session ID不为空，此时服务端可以在缓存的会话中进行校验，如果OK会恢复相同的Session ID进行确认；服务器也可以产生一个新的Session ID，表明后续有缓存该对话的意图；或者服务器返回空，表示不会缓存对话。<br>　　(3). <strong>CertificateServer Hello Done</strong><br>　　TLS握手过程中一个过程可能有多条消息构成，在上面的Server Hello发送完后，接下来服务端还会发送自己的数字证书，证书的信息通过浏览器上面的那把锁点击也可以查看详情。<br><img src="/post_images/images/201701/e6719e16.png" alt="https-step"><br>　　证书中包含了颁发者、使用域名、有效时间、公钥等重要信息。然后服务端通过Server Hello Done结束发送。<br><img src="/post_images/images/201701/eb4dc437.png" alt="https-step"><br>　　(4). <strong>Client Key Exchange, Change Cipher Spec, Encrypted Handshake Message</strong><br>　　客户端收到证书后，就开始忙活了：证书有效期限、域名匹配、是否被吊销了比较简单，关键怎么验证服务器传送过来的证书是否有效呢，毕竟这个数字证书中包含了服务端的公钥，涉及到后面的非对称加密数据的传输的？<br>　　在通信的双方不能完全相信彼此的情况下，只能通过引入权威第三方进行协调，就像是支付宝的原理样的。从之前的非对称加密原理可知，密钥可以对消息、文件进行数字签名，所以只要可信机构(CA)确认过我的身份可靠后，使用他们的私钥对我的公钥和附加信息进行数字签名，那么任何相信该可信机构的人，都可以使用可信机构的公钥来对我的证书进行验证以实现对我身份的校验了。<br>　　不过我们如何获得可靠的第三方公钥呢，通过每层结构都用自己的私钥对自己颁发出去的公钥及其拥有者进行签名，可以自上而下形成一个信任层次，但是顶级证书谁来信任呢，这不是个鸡与蛋的问题么？所以第三方可信结构的证书都是预置在浏览器和操作系统里面的，他们的证书是自签名的，对他们的信任是无条件的，所以从WoSign作恶被曝光后，Firefox、Chrome都声称停止相信WoSign的证书了，众目睽睽之下证书颁发机构才能得到有效的监督。还有，证书的等级分为DV、OV、EV，这也体现在签发的时候证书机构对申请者审查的程度不同，DV只要能验证域名所有权就可以签发，而EV还需要很多的书面文件审核才可以颁发的。<br><img src="/post_images/images/201701/fa957bfb.png" alt="https-step"><br>　　证书通过验证后，后面就可以使用其中的公钥来加密敏感消息发送给服务端了。<br>　　在上面两个Hello中总共产生了2个32字节的随机数，并且通过明文的方式发送给了对方，此时Client端再产生一个48字节的pre_master_secret随机数，该随机数通过上面的公钥和协定的加密算法(RSA)加密后发送给服务端，只有持有私钥的服务端才可以解密得到内容。这样，客户端和服务端都共有三个随机数，可以用算法产生一个对称加密密钥了。<br>　　这里只使用服务器的公钥将pre_master_secret加密后就发送出去了，设想黑客记录了通信过程中的所有数据包，那么他可以得到handshake Hello过程中的随机数(明文的)以及加密后的pre_master_secret，如果有一天服务器的私钥被泄露，黑客就可以用私钥解密得到pre_master_secret，采用周知的方法得到session key，后续所有通信的数据内容都可以被解密了，即使此时证书过期了或者被吊销了，也于事无补，所以单纯的RSA handshake是不安全的。而上文中提到被禁用的Diffie Hellman就是为了解决这个问题而被提出来的，该算法被设计出来进行密钥的安全交换，原理上就没深究了。<br>　　接下来Client发送一个Change Cipher Spec消息，该消息只有一个字节，其值为1，后面服务端也会向客户端发送，主要作用是告知对端后续的通信将会使用之前协商的CipherSpec和密钥对进行通信。<br>　　客户端发送的最后一个消息是Encrypted Handshake Message，也叫做Finished消息，其内容是之前所有消息(不包括Hello消息)的内容+handshake_messages(“client finished”)等消息产生verify_data，然后通过各种计算操作产生64字节加密结果发送给服务端，服务端对其解密和校验，这个过程主要就是验证客户端和服务端之前商定的Cipher Spec和密钥是否生效。<br>　　(5). <strong>New Session Ticket, Change Cipher Spec, Encrypted Handshake Message</strong><br><img src="/post_images/images/201701/4e7e2040.png" alt="https-step"><br>　　服务端也会有类似的Change Cipher Spec和Encrypted Handshake Message消息，不过这里还有一个New Session Ticket。<br>　　这又是另外一个RFC5077了，其实跟上面的Session ID起到类似的作用，都是通过历史会话快速生成新会话的功能(Session Resumption)。在HandShake过程中，Server发送一个加密的session ticket(包含session key)给客户端，当恢复一个对话的时候客户端返回该加密的key，服务端解密后就可以在不需要私钥的情况下快速恢复对话了。该特性由Firefox、Chrome主要支持，其他浏览器多使用Session ID的方式恢复对话。<br>　　Session ID是TLS内置的功能，而session ticket是一个扩展，其两者的区别是：前者需要在客户端和服务端都缓存该Session ID，服务端的缓存导致该情况下恢复对话功能不能跨主机；session ticket只会将加密的会话保存在客户端，当客户端需要恢复对话的时候，直接将会话数据发送给服务端，服务端解密就可以了，所以所有能够解密该session ticket的服务器多可以用来恢复对话，在免除服务端缓存Session信息压力的同时，更具有灵活性。采用会话恢复机制，能显著减轻服务端的压力以及客户端的连接速度。<br>　　(6). <strong>Application Data</strong><br>　　自此，TLS handshake完成，后继的通信都采用对称加密方式进行加密保护，尽请放心使用。<br><img src="/post_images/images/201701/f1ded92d.png" alt="https-step"></p>
+<p>本文完！</p>
+<h1 id="参考">参考</h1><ul>
+<li><a href="https://stormpath.com/blog/why-http-is-sometimes-better-than-https" target="_blank" rel="external">Why HTTP is Sometimes Better than HTTPS</a></li>
+<li><a href="http://www.codecompiled.com/understanding-https-protocol/" target="_blank" rel="external">Understanding HTTPS Protocol</a></li>
+<li><a href="https://https.cio.gov/" target="_blank" rel="external">The HTTPS-Only Standard</a></li>
+<li><a href="http://www.moserware.com/2009/06/first-few-milliseconds-of-https.html" target="_blank" rel="external">The First Few Milliseconds of an HTTPS Connection</a></li>
+<li><a href="http://security.stackexchange.com/questions/20803/how-does-ssl-tls-work" target="_blank" rel="external">How does SSL/TLS work?</a></li>
+<li><a href="http://www.cnblogs.com/JeffreySun/archive/2010/06/24/1627247.html" target="_blank" rel="external">数字证书原理</a></li>
+<li><a href="https://engineeringblog.yelp.com/2016/09/great-https-migration.html" target="_blank" rel="external">The Great HTTPS Migration</a></li>
+<li><a href="https://www.v2ex.com/t/255600" target="_blank" rel="external">运营商进行网络劫持的前生今世+劫持的危害</a></li>
+<li><a href="https://tools.ietf.org/html/rfc5246" target="_blank" rel="external">The Transport Layer Security (TLS) Protocol Version 1.2</a></li>
+<li><a href="https://blog.cloudflare.com/keyless-ssl-the-nitty-gritty-technical-details/" target="_blank" rel="external">Keyless SSL: The Nitty Gritty Technical Details</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/201701/https-principle.html">HTTPS原理简单介绍</a></p>
+        <p><span>最后更新:</span>2017-01-18, 21:15:17</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/201701/https-principle.html" title="HTTPS原理简单介绍">https://taozj.org/201701/https-principle.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://taozj.org/201701/https-principle.html　　作者: taozj" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/201701/gnu-gdb-debug.html">
+                    GNU GDB调试手册
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/201701/rpc-principle-and-tips.html">
+                    RPC设计和使用中的一些杂谈
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+  
+     <! -- 添加捐赠图标 -->
+
+    
+
+    <div class ="post-donate">
+      <div id="donate_board" class="donate_bar center">
+        <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+        <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+        <br>
+      </div>  
+  
+      <div id="donate_guide" class="donate_bar center hidden">
+        
+          <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0"       style="float:left;margin-left:25%;margin-right:2px;">
+          <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+          </a> 
+          
+
+      
+       <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+         <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+       </a>
+      
+    
+      </div>
+  
+      <script type="text/javascript">
+        document.getElementById('btn_donate').onclick = function(){
+          $('#donate_board').addClass('hidden');
+          $('#donate_guide').removeClass('hidden');
+        }
+      </script>
+    </div>
+
+    
+
+<! -- 添加捐赠图标 -->
+
+
+  
+</article>
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="201701/https-principle.html" data-title="HTTPS原理简单介绍" data-url="https://taozj.org/201701/https-principle.html"></div>
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"freesign"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        <!-- ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//127.0.0.1:4000/js/embed.js'; -->
+        ds.src = '/js/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- 多说公共JS代码 end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/201701/gnu-gdb-debug.html" title="上一篇: GNU GDB调试手册">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/201701/rpc-principle-and-tips.html" title="下一篇: RPC设计和使用中的一些杂谈">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a></li><li class="post-list-item"><a class="post-list-link" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/https-principle.html">HTTPS原理简单介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/rpc-principle-and-tips.html">RPC设计和使用中的一些杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(6)-application.html">分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/learn-note-of-distributed-system-(5)-zab-consensus.html">分布式系统入门笔记（五）：ZooKeeper之ZAB一致性协议</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a></li><li class="post-list-item"><a class="post-list-link" href="/201701/linux-performance-basic.html">Linux服务器的那些性能参数指标</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/cmd-tools-sed-awk.html">文本处理利器sed与awk使用总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/install-gentoo-root-zfs-on-macbookpro-2015-early.html">MacbookPro上基于ZFS的Gentoo双系统安装</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-distributed-system-(4)-raft-consensus.html">分布式系统入门笔记（四）：Raft一致性算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/read-note-of-amazon-dynamo.html">Amazon Dynamo论文阅读笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/consistent-hashing.html">一致性hashing的原理解析</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/nginx-load-balancing.html">基于Nginx的软件负载均衡实现解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(3)-behavioral.html">设计模式整理总结（三）：行为型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/design-patterns-(2)-structural.html">设计模式整理总结（二）：结构型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/http2-spec.html">HTTP/2协议规范和特性解读</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/learn-note-of-google-grpc.html">Google gRPC框架学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201612/tcp-connection-keep-alive.html">网络开发中客户端连接保鲜机制的实现方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/design-patterns-(1)-creational.html">设计模式整理总结（一）：创建型模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/forkp-mulit-process-manage-framework.html">forkp多进程程序管理库的轮子</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(3)-see-paxos-from-phxpaxos.html">分布式系统入门笔记（三）：从PhxPaxos中再看Paxos协议工程实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-tencent-libco-coroutine.html">腾讯libco协程库学习使用笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/libto-coroutine-library-base-on-boost-context2.html">基于Boost.Context2库的协程库轮子libto的设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(2)-paxos-algorithm.html">分布式系统入门笔记（二）：Paxos算法介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/learn-note-of-distributed-system-(1)-abstraction-and-2PC-3PC.html">分布式系统入门笔记（一）：分布式系统基本概念和两三阶段提交</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/about-multi-process-thread-dev-manage.html">浅谈多进程程序的进程控制和管理方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/transform-work-env-to-mac-os.html">macOS新平台工作环境的设置和迁移</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/introduction-of-boost-context-and-new-coroutine-library.html">Boost.Context库简介及Boost.Coroutine协程使用方式</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(4)-sort.html">数据结构和算法（四）：主流内排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(3)-rbtree.html">数据结构和算法（三）：红黑二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(2)-avl.html">数据结构和算法（二）：AVL自平衡二叉树</a></li><li class="post-list-item"><a class="post-list-link" href="/201611/data-structure-and-algorithm-(1)-hash.html">数据结构和算法（一）：hash散列容器</a></li><li class="post-list-item"><a class="post-list-link" href="/201610/talk-about-singleton.html">说说设计模式中的单例模式</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(3)-strand.html">Boost-Asio网络开发基础知识（三）：Strand序列化执行用户回调</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(2)-overview-of-the async-framework.html">Boost.Asio网络开发基础知识（二）：异步框架总览</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/basics-of-boost-asio-(1)-read-the-docs.html">Boost.Asio网络开发基础知识（一）：读读文档</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/cpp11-atomic-and-memory-model.html">C++11标准中的Atomic原子操作和内存模型</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/lockless-in-multi-thread.html">多线程开发中无锁队列的设计和实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/talk-about-io-seperation-design.html">开发中IO分离设计的重构杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/learn-note-of-protobuf.html">Google Protobuf数据交换格式的使用方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/read-(linux-mulit-thread-server-develop).html">《Linux多线程服务端编程》读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201609/usage-of-boost-coroutine.html">Boost.Coroutine协程库的简单使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/feeling-of-cpp-11-and-two-ticks.html">C++11新标准阶段性学习心得及两个小轮子分享</a></li><li class="post-list-item"><a class="post-list-link" href="/201608/some-refined-and-modification-this-site.html">关于近来本站点的一些修改和设置</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/learn-note-of-boost-(1)-smart-ptr-memory-pool.html">Boost库学习笔记(一)：智能指针和内存池</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/simple-digit-recong-base-on-tesseract.html">基于Tesseract的数字识别程序</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/construct-running-close-of-tcp.html">TCP链接的建立和关闭过程</a></li><li class="post-list-item"><a class="post-list-link" href="/201607/design-and-impl-of-minicached-base-on-memcached.html">基于memcached原理实现的单机轻量级通用缓存库</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/learn-note-of-libevent-(3)-internel-impl-and-framework.html">Libevent学习笔记（三）：内部实现原理初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(4)-dns-proxy-support.html">基于Libevent转发的内网端口暴露（四）：添加DNS代理的功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/read-(the-art-of-sober-thinking).html">读《清醒思考的艺术》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(2)-svd-impl.html">基于内容推荐的个性化阅读实现（二）：基于SVD的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(3)-ss5-proxy-support.html">基于Libevent转发的内网端口暴露（三）：添加SS5代理功能</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(2)-refined-and-improvement.html">基于Libevent转发的内网端口暴露（二）：优化重构</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/port-expose-based-on-libevent-(1)-basic-impl.html">基于Libevent转发的内网端口暴露（一）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201606/personalized-reading-based-on-content-recommendation-(1)-general-impl.html">基于内容推荐的个性化阅读实现（二）：基本实现</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/principle-of-oauth2.html">互联网OAuth 2.0开放授权原理</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/data-type-and-index-of-mysql-database.html">MySQL数据类型整理和索引介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/auto-answer-recommend-conclusion.html">答案自动推荐模块项目小结</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(2)-thread-pool-in-memcached.html">Libevent学习笔记（二）：Memcached中Libevent和线程池使用初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/fastcgi-support-for-http-server-libmicrohttpd.html">对libmicrohttpd添加FastCGI协议支持</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/learn-note-of-libevent-(1)-basic-usage.html">Libevent学习笔记（一）：基本使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201605/usage-of-apache-lucy-fulltext-index.html">Apache Lucy的全文检索引擎的使用</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/fulltext-search-based-on-lsi-lda.html">基于LSI/LDA的文本检索的原理和操作步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(2)-difference-select-poll-epoll.html">Linux环境开发（二）：IO复用之select/poll/epoll之原理和差异分析</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/linux-env-program-(1)-async-blocking-io-model.html">Linux环境开发（一）：同异步、阻塞的IO模型相关问题</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/oversee-of-http-based-on-libmicrohttpd.html">基于libmicrohttpd的HTTP服务器初探</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/server-prog-port-from-windows-to-linux.html">Windows服务端程序向Linux移植经验总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-algorithm.html">推荐系统常用的推荐算法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/recommend-system-cases.html">推荐系统的典型推荐案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/how-to-calc-svd.html">SVD的数学计算步骤</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/conclusion-of-machine-learning-algorithm.html">不带公式的机器学习算法整理</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/random-sampling-method.html">随机采样方法</a></li><li class="post-list-item"><a class="post-list-link" href="/201604/statistics-frequency-bayesian.html">统计学之边角料——频率派和贝叶斯派</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(3)-relative-modules.html">Spark学习手册（三）：Spark模块学习摘读</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(2)-read-official-doc.html">Spark学习手册（二）：Spark官方手册读摘</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-spark-(1)-construct-spark-hdfs.html">Spark学习手册（一）：HDFS支撑的Spark环境搭建与尝试</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/learn-note-of-pro-git.html">Pro Git速查笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/interesting-cases-of-machine-learning.html">深度学习的那些有趣案例</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-love-dog.html">我的养狗笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/one-year-old-of-my-zaizai.html">我们仔仔快要一岁啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/how-to-survive-from-info-ocean.html">面对越来越多的信息我们是怎么了</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/encrypt-safe-your-file-and-email-gpg.html">请善用GPG安全你的邮件和文件</a></li><li class="post-list-item"><a class="post-list-link" href="/201603/blog-site-under-https.html">我的博客用上HTTPS啦</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/learn-note-of-numpy.html">NumPy科学计算库学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/leave-tp-link-at-2015.html">2015年工作总结——离开TP之路</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/read-(i-am-in-taobao-these-ten-years).html">读《淘宝技术这十年》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/usage-and-optimize-of-zfs.html">终极文件系统ZFS的使用与优化技巧</a></li><li class="post-list-item"><a class="post-list-link" href="/201602/setup-dev-env-for-pebble-smartphone.html">Pebble嵌入式开发环境搭建和开发测试样例</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/read-(the-mystery-of-silicon-valley).html">读《硅谷之谜》感</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/conclusion-of-machine-learning.html">机器学习中自然语言处理之总结</a></li><li class="post-list-item"><a class="post-list-link" href="/201601/gentoo-overlay-and-software-recommend.html">我的Gentoo Overlay和Linux软件推荐</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/docker-examples.html">Docker容器技术使用实例</a></li><li class="post-list-item"><a class="post-list-link" href="/201510/mail-server-based-on-postfix-dovecot.html">搭建基于Postfix和Dovecot的邮件服务器</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(2).html">RedHat系列软件打包实例（二）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/rpmbuild-package-example-(1).html">RedHat系列RPM软件打包实例（一）</a></li><li class="post-list-item"><a class="post-list-link" href="/201509/generate-makefile-through-autotools.html">利用autotools自动生成项目的Makefile</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/keepass-pass-save.html">开源的个人密码管理器软件KeePass</a></li><li class="post-list-item"><a class="post-list-link" href="/201508/learning-and-debug-linux-kernel-under-windows.html">在Windows下通过虚拟机搭建Linux内核的学习和调试环境</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2015-2017 taozj
+            </div>
+            <div class="footer-right">
+                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                </a>
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    </div>
+    
+    <script src="/js/GithubRepoWidget.js"></script>
+
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+<script src="/js/search.js"></script> 
+
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+   <script type="text/javascript">      
+     var search_path = "search.xml";
+	 if (search_path.length == 0) {
+	 	search_path = "search.xml";
+	 }
+	 var path = "/" + search_path;
+     searchFunc(path, 'local-search-input', 'local-search-result');
+   </script>
+
+</script>
+
+  </div>
+</body>
+</html>
