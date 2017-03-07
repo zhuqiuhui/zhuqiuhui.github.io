@@ -1,1029 +1,700 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
+
 <head>
-  <meta charset="utf-8">
-  
-  <title>恋恋风尘的博客</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="淡泊明志，宁静致远！">
-<meta property="og:type" content="website">
-<meta property="og:title" content="恋恋风尘的博客">
-<!--<meta property="og:url" content="https://taozj.org/index.html">-->
-<meta property="og:site_name" content="恋恋风尘的博客">
-<meta property="og:description" content="淡泊明志，宁静致远！">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="恋恋风尘的博客">
-<meta name="twitter:description" content="淡泊明志，宁静致远！">
-  
-    <link rel="alternative" href="/atom.xml" title="恋恋风尘的博客" type="application/atom+xml"><!---->
-  
-  
+    <meta charset="utf-8">
+    <title>恋恋风尘的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="淡泊明志，宁静致远！">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="恋恋风尘的博客">
+    <!--<meta property="og:url" content="https://taozj.org/index.html">-->
+    <meta property="og:site_name" content="恋恋风尘的博客">
+    <meta property="og:description" content="淡泊明志，宁静致远！">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="恋恋风尘的博客">
+    <meta name="twitter:description" content="淡泊明志，宁静致远！">
+    <link rel="alternative" href="/atom.xml" title="恋恋风尘的博客" type="application/atom+xml">
+    <!---->
     <link rel="icon" href="/favicon.ico">
-  
-  
-      <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
-  
-  
-      <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
-  
-  
-      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
-      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
-      <style> .article { opacity: 0;} </style>
-  
-  <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/iconfont.css">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  
-    
-    
-  
-  
-      <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
-  
-  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
-  <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
-  <script>
-      var yiliaConfig = {
-          fancybox: true,
-          animate: true,
-          isHome: true,
-          isPost: false,
-          isArchive: false,
-          isTag: false,
-          isCategory: false,
-          open_in_new: true,
-          fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
-          scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
-      }
-  </script>
-
-  
-      <script>
-          yiliaConfig.rootUrl = "/";
-      </script>
-  
-
-  
-  
+    <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+    .article {
+        opacity: 0;
+    }
+    </style>
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/iconfont.css">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+    <script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: true,
+        isPost: false,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        open_in_new: true,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+    }
+    </script>
+    <script>
+    yiliaConfig.rootUrl = "/";
+    </script>
 </head>
 
 <body>
-  <div id="container">
-    <div class="left-col">
-    <div class="overlay"></div>
-<div class="intrude-less">
-    <header id="header" class="inner">
-        <a href="/" class="profilepic">
-            <img src="/post_images/resources/avatar.jpg" class="animated zoomIn">
-        </a>
-        <hgroup>
-          <h1 class="header-author"><a href="/">Lil-hui</a></h1>
-        </hgroup>
-
-        
-        <p class="header-subtitle">Java后台开发</p>
-        
-        <br>
-        
-        <p class="header-subtitle">你必须一路向前，因为人生不能后退！</p>
-        
-                
-
-
-        
-            <div id="switch-btn" class="switch-btn">
-                <div class="icon">
-                    <div class="icon-ctn">
-                        <div class="icon-wrap icon-house" data-idx="0">
-                            <div class="birdhouse"></div>
-                            <div class="birdhouse_holes"></div>
+    <div id="container">
+        <!--首页左侧栏目-->
+        <div class="left-col">
+            <div class="overlay"></div>
+            <div class="intrude-less">
+                <header id="header" class="inner">
+                    <a href="/" class="profilepic">
+                        <img src="/post_images/resources/avatar.jpg" class="animated zoomIn">
+                    </a>
+                    <hgroup>
+                        <h1 class="header-author"><a href="/">Lil-hui</a></h1>
+                    </hgroup>
+                    <p class="header-subtitle">Java后台开发</p>
+                    <br>
+                    <p class="header-subtitle">你必须一路向前，因为人生不能后退！</p>
+                    <div id="switch-btn" class="switch-btn">
+                        <div class="icon">
+                            <div class="icon-ctn">
+                                <div class="icon-wrap icon-house" data-idx="0">
+                                    <div class="birdhouse"></div>
+                                    <div class="birdhouse_holes"></div>
+                                </div>
+                                <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                                    <div class="ribbon"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
-                            <div class="ribbon"></div>
+                        <div class="tips-box hide">
+                            <div class="tips-arrow"></div>
+                            <ul class="tips-inner">
+                                <li>菜单</li>
+                                <li>标签</li>
+                            </ul>
                         </div>
-                        
-                        
                     </div>
-                    
-                </div>
-                <div class="tips-box hide">
-                    <div class="tips-arrow"></div>
-                    <ul class="tips-inner">
-                        <li>菜单</li>
-                        <li>标签</li>
-                        
-                        
-                    </ul>
-                </div>
-            </div>
-        
-
-        <div id="switch-area" class="switch-area">
-            <div class="switch-wrap">
-                <section class="switch-part switch-part1">
-                    <nav class="header-menu">
-                        <ul>
-                        
-                            <li><a href="/archives">文章归档</a></li>
-                        
-                            <!--<li><a href="https://album.taozj.org">个人相册</a></li>-->
-                        
-                            <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
-                        
-                            <li><a href="/about">请你读我</a></li>
-                        
-                            <li><a href="/search.html">搜索本站</a></li>
-                        
-                        </ul>
-                    </nav>
-                    <nav class="header-nav">
-                        <ul class="social">
-                            
-                                <a class="fa GitHub" target="_blank" href="https://github.com/zhuqiuhui" title="GitHub"></a>
-                            
-                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/2453953883" title="新浪微博"></a>
-                            
-                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
-                            
-                                <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
-                            
-                                <a class="fa QQ" target="_blank" href="/1003505819" title="QQ"></a>
-                            
-                                <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
-                            
-                        </ul>
-                    </nav>
-                </section>
-                
-                
-                <section class="switch-part switch-part2">
-                    <div class="widget tagcloud" id="js-tagcloud">
-                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
+                    <div id="switch-area" class="switch-area">
+                        <div class="switch-wrap">
+                            <section class="switch-part switch-part1">
+                                <nav class="header-menu">
+                                    <ul>
+                                        <li><a href="/archives">文章归档</a></li>
+                                        <!--<li><a href="https://album.taozj.org">个人相册</a></li>-->
+                                        <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                                        <li><a href="/about">请你读我</a></li>
+                                        <li><a href="/search.html">搜索本站</a></li>
+                                    </ul>
+                                </nav>
+                                <nav class="header-nav">
+                                    <ul class="social">
+                                        <a class="fa GitHub" target="_blank" href="https://github.com/zhuqiuhui" title="GitHub"></a>
+                                        <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/2453953883" title="新浪微博"></a>
+                                        <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                                        <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
+                                        <a class="fa QQ" target="_blank" href="/1003505819" title="QQ"></a>
+                                        <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
+                                    </ul>
+                                </nav>
+                            </section>
+                            <section class="switch-part switch-part2">
+                                <div class="widget tagcloud" id="js-tagcloud">
+                                    <ul class="tag-list">
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li>
+                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/造轮子/">造轮子</a></li>
+                                    </ul>
+                                </div>
+                            </section>
+                        </div>
                     </div>
-                </section>
-                
-                
-                
-
-                
+                </header>
             </div>
         </div>
-    </header>                
-</div>
-
-    </div>
-
-    <div class="mid-col">
-    <!--
-      <nav id="mobile-nav">
-      <div class="overlay">
-          <div class="slider-trigger"></div>
-          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">Lil-hui</a></h1>
-      </div>
-    <div class="intrude-less">
-        <header id="header" class="inner">
-            <a href="/" class="profilepic">
-                <img src="/post_images/resources/avatar.jpg" class="animated zoomIn">
-            </a>
-            <hgroup>
-              <h1 class="header-author"><a href="/" title="回到主页">Lil-hui</a></h1>
-            </hgroup>
-            
-            <p class="header-subtitle">Java后台开发</p>
-            
-            <nav class="header-menu">
-                <ul>
-                
-                    <li><a href="/archives">文章归档</a></li>
-                
-                    <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
-                
-                    <li><a href="/about">请你读我</a></li>
-                
-                    <li><a href="/search.html">搜索本站</a></li>
-                
-                <div class="clearfix"></div>
-                </ul>
-            </nav>
-            <nav class="header-nav">
-                        <ul class="social">
-                            
+        <div class="mid-col">
+            <!--手机端显示头部主页-->
+            <nav id="mobile-nav">
+                <div class="overlay">
+                    <div class="slider-trigger"></div>
+                    <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">Lil-hui</a></h1>
+                </div>
+                <div class="intrude-less">
+                    <header id="header" class="inner">
+                        <a href="/" class="profilepic">
+                            <img src="/post_images/resources/avatar.jpg" class="animated zoomIn">
+                        </a>
+                        <hgroup>
+                            <h1 class="header-author"><a href="/" title="回到主页">Lil-hui</a></h1>
+                        </hgroup>
+                        <p class="header-subtitle">Java后台开发</p>
+                        <nav class="header-menu">
+                            <ul>
+                                <li><a href="/archives">文章归档</a></li>
+                                <li><a href="https://wiki.taozj.org/doku.php">个人WiKi</a></li>
+                                <li><a href="/about">请你读我</a></li>
+                                <li><a href="/search.html">搜索本站</a></li>
+                                <div class="clearfix"></div>
+                            </ul>
+                        </nav>
+                        <nav class="header-nav">
+                            <ul class="social">
                                 <a class="fa GitHub" target="_blank" href="https://github.com/zhuqiuhui" title="GitHub"></a>
-                            
                                 <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/1683951363" title="新浪微博"></a>
-                            
                                 <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
-                            
                                 <a class="fa Email" target="_blank" href="mailto:dEB0YW96ai5vcmcK (base64)" title="Email"></a>
-                            
                                 <a class="fa QQ" target="_blank" href="/1003505819" title="QQ"></a>
-                            
                                 <a class="fa Twitter" target="_blank" href="https://twitter.com/taozhijiang" title="Twitter"></a>
-                            
-                        </ul>
+                            </ul>
+                        </nav>
+                    </header>
+                </div>
+                <link class="menu-list" tags="标签" friends="友情链接" about="关于我" />
             </nav>
-        </header>                
-    </div>
-    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
-</nav>-->
-      <div class="body-wrap">
-  
-    <article id="post-study-conclusion-stage" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/201612/study-conclusion-stage.html" class="article-date">
-      <time datetime="2016-12-12T11:48:05.000Z" itemprop="datePublished">2016-12-12</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
+            <!--下面是主页文章的开始-->
+            <div class="body-wrap">
+                <article id="post-study-conclusion-stage" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/201612/study-conclusion-stage.html" class="article-date">
+                            <time datetime="2016-12-12T11:48:05.000Z" itemprop="datePublished">2016-12-12</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
       <a class="article-title" href="/201612/study-conclusion-stage.html">【置顶】个人阶段性学习和规划总结(技能树)</a>
     </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>　　专注后台服务端开发也好久了，自我感觉经验增加了很多，接触到的东西确实不少，博文也批量更新了很多。表面看似很多很杂，但个人心中思路计划感觉还是比较明确的，此处做一阶段性整理和总结吧。<br>　　其实不仅仅是后台服务端开发，就整个软件开发的知识构成也是有所层次的。个人毕竟不是正规计算机科班出身，也就是大家所说的半路出道的野程序员，很多时候感觉自己的知识构成还是有所缺陷。长痛不如短痛，晚补不如早补，该学的终究跑不掉！<br>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-        <div class="article-pop-out tagcloud">
-          <a class="">置顶</a>
-        </div>
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/博客/">博客</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工作相关/">工作相关</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/服务运维/">服务运维</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/造轮子/">造轮子</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/201612/study-conclusion-stage.html#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-blog-collection" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/201701/blog-collection.html" class="article-date">
-      <time datetime="2017-01-09T14:40:48.000Z" itemprop="datePublished">2017-01-09</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
+                        </header>
+                        <div class="article-entry" itemprop="articleBody">
+                            <p>　　专注后台服务端开发也好久了，自我感觉经验增加了很多，接触到的东西确实不少，博文也批量更新了很多。表面看似很多很杂，但个人心中思路计划感觉还是比较明确的，此处做一阶段性整理和总结吧。
+                                <br>　　其实不仅仅是后台服务端开发，就整个软件开发的知识构成也是有所层次的。个人毕竟不是正规计算机科班出身，也就是大家所说的半路出道的野程序员，很多时候感觉自己的知识构成还是有所缺陷。长痛不如短痛，晚补不如早补，该学的终究跑不掉！
+                                <br>
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-pop-out tagcloud">
+                                <a class="">置顶</a>
+                            </div>
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/博客/">博客</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工作相关/">工作相关</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/服务运维/">服务运维</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/造轮子/">造轮子</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/201612/study-conclusion-stage.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+                <article id="post-blog-collection" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/201701/blog-collection.html" class="article-date">
+                            <time datetime="2017-01-09T14:40:48.000Z" itemprop="datePublished">2017-01-09</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
       <a class="article-title" href="/201701/blog-collection.html">【置顶】博客资源收录大全</a>
     </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>　　虽然当下微信公众号席卷自媒体之势如火如荼，但是文章展示个人还是偏向于独立博客的方式，主要是因为个人可以控制的东西比较多。我想，对于我来说，这个时代没有什么比个性和自由更为重要的了吧。<br>　　下面是一些网络知名人士的博客，以及在搜索资料过程中遇到的好站点。除了不感兴趣的前端、移动端外，过于Java/Nodejs等语言化的博客也被KO了，希望平时没事多看看吧！<br>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-        <div class="article-pop-out tagcloud">
-          <a class="">置顶</a>
-        </div>
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/杂七杂八/">杂七杂八</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/博客/">博客</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/201701/blog-collection.html#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-study-note-of-scalable-backend-(5)-message-queue" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/201702/study-note-of-scalable-backend-(5)-message-queue.html" class="article-date">
-      <time datetime="2017-02-24T15:46:13.000Z" itemprop="datePublished">2017-02-24</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
+                        </header>
+                        <div class="article-entry" itemprop="articleBody">
+                            <p>　　虽然当下微信公众号席卷自媒体之势如火如荼，但是文章展示个人还是偏向于独立博客的方式，主要是因为个人可以控制的东西比较多。我想，对于我来说，这个时代没有什么比个性和自由更为重要的了吧。
+                                <br>　　下面是一些网络知名人士的博客，以及在搜索资料过程中遇到的好站点。除了不感兴趣的前端、移动端外，过于Java/Nodejs等语言化的博客也被KO了，希望平时没事多看看吧！
+                                <br>
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-pop-out tagcloud">
+                                <a class="">置顶</a>
+                            </div>
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/杂七杂八/">杂七杂八</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/博客/">博客</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/201701/blog-collection.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+                <article id="post-study-note-of-scalable-backend-(5)-message-queue" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/201702/study-note-of-scalable-backend-(5)-message-queue.html" class="article-date">
+                            <time datetime="2017-02-24T15:46:13.000Z" itemprop="datePublished">2017-02-24</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
       <a class="article-title" href="/201702/study-note-of-scalable-backend-(5)-message-queue.html">后台开发那些常用技术再次小结（五）：消息队列</a>
     </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h1 id="一、消息队列简介">一、消息队列简介</h1><p>　　消息队列本质上是一个缓冲并分发请求的组件，消息队列工作的上下文中假定消息为单向流动，拥有着“发射后不用管”的特性。消息由消息生产者产生、消息队列缓冲、消息消费者消费信息执行操作，生产者和消费者之间彼此独立的工作，之间只会通过消息格式和消息队列产生耦合，这样就实现了生产者和消费者业务的解耦和异步化操作：之后生产者和消费者可以独立部署、独立伸缩，并且生产者向队列提交完消息之后就可以立即响应客户的请求。</p>
-<h2 id="1-1_消息队列中的角色">1.1 消息队列中的角色</h2><p>　　<strong>消息生产者</strong><br>　　消息生产者也叫作消息发布者，其属于客户端代码的一部分，其只需要负责创建一条合法消息，并发送到消息队列中即可。应用通常有多个生产者，所有发步的消息被排队并异步处理。<br>　　<strong>消息队列</strong><br>　　消息队列本身起着向消费者递交消息的缓冲作用，消息队列可以是一个具有权限控制、路由、持久化、失败恢复等多种职责的独立组件，所以通常也被作为一个独立应用程序提供服务，称作消息代理或者面向消息的中间件。<br>　　<strong>消息消费者</strong><br>　　消息消费者主要从消息队列中接收并处理消息，是实际处理异步请求的组件。消息消费者不应当知道生产者的情况，其应该只依赖于消息队列中的合法消息做出行动。<br>　　消息消费者通常具有周期模式和守护模式进行工作：<strong>周期模式 | 拉模式</strong>，消费者定期连接到消息队列检查队列状况，如果有消息才消费，这种模型在诸如PHP、Perl等动态语言中比较常见，可以用在队列消息较少或者网络不稳定的场景；<strong>守护模式 | 推模式</strong>，消息消费者和消息代理通常用一个持久连接进行无限循环方式运行，消费者阻塞在取消息的操作上，这种模式在持久化应用容器的语言中更常见，比如Java、Nodejs；还有结合两种，采用推拉结合的形式进行工作的。
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/201702/study-note-of-scalable-backend-(5)-message-queue.html#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-study-note-of-scalable-backend-(4)-cache" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/201702/study-note-of-scalable-backend-(4)-cache.html" class="article-date">
-      <time datetime="2017-02-23T15:21:03.000Z" itemprop="datePublished">2017-02-23</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
+                        </header>
+                        <div class="article-entry" itemprop="articleBody">
+                            <h1 id="一、消息队列简介">一、消息队列简介</h1>
+                            <p>　　消息队列本质上是一个缓冲并分发请求的组件，消息队列工作的上下文中假定消息为单向流动，拥有着“发射后不用管”的特性。消息由消息生产者产生、消息队列缓冲、消息消费者消费信息执行操作，生产者和消费者之间彼此独立的工作，之间只会通过消息格式和消息队列产生耦合，这样就实现了生产者和消费者业务的解耦和异步化操作：之后生产者和消费者可以独立部署、独立伸缩，并且生产者向队列提交完消息之后就可以立即响应客户的请求。</p>
+                            <h2 id="1-1_消息队列中的角色">1.1 消息队列中的角色</h2>
+                            <p>　　<strong>消息生产者</strong>
+                                <br>　　消息生产者也叫作消息发布者，其属于客户端代码的一部分，其只需要负责创建一条合法消息，并发送到消息队列中即可。应用通常有多个生产者，所有发步的消息被排队并异步处理。
+                                <br>　　<strong>消息队列</strong>
+                                <br>　　消息队列本身起着向消费者递交消息的缓冲作用，消息队列可以是一个具有权限控制、路由、持久化、失败恢复等多种职责的独立组件，所以通常也被作为一个独立应用程序提供服务，称作消息代理或者面向消息的中间件。
+                                <br>　　<strong>消息消费者</strong>
+                                <br>　　消息消费者主要从消息队列中接收并处理消息，是实际处理异步请求的组件。消息消费者不应当知道生产者的情况，其应该只依赖于消息队列中的合法消息做出行动。
+                                <br>　　消息消费者通常具有周期模式和守护模式进行工作：<strong>周期模式 | 拉模式</strong>，消费者定期连接到消息队列检查队列状况，如果有消息才消费，这种模型在诸如PHP、Perl等动态语言中比较常见，可以用在队列消息较少或者网络不稳定的场景；<strong>守护模式 | 推模式</strong>，消息消费者和消息代理通常用一个持久连接进行无限循环方式运行，消费者阻塞在取消息的操作上，这种模式在持久化应用容器的语言中更常见，比如Java、Nodejs；还有结合两种，采用推拉结合的形式进行工作的。
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/201702/study-note-of-scalable-backend-(5)-message-queue.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+                <article id="post-study-note-of-scalable-backend-(4)-cache" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/201702/study-note-of-scalable-backend-(4)-cache.html" class="article-date">
+                            <time datetime="2017-02-23T15:21:03.000Z" itemprop="datePublished">2017-02-23</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
       <a class="article-title" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a>
     </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>　　缓存技术在计算机体系中使用的极为广泛：CPU内部多级缓存、硬盘缓存、Linux文件系统缓存、数据库查询缓存、DNS解析缓存、浏览器和应用APP缓存等，缓存在加快系统响应的同时，也降低了对某些资源的消耗，善用缓存会整个系统的性能将会有极大的改善。<br>　　因为缓存通常可以从源头重建，所以即使被删除或者丢失了也不会产生太大的问题，不过也有一些诸如缓存失败导致服务器雪崩的问题。缓存最主要考量的是命中率，这个指标收到缓存键集合大小、内存空间大小和缓存寿命相互制约。</p>
-<h1 id="一、基于HTTP缓存">一、基于HTTP缓存</h1><p>　　HTTP层的缓存一个重要特性就是其为通读缓存，通读缓存通常作为中介(代理)的角色，透明地给HTTP链接添加缓存功能，他可以拦截客户端请求并用缓存对象返回给客户端作为响应，只有当缓存没有合适的数据的生活，才会链接到原始服务器并转发客户端请求给他。因为服务和通读缓存的接口是一样的，这种情况下客户端也可以直接连接到原始服务器而跳过缓存。通读缓存很具有吸引力，因为他的存在对客户端来说是透明的，客户端无法区分响应来自缓存还是原始服务器，所以通读缓存扮演着可插拔的角色，客户端无须因为他的存在与否而做任何修改。</p>
-<h2 id="1-1_HTTP规范的缓存头">1.1 HTTP规范的缓存头</h2><p>　　HTTP协议虽然广为使用，而且其可被缓存特性也广受赞誉，不过协议上其相关选项和实现缺较为的混乱。HTTP协议中和缓存相关的参数有：<br>　　<strong>Cache-Control</strong><br>　　private: 指出请求结果对请求用户是特定的，响应不能提供给其他用户。该用法也就意味着只有浏览器可以缓存响应，因为中间缓存无法识别特定用户。<br>　　public: 只要它为过期，指示响应可以在用户间被共享。注意这个选项和private是互斥的。<br>　　no-store: 指示响应不能被任何中间缓存存储到磁盘上，即响应可以被缓存在内存，但是不能持久化到磁盘。当你在响应中包含用户敏感信息的时候应该包含这个选项，使得缓存信息不回存储这些数据到磁盘上。<br>　　no-cache: 指示响应不能被缓存，更精确的意思是针对这个请求，缓存在每次用户请求相同资源的时候都需要询问服务器此时是否仍然合法，其效果和 Cache-Control:max-age=0相当。
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/201702/study-note-of-scalable-backend-(4)-cache.html#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-cmake-cheatsheet" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/201702/cmake-cheatsheet.html" class="article-date">
-      <time datetime="2017-02-22T12:31:21.000Z" itemprop="datePublished">2017-02-22</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
+                        </header>
+                        <div class="article-entry" itemprop="articleBody">
+                            <p>　　缓存技术在计算机体系中使用的极为广泛：CPU内部多级缓存、硬盘缓存、Linux文件系统缓存、数据库查询缓存、DNS解析缓存、浏览器和应用APP缓存等，缓存在加快系统响应的同时，也降低了对某些资源的消耗，善用缓存会整个系统的性能将会有极大的改善。
+                                <br>　　因为缓存通常可以从源头重建，所以即使被删除或者丢失了也不会产生太大的问题，不过也有一些诸如缓存失败导致服务器雪崩的问题。缓存最主要考量的是命中率，这个指标收到缓存键集合大小、内存空间大小和缓存寿命相互制约。</p>
+                            <h1 id="一、基于HTTP缓存">一、基于HTTP缓存</h1>
+                            <p>　　HTTP层的缓存一个重要特性就是其为通读缓存，通读缓存通常作为中介(代理)的角色，透明地给HTTP链接添加缓存功能，他可以拦截客户端请求并用缓存对象返回给客户端作为响应，只有当缓存没有合适的数据的生活，才会链接到原始服务器并转发客户端请求给他。因为服务和通读缓存的接口是一样的，这种情况下客户端也可以直接连接到原始服务器而跳过缓存。通读缓存很具有吸引力，因为他的存在对客户端来说是透明的，客户端无法区分响应来自缓存还是原始服务器，所以通读缓存扮演着可插拔的角色，客户端无须因为他的存在与否而做任何修改。</p>
+                            <h2 id="1-1_HTTP规范的缓存头">1.1 HTTP规范的缓存头</h2>
+                            <p>　　HTTP协议虽然广为使用，而且其可被缓存特性也广受赞誉，不过协议上其相关选项和实现缺较为的混乱。HTTP协议中和缓存相关的参数有：
+                                <br>　　<strong>Cache-Control</strong>
+                                <br>　　private: 指出请求结果对请求用户是特定的，响应不能提供给其他用户。该用法也就意味着只有浏览器可以缓存响应，因为中间缓存无法识别特定用户。
+                                <br>　　public: 只要它为过期，指示响应可以在用户间被共享。注意这个选项和private是互斥的。
+                                <br>　　no-store: 指示响应不能被任何中间缓存存储到磁盘上，即响应可以被缓存在内存，但是不能持久化到磁盘。当你在响应中包含用户敏感信息的时候应该包含这个选项，使得缓存信息不回存储这些数据到磁盘上。
+                                <br>　　no-cache: 指示响应不能被缓存，更精确的意思是针对这个请求，缓存在每次用户请求相同资源的时候都需要询问服务器此时是否仍然合法，其效果和 Cache-Control:max-age=0相当。
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/201702/study-note-of-scalable-backend-(4)-cache.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+                <article id="post-cmake-cheatsheet" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/201702/cmake-cheatsheet.html" class="article-date">
+                            <time datetime="2017-02-22T12:31:21.000Z" itemprop="datePublished">2017-02-22</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
       <a class="article-title" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a>
     </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>　　之前自己的小项目都是直接手动人肉Makefile，因为项目的文件不是很多，发现以前写的那个Makefile模板增增改改还是挺够用的。但现在发现CMake真是越来越流行了，不知道是不是借着QT/KDE等项目的东风，越来越多的C++开源项目开始使用CMake工具来用作管理项目了。此外，著名IDE Clion和CMake也集成的很好，只不过我现在已经不用IDE进行调试了，因为命令行的GDB更方便。<br><img src="/post_images/images/201702/4a3b2635.png" alt="cmake"><br>　　这次在一个项目中使用了CMake，简单直白的几行命令，就可以快速生成Makefile，相比Makefile晦涩的语法和隐暗的规则，可以说是懒人(对我来说主要是弱鸡)用的Makefile。除了辅助生成编译用的Makefile，CMake还集成安装、测试、打包等功能，同时跟Boost库的单元测试框架也很好的集成，Bingo！<br>　　注意：CMake工具的实现主要是由一系列的命令构成，同时还有大量的预定义变量，正是他们的存在使得用户可以用极少的语句生成功能丰富的Makefile文件。现在CMake官方最新发布版本是v3.8，但是在CentOS-7系列的机器上最新的CMake版本仍然是v2.8分支，由于代码的部署环境所限，本篇文档还是针对CMake v2.8.12老版本操作实验的结果，有时候同最新CMake可能会有所差异，建议查看查看老版本的文档。<br>　　CMake中有很多涉及到文件、目录的相关命令或者变量，在作为参数的时候有时可以使用相对路径，有时可以使用绝对路径；在使用相对路径的时候，有时候是相对于项目的源代码路径，有时候是相对于编译路径，还有些时候相对路径参考于某些预制变量，这些东西如果被搞糊涂了还是建议查看相关文档。<br>　　本文档不求最全，够用即可！</p>
-<h1 id="一、起步">一、起步</h1><p>　　凡是手动安装过CMake管理的软件的同学，都知道CMake的用法。通常会在项目路径下面建立一个build目录，然后进入build目录使用<code bash>➜  build git:(master) ✗ cmake ../ </code>命令就可以生成Makefile文件，接下来的操作想必大家就都知道了。额外创建build路径进行项目外编译，就是可以保护你的源代码路径整洁干净。<br>　　所以开发者就是要编写这个CMakeLists.txt文件，方便自己的同时也方便了用户。
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/开发基础/">开发基础</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内核/">内核</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/201702/cmake-cheatsheet.html#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-study-note-of-scalable-backend-(3)-storage" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/201702/study-note-of-scalable-backend-(3)-storage.html" class="article-date">
-      <time datetime="2017-02-12T15:12:07.000Z" itemprop="datePublished">2017-02-12</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
+                        </header>
+                        <div class="article-entry" itemprop="articleBody">
+                            <p>　　之前自己的小项目都是直接手动人肉Makefile，因为项目的文件不是很多，发现以前写的那个Makefile模板增增改改还是挺够用的。但现在发现CMake真是越来越流行了，不知道是不是借着QT/KDE等项目的东风，越来越多的C++开源项目开始使用CMake工具来用作管理项目了。此外，著名IDE Clion和CMake也集成的很好，只不过我现在已经不用IDE进行调试了，因为命令行的GDB更方便。
+                                <br><img src="/post_images/images/201702/4a3b2635.png" alt="cmake">
+                                <br>　　这次在一个项目中使用了CMake，简单直白的几行命令，就可以快速生成Makefile，相比Makefile晦涩的语法和隐暗的规则，可以说是懒人(对我来说主要是弱鸡)用的Makefile。除了辅助生成编译用的Makefile，CMake还集成安装、测试、打包等功能，同时跟Boost库的单元测试框架也很好的集成，Bingo！
+                                <br>　　注意：CMake工具的实现主要是由一系列的命令构成，同时还有大量的预定义变量，正是他们的存在使得用户可以用极少的语句生成功能丰富的Makefile文件。现在CMake官方最新发布版本是v3.8，但是在CentOS-7系列的机器上最新的CMake版本仍然是v2.8分支，由于代码的部署环境所限，本篇文档还是针对CMake v2.8.12老版本操作实验的结果，有时候同最新CMake可能会有所差异，建议查看查看老版本的文档。
+                                <br>　　CMake中有很多涉及到文件、目录的相关命令或者变量，在作为参数的时候有时可以使用相对路径，有时可以使用绝对路径；在使用相对路径的时候，有时候是相对于项目的源代码路径，有时候是相对于编译路径，还有些时候相对路径参考于某些预制变量，这些东西如果被搞糊涂了还是建议查看相关文档。
+                                <br>　　本文档不求最全，够用即可！</p>
+                            <h1 id="一、起步">一、起步</h1>
+                            <p>　　凡是手动安装过CMake管理的软件的同学，都知道CMake的用法。通常会在项目路径下面建立一个build目录，然后进入build目录使用<code bash>➜  build git:(master) ✗ cmake ../ </code>命令就可以生成Makefile文件，接下来的操作想必大家就都知道了。额外创建build路径进行项目外编译，就是可以保护你的源代码路径整洁干净。
+                                <br>　　所以开发者就是要编写这个CMakeLists.txt文件，方便自己的同时也方便了用户。
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/开发基础/">开发基础</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内核/">内核</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/201702/cmake-cheatsheet.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+                <article id="post-study-note-of-scalable-backend-(3)-storage" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/201702/study-note-of-scalable-backend-(3)-storage.html" class="article-date">
+                            <time datetime="2017-02-12T15:12:07.000Z" itemprop="datePublished">2017-02-12</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
       <a class="article-title" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a>
     </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>　　原书对于存储模块，主要就是描述的数据库的设计和优化，和我通常想到的文件系统的存储有点差异，其实数据库的底层还是放在文件系统上面的(原谅我又不禁想到了GitLab删库事件)，只不过随着数据量增加数据库文件的尺寸会不断的变大(在mysql中查找datadir的变量就可以看见数据文件的位置)。<br>　　互联网公司很多数据都塞在数据库中的，而且数据库这一模块的使用和优化经验也比较的丰富，更加有文章可做吧！</p>
-<h1 id="一、文件存储">一、文件存储</h1><p>　　在绝大多数情况下磁盘一直都被诟病是拖慢整个系统的罪魁祸首，现在看来网络速度都会比磁盘要快得多。<br>　　如果是自己的服务器托管，建议尽可能的增加物理内存(云主机就算了，增加内存配置价格贼贵)，因为操作系统的缓存机制，较大的物理内存能减少IO操作，从而改善文件系统访问性能。<br>　　现在优化磁盘效率的方法除了操作系统和文件系统的参数调优之外，最直接的方法就是上SSD。想到前些年很多人对SSD还是持观望态度，时常会有SSD无故掉盘、数据无法恢复的情况，不过从这些年看来随着SSD技术的完善，各大厂商和数据中心都以SSD硬盘作为主机的卖点了，可见SSD还是接受住了现实的考验了(虽然现在随着工艺水平的提高和TLC的推广，据称SSD的寿命甚至还不如之前)，工业上通过SSD将业务性能提高几倍甚至几十倍的案例数见不鲜。其实，现实世界没有什么硬件是绝对可靠的，所谓的可靠性缺陷可以用软件来弥补。想当初我在2012年花了六百多大洋买了Crucial 64GB m-sata接口的固态硬盘，该硬盘作为系统盘现在仍然工作的杠杠地，所以增加内存和上固态硬盘是任何工作或者生产机器实现“垂直扩展“的最佳捷径了。对于固态硬盘如果是SATA3接口，其最高速率是6Gbps，而现在很多SSD的传输速度已经受限于该接口速率了，那么你可以考虑采用PCI-E接口的SSD存储来获取更高的性能了。<br>　　如果你对SSD的可靠性还是不放心的话，将SSD作为一个缓存介质而不做数据持久化的存储，也可以极大增加IOPS的性能指标，对随机化IO密集型的服务优化效果十分明显。虽然某些情况下SSD中的数据没有写回之前挂掉，还是会有丢数据的风险，但是相比之前安全系数已经高了好多。各个大厂针对此种情形的<a href="http://mogu.io/Facebook_flashcache-81">解决方案</a>貌似很多啊！<br>　　RAID(独立冗余磁盘阵列)算是一个历史悠久但却极为有用的存储技术了，通过多个廉价独立的磁盘进行组合达到多种组合，将IO操作分散到多个物理磁盘上去，同时具有增加副本备份恢复的功能，让整个存储系统在可靠性、性能、成本之间做出权衡，RAID技术算是在存储最底层层次上所做出的备份和优化操作。RAID的类别可分为几十种，比如：RAID0是把数据切成块，分别存储在两个或者多个磁盘上，虽然读写性能都增加了N倍，但是安全性最低，任何一块磁盘挂掉数据就无法恢复了；RAID1是做的存储冗余镜像，读性能能增加N倍，但是写操作需要在多块磁盘上写出完整副本，性能可能会有所降低，而且磁盘空间利用率最低；RAID5和RAID6也是将数据分块，同时将可恢复的校验数据也作为一个数据块，他们依次分布在不同的磁盘上，这样在增加读写性能的同时，也允许少量磁盘坏掉后可以恢复原来的数据，工业上使用的较多；RAID10和RAID01算是RAID1和RAID0的合体也比较流行(两者镜像和条带操作的顺序不同)，虽然磁盘利用率低，但是大家觉得在可靠性和性能都能达到较好的效果(也不一定，工业上不都是认为3-5份的数据备份才是比较安全的嘛)。
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/201702/study-note-of-scalable-backend-(3)-storage.html#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-study-note-of-scalable-backend-(2)-web-service" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/201702/study-note-of-scalable-backend-(2)-web-service.html" class="article-date">
-      <time datetime="2017-02-08T12:32:23.000Z" itemprop="datePublished">2017-02-08</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
+                        </header>
+                        <div class="article-entry" itemprop="articleBody">
+                            <p>　　原书对于存储模块，主要就是描述的数据库的设计和优化，和我通常想到的文件系统的存储有点差异，其实数据库的底层还是放在文件系统上面的(原谅我又不禁想到了GitLab删库事件)，只不过随着数据量增加数据库文件的尺寸会不断的变大(在mysql中查找datadir的变量就可以看见数据文件的位置)。
+                                <br>　　互联网公司很多数据都塞在数据库中的，而且数据库这一模块的使用和优化经验也比较的丰富，更加有文章可做吧！</p>
+                            <h1 id="一、文件存储">一、文件存储</h1>
+                            <p>　　在绝大多数情况下磁盘一直都被诟病是拖慢整个系统的罪魁祸首，现在看来网络速度都会比磁盘要快得多。
+                                <br>　　如果是自己的服务器托管，建议尽可能的增加物理内存(云主机就算了，增加内存配置价格贼贵)，因为操作系统的缓存机制，较大的物理内存能减少IO操作，从而改善文件系统访问性能。
+                                <br>　　现在优化磁盘效率的方法除了操作系统和文件系统的参数调优之外，最直接的方法就是上SSD。想到前些年很多人对SSD还是持观望态度，时常会有SSD无故掉盘、数据无法恢复的情况，不过从这些年看来随着SSD技术的完善，各大厂商和数据中心都以SSD硬盘作为主机的卖点了，可见SSD还是接受住了现实的考验了(虽然现在随着工艺水平的提高和TLC的推广，据称SSD的寿命甚至还不如之前)，工业上通过SSD将业务性能提高几倍甚至几十倍的案例数见不鲜。其实，现实世界没有什么硬件是绝对可靠的，所谓的可靠性缺陷可以用软件来弥补。想当初我在2012年花了六百多大洋买了Crucial 64GB m-sata接口的固态硬盘，该硬盘作为系统盘现在仍然工作的杠杠地，所以增加内存和上固态硬盘是任何工作或者生产机器实现“垂直扩展“的最佳捷径了。对于固态硬盘如果是SATA3接口，其最高速率是6Gbps，而现在很多SSD的传输速度已经受限于该接口速率了，那么你可以考虑采用PCI-E接口的SSD存储来获取更高的性能了。
+                                <br>　　如果你对SSD的可靠性还是不放心的话，将SSD作为一个缓存介质而不做数据持久化的存储，也可以极大增加IOPS的性能指标，对随机化IO密集型的服务优化效果十分明显。虽然某些情况下SSD中的数据没有写回之前挂掉，还是会有丢数据的风险，但是相比之前安全系数已经高了好多。各个大厂针对此种情形的<a href="http://mogu.io/Facebook_flashcache-81">解决方案</a>貌似很多啊！
+                                <br>　　RAID(独立冗余磁盘阵列)算是一个历史悠久但却极为有用的存储技术了，通过多个廉价独立的磁盘进行组合达到多种组合，将IO操作分散到多个物理磁盘上去，同时具有增加副本备份恢复的功能，让整个存储系统在可靠性、性能、成本之间做出权衡，RAID技术算是在存储最底层层次上所做出的备份和优化操作。RAID的类别可分为几十种，比如：RAID0是把数据切成块，分别存储在两个或者多个磁盘上，虽然读写性能都增加了N倍，但是安全性最低，任何一块磁盘挂掉数据就无法恢复了；RAID1是做的存储冗余镜像，读性能能增加N倍，但是写操作需要在多块磁盘上写出完整副本，性能可能会有所降低，而且磁盘空间利用率最低；RAID5和RAID6也是将数据分块，同时将可恢复的校验数据也作为一个数据块，他们依次分布在不同的磁盘上，这样在增加读写性能的同时，也允许少量磁盘坏掉后可以恢复原来的数据，工业上使用的较多；RAID10和RAID01算是RAID1和RAID0的合体也比较流行(两者镜像和条带操作的顺序不同)，虽然磁盘利用率低，但是大家觉得在可靠性和性能都能达到较好的效果(也不一定，工业上不都是认为3-5份的数据备份才是比较安全的嘛)。
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/201702/study-note-of-scalable-backend-(3)-storage.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+                <article id="post-study-note-of-scalable-backend-(2)-web-service" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/201702/study-note-of-scalable-backend-(2)-web-service.html" class="article-date">
+                            <time datetime="2017-02-08T12:32:23.000Z" itemprop="datePublished">2017-02-08</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
       <a class="article-title" href="/201702/study-note-of-scalable-backend-(2)-web-service.html">后台开发那些常用技术再次小结（二）：Web服务层</a>
     </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>　　Web服务部分应当算是整个服务端开发中最重要、最复杂、同时也最具可玩性的部分了。业务逻辑的处理主要分布在Web服务层，这样一方面可以让其上层展示层不必关心业务逻辑，只专心负责展示和用户输入部分(也让其具有强大的伸缩性)，而Web服务层本身也可以通过功能分割(增加副本、功能分割和数据分片是实现伸缩性的三大利器)，以及单个服务自身的伸缩设计，最终构建一个功能强大的Web服务层。<br>　　Web服务层采用一定的设计模式为上层提供调用接口，同时这些年来，跟随者移动互联网和与计算的大潮，各大厂商也喜欢将自己的服务通过接口的方式免费或者收费的形式提供给第三方使用，这也就是所谓的Web服务和前端应用平行部署的现象，在这种环境下的服务接口设计就显得会比以往更加的重要，当时那种裸socket之上自定义数据帧的时代显然是跟不上了。尤其这些年来，关于RESTful接口设计风格可谓是如日中天，无论是Google、Amazon这些互联网大佬，还是几个人组成的互联网创业公司，都号称自己开放的服务是符合RESTful风格的接口，但是正如我在V2ex论坛上看到大家所争论(《 <a href="https://www.v2ex.com/t/340607">RESTful 有用吗？ HTTP 有 GET POST 就足够了？</a>》)的一样：绝对纯正的RESTful风格接口的设计和实现在当下是不可能实现的，大家开放出来的接口要么就是根据实践情况有所妥协，要么就是封装了一个简易外壳的“伪RESTful接口”而已。<br>　　这里看到一本《<a href="https://book.douban.com/subject/25786076/">服务设计模式</a>》，虽然后面的内容看的不是很明白，但是前面对于服务设计的总结还是不错的，在此进行归纳总结！归咎来说，Web服务主要是为集成不同的系统提供相应地方法，并通过HTTP来输出可重用业务功能，他们或者将HTTP作为一种简单的信息传输工具来承载数据传输(比如SOAP/WSDL服务)，或者将HTTP作为一种完整的应用控制协议，将HTTP协议的内容定义服务的各种行为和语义(RESTful服务)，前者被定义为以功能为中心的服务，后者被定义为以资源为中心的服务。<br>　　<strong>以功能为中心的服务</strong>：该种风格的服务是指能够调用远程机器上的功能或者对象方法，而无需知道这些功能或者对象是如果实现的，因此这种框架技术需要处理跨编程语言、跨CPU构架、跨运行时环境的问题，同时对调用参数的约定、变量转换、错误处理还必须进行明确的规范。以功能为中心的服务现在基本是SOAP一枝独秀，其基本使用XML作为服务描述和消息编码方式，通过HTTP在客户端和服务端之间传递请求和响应。
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/201702/study-note-of-scalable-backend-(2)-web-service.html#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-study-note-of-scalable-backend-(1)-front" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/201702/study-note-of-scalable-backend-(1)-front.html" class="article-date">
-      <time datetime="2017-02-08T12:31:21.000Z" itemprop="datePublished">2017-02-08</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
+                        </header>
+                        <div class="article-entry" itemprop="articleBody">
+                            <p>　　Web服务部分应当算是整个服务端开发中最重要、最复杂、同时也最具可玩性的部分了。业务逻辑的处理主要分布在Web服务层，这样一方面可以让其上层展示层不必关心业务逻辑，只专心负责展示和用户输入部分(也让其具有强大的伸缩性)，而Web服务层本身也可以通过功能分割(增加副本、功能分割和数据分片是实现伸缩性的三大利器)，以及单个服务自身的伸缩设计，最终构建一个功能强大的Web服务层。
+                                <br>　　Web服务层采用一定的设计模式为上层提供调用接口，同时这些年来，跟随者移动互联网和与计算的大潮，各大厂商也喜欢将自己的服务通过接口的方式免费或者收费的形式提供给第三方使用，这也就是所谓的Web服务和前端应用平行部署的现象，在这种环境下的服务接口设计就显得会比以往更加的重要，当时那种裸socket之上自定义数据帧的时代显然是跟不上了。尤其这些年来，关于RESTful接口设计风格可谓是如日中天，无论是Google、Amazon这些互联网大佬，还是几个人组成的互联网创业公司，都号称自己开放的服务是符合RESTful风格的接口，但是正如我在V2ex论坛上看到大家所争论(《 <a href="https://www.v2ex.com/t/340607">RESTful 有用吗？ HTTP 有 GET POST 就足够了？</a>》)的一样：绝对纯正的RESTful风格接口的设计和实现在当下是不可能实现的，大家开放出来的接口要么就是根据实践情况有所妥协，要么就是封装了一个简易外壳的“伪RESTful接口”而已。
+                                <br>　　这里看到一本《<a href="https://book.douban.com/subject/25786076/">服务设计模式</a>》，虽然后面的内容看的不是很明白，但是前面对于服务设计的总结还是不错的，在此进行归纳总结！归咎来说，Web服务主要是为集成不同的系统提供相应地方法，并通过HTTP来输出可重用业务功能，他们或者将HTTP作为一种简单的信息传输工具来承载数据传输(比如SOAP/WSDL服务)，或者将HTTP作为一种完整的应用控制协议，将HTTP协议的内容定义服务的各种行为和语义(RESTful服务)，前者被定义为以功能为中心的服务，后者被定义为以资源为中心的服务。
+                                <br>　　<strong>以功能为中心的服务</strong>：该种风格的服务是指能够调用远程机器上的功能或者对象方法，而无需知道这些功能或者对象是如果实现的，因此这种框架技术需要处理跨编程语言、跨CPU构架、跨运行时环境的问题，同时对调用参数的约定、变量转换、错误处理还必须进行明确的规范。以功能为中心的服务现在基本是SOAP一枝独秀，其基本使用XML作为服务描述和消息编码方式，通过HTTP在客户端和服务端之间传递请求和响应。
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/201702/study-note-of-scalable-backend-(2)-web-service.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+                <article id="post-study-note-of-scalable-backend-(1)-front" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/201702/study-note-of-scalable-backend-(1)-front.html" class="article-date">
+                            <time datetime="2017-02-08T12:31:21.000Z" itemprop="datePublished">2017-02-08</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
       <a class="article-title" href="/201702/study-note-of-scalable-backend-(1)-front.html">后台开发那些常用技术再次小结（一）：前端部分</a>
     </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>　　回家的路途上看了一下《<a href="https://book.douban.com/subject/26906846/">互联网创业核心技术：构建可伸缩的web应用</a>》这本书，该书是使用开发者头条积分兑换的第二本书，而且出版的时间还比较新。看了之后感觉还是比较有收的，至少感觉有了这个视野之后，再观网上那些所谓的高并发、高性能、高扩展性的网站架构，会有一种豁然开朗的感觉。其实怎么说呢，现在强调的高性能、可扩展系统的各套花样本质上也就那么几种模式，大家都是在实际项目中根据自身的业务规模、业务特点做相应的选型、裁剪、适配、调优而已。<br>　　想想其实也不难理解，毕竟我们已经进入后互联网时代这么久了，大规模互联网系统开发中的各种问题、各种坑点想必大家都遇到过了，解决方案也十分成熟可靠，甚至各大云平台都把你所考虑的东西都帮你做完了，你只需要专注自己的业务开发和运维就可以了！或许真如之前别人所对我所说：这些互联网时代听起来高大上的技术，如果不是作为专家深入研究，而是仅仅当做一个现成的组件使用，那么你所“了解”的这些技术，充其量就是跟别人之间多出来的那几分谈资而已，任何一个程序员在对应的环境下都可以快速掌握的。说说也是，毕竟上面说的那本书俺一天不到的时间就看完了，这么看来，感觉操作系统、数据结构和算法、计算机网络、软件调试和优化等看似不起眼的东西，此时便显得更为地重要！<br>　　不过话又说回来，上面的意思并不是说这类知识不重要，即使你不去做他，但是对他的全局观的理解和把控也会影响到自身的业务设计和实现。于是后面将根据书中内容的主线，总体描述现在互联网系统的开发过程中，为了达到构建高性能、可扩展的架构，从前端层、Web应用层、Web服务层、数据存储层部分，配合缓存、异步这些组件进行设计和实现的相关事项，同时配合其他文献分类别进行整理归纳和扩充，算是做一个自我普及的作用吧。<br><img src="/post_images/images/201702/ae1f1917.jpg" alt="struct"><br>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/201702/study-note-of-scalable-backend-(1)-front.html#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-little-thoughts-at-the-begin-of-2017" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/201702/little-thoughts-at-the-begin-of-2017.html" class="article-date">
-      <time datetime="2017-02-05T13:53:19.000Z" itemprop="datePublished">2017-02-05</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
+                        </header>
+                        <div class="article-entry" itemprop="articleBody">
+                            <p>　　回家的路途上看了一下《<a href="https://book.douban.com/subject/26906846/">互联网创业核心技术：构建可伸缩的web应用</a>》这本书，该书是使用开发者头条积分兑换的第二本书，而且出版的时间还比较新。看了之后感觉还是比较有收的，至少感觉有了这个视野之后，再观网上那些所谓的高并发、高性能、高扩展性的网站架构，会有一种豁然开朗的感觉。其实怎么说呢，现在强调的高性能、可扩展系统的各套花样本质上也就那么几种模式，大家都是在实际项目中根据自身的业务规模、业务特点做相应的选型、裁剪、适配、调优而已。
+                                <br>　　想想其实也不难理解，毕竟我们已经进入后互联网时代这么久了，大规模互联网系统开发中的各种问题、各种坑点想必大家都遇到过了，解决方案也十分成熟可靠，甚至各大云平台都把你所考虑的东西都帮你做完了，你只需要专注自己的业务开发和运维就可以了！或许真如之前别人所对我所说：这些互联网时代听起来高大上的技术，如果不是作为专家深入研究，而是仅仅当做一个现成的组件使用，那么你所“了解”的这些技术，充其量就是跟别人之间多出来的那几分谈资而已，任何一个程序员在对应的环境下都可以快速掌握的。说说也是，毕竟上面说的那本书俺一天不到的时间就看完了，这么看来，感觉操作系统、数据结构和算法、计算机网络、软件调试和优化等看似不起眼的东西，此时便显得更为地重要！
+                                <br>　　不过话又说回来，上面的意思并不是说这类知识不重要，即使你不去做他，但是对他的全局观的理解和把控也会影响到自身的业务设计和实现。于是后面将根据书中内容的主线，总体描述现在互联网系统的开发过程中，为了达到构建高性能、可扩展的架构，从前端层、Web应用层、Web服务层、数据存储层部分，配合缓存、异步这些组件进行设计和实现的相关事项，同时配合其他文献分类别进行整理归纳和扩充，算是做一个自我普及的作用吧。
+                                <br><img src="/post_images/images/201702/ae1f1917.jpg" alt="struct">
+                                <br>
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/201702/study-note-of-scalable-backend-(1)-front.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+                <article id="post-little-thoughts-at-the-begin-of-2017" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/201702/little-thoughts-at-the-begin-of-2017.html" class="article-date">
+                            <time datetime="2017-02-05T13:53:19.000Z" itemprop="datePublished">2017-02-05</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
       <a class="article-title" href="/201702/little-thoughts-at-the-begin-of-2017.html">2017年春节返途中的两三思考</a>
     </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>　　2017年是中国传统农历上的鸡年，而对我来说也是注定不平凡的一年：全家终于搬迁进了久等三年的安置新房，算是终于住上一个看起来像样一点的房子了；这是我结婚后的第一个年头，名义上正式步入人生中新的阶段；这年是我老爸的本命年，我爸六十了，而我也已经三十而立了！<br>　　这是在和老婆走完娘家从汉中回深圳途中立下的提纲，这是一个没有空客320/波音737，也没有时速三百公里和谐号的旅途，我们搭乘的，是从所有南下陕西人记忆中磨灭不掉的K768。我是无座票在这人山人海中度过了漫长的28个小时（当然还是要感谢黄牛帮老婆抢了张卧铺），那种人山人海、水泄不通、吵杂闷浊的环境实在是种炼狱的感觉，而唯一带来的好处就是，没有在安然舒适的环境中看电影、耍手机来消磨时光，而是给了我多些回忆、思考的机会和生活的种种感触（悲剧是吸了好多二手烟，这点确实比较惨）！<br><img src="/post_images/images/201702/d96907d5.jpg" alt="2017-ticket"></p>
-<p><strong>父母和亲人老了</strong><br>　　年底在老家办了一场简单的婚礼，算是所有的亲戚都到场了，本身我爸妈都是排行最小的，所以到场的长辈都是老头、老太级别的状态了，最长的姑妈已经84岁高龄了。虽是一眼望去满是凋零，但是堂、表兄弟姐妹的小孩很多，活蹦乱跳的小精灵为整个场地增加了不少生命的气息。在所有我这一辈的亲戚中，我是最后完婚的，不过作为我这代人婚事的收官之作，虽然简陋但也凭空流露出那么一些自豪感。<br>　　让我感到欣慰的是，全家早年虽然多灾多难、命运多舛，而且爸妈也都接近60岁高龄，但是总体来说二老的身体和精神面貌还挺不错的。自从03年上大学直到现在工作，一直未有机会在家尽孝，这点是一直让我心中愧疚不已的，自己是家中的独子，必须承担起这份义不容辞的责任。结婚本是件幸福无比的事情，但是婚后直接面临的就是孩子、房子等各种问题，身边跟我类似情况的朋友还有很多，有时候想想我们这代人活得真是无比的辛苦。<br>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/生活/">生活</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/生活杂感/">生活杂感</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/201702/little-thoughts-at-the-begin-of-2017.html#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-gnu-gdb-debug" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/201701/gnu-gdb-debug.html" class="article-date">
-      <time datetime="2017-01-19T13:03:50.000Z" itemprop="datePublished">2017-01-19</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
+                        </header>
+                        <div class="article-entry" itemprop="articleBody">
+                            <p>　　2017年是中国传统农历上的鸡年，而对我来说也是注定不平凡的一年：全家终于搬迁进了久等三年的安置新房，算是终于住上一个看起来像样一点的房子了；这是我结婚后的第一个年头，名义上正式步入人生中新的阶段；这年是我老爸的本命年，我爸六十了，而我也已经三十而立了！
+                                <br>　　这是在和老婆走完娘家从汉中回深圳途中立下的提纲，这是一个没有空客320/波音737，也没有时速三百公里和谐号的旅途，我们搭乘的，是从所有南下陕西人记忆中磨灭不掉的K768。我是无座票在这人山人海中度过了漫长的28个小时（当然还是要感谢黄牛帮老婆抢了张卧铺），那种人山人海、水泄不通、吵杂闷浊的环境实在是种炼狱的感觉，而唯一带来的好处就是，没有在安然舒适的环境中看电影、耍手机来消磨时光，而是给了我多些回忆、思考的机会和生活的种种感触（悲剧是吸了好多二手烟，这点确实比较惨）！
+                                <br><img src="/post_images/images/201702/d96907d5.jpg" alt="2017-ticket"></p>
+                            <p><strong>父母和亲人老了</strong>
+                                <br>　　年底在老家办了一场简单的婚礼，算是所有的亲戚都到场了，本身我爸妈都是排行最小的，所以到场的长辈都是老头、老太级别的状态了，最长的姑妈已经84岁高龄了。虽是一眼望去满是凋零，但是堂、表兄弟姐妹的小孩很多，活蹦乱跳的小精灵为整个场地增加了不少生命的气息。在所有我这一辈的亲戚中，我是最后完婚的，不过作为我这代人婚事的收官之作，虽然简陋但也凭空流露出那么一些自豪感。
+                                <br>　　让我感到欣慰的是，全家早年虽然多灾多难、命运多舛，而且爸妈也都接近60岁高龄，但是总体来说二老的身体和精神面貌还挺不错的。自从03年上大学直到现在工作，一直未有机会在家尽孝，这点是一直让我心中愧疚不已的，自己是家中的独子，必须承担起这份义不容辞的责任。结婚本是件幸福无比的事情，但是婚后直接面临的就是孩子、房子等各种问题，身边跟我类似情况的朋友还有很多，有时候想想我们这代人活得真是无比的辛苦。
+                                <br>
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/生活/">生活</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/生活杂感/">生活杂感</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/201702/little-thoughts-at-the-begin-of-2017.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+                <article id="post-gnu-gdb-debug" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/201701/gnu-gdb-debug.html" class="article-date">
+                            <time datetime="2017-01-19T13:03:50.000Z" itemprop="datePublished">2017-01-19</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
       <a class="article-title" href="/201701/gnu-gdb-debug.html">GNU GDB调试手册</a>
     </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>　　人家都说Windows平台下的程序员是幸福的，因为Visual Studio实在是太好用了。<br>　　我想一听到上面这句话，绝大多数Linux平台C/C++程序员都将会沉默，至少网上搜Linux平台下C/C++开发调试，很大一部分文章都是介绍搭建IDE的，这也侧面说明了Linux平台下没有一个占绝对主流地位好用的IDE。自己平时写程序是用的SlickEdit，这个IDE很贵，支持代码补全和跳转，调试过程也支持断点、Watch等特性，但是使用过程中还是有这样那样的小问题(比如非英文字串显式、速度比较慢)，但是总体比较而言还是比较优秀的跨平台C/C++ IDE。虽然线下编码调试使用这货当然可以，然则线上环境就无能为力了，再加上自己之前对gdb也只是了解个表明，这次就顺着gdb的文档深挖一下！<br>　　真是一看吓一跳，gdb的命令行调试要远比IDE的功能高级的多，如果只是通常的设置断点，监测变量什么的可能IDE比较方便，但是一旦上升到高级点的调试技巧，反而gdb在命令行的模式下更为的方便和高效。<br>　　前方预警：<strong>这将会是一篇很长很长的文档摘读</strong>。</p>
-<h1 id="一、开始使用gdb">一、开始使用gdb</h1><h2 id="1-1_启动gdb">1.1 启动gdb</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">➜  ~ gdb program [core|pid]</div><div class="line">➜  ~ gdb --args g++ -O2 -o main main.cpp</div><div class="line">(gdb) shell <span class="built_in">echo</span> <span class="variable">$SHELL</span></div><div class="line">(gdb) <span class="built_in">set</span> logging on</div></pre></td></tr></table></figure>
-<p>　　gdb接需要调试的程序可执行文件，后面可以附加core文件或者pid进程号(调试正在运行的进程)，如果有第三个参数gdb总是先尝试解释他为core文件，然后才是进程号。第二种格式采用–args，待调试的程序执行的时候需要额外的参数，此时可执行程序后面的参数不再被gdb解释。<br>　　组合键Ctrl-D或者输入quit可以退出调试状态，如果之前attach到一个进程上面去了，可以用detach命令释放进程，如果quit有表达式那么表达式就作为gdb的退出状态，否则是被调试的子进程的退出状态。gdb中使用Ctrl-C不会终止gdb，而是会终止gdb正在运行的调试指令返回到gdb命令状态。<br>　　在gdb中可以使用shell或者!做前导来执行shell中的命令而不用退出gdb(gdb的退出和重启动的代价是很大的)，make命令可以用来重新编译程序而不用先导shell|!符号，而gdb自动重新加载符号。<br>　　通过set logging on可以打开日志功能，默认会将日志输出追加到当前目录的gdb.txt文件中。</p>
-<h2 id="1-2_gdb中的命令">1.2 gdb中的命令</h2><p>　　gdb是很智能的，所有的命令都可以使用TAB、TAB-TAB进行补齐或者提示，不输入任何命令的空换行(在可能的情况下)表示重新执行前一条指令，这节省了重复输入step|list等指令的劳动。gdb允许指令和参数的缩减输入，没有歧义的时候会运行，而在遇到歧义的时候起会提示出各个歧义的命令列表供参考。<br>　　有些命令参数中可能含有特殊的符号(比如括号)，尤其在C++允许函数重载的时候需要使用参数类型来进行区分，此时参数需要使用 ‘ 单引号来包围，而且在需要的时候gdb也会自动帮你包围并给出候选列表的。</p>
-<h2 id="1-3_gdb帮助">1.3 gdb帮助</h2><p>　　gdb本身附带了很多帮助命令，比如：<br>　　<strong>help <em>command</em></strong>：显示名的帮助信息<br>　　<strong>apropos <em>args</em></strong>：会在命令名、文档中搜索指定的表达式<br>　　<strong>info <em>args|registers|breakpoints|…</em></strong>：可以显示很多状态信息，具体可以查看help info<br>　　<strong>set <em>var val</em></strong>：设置环境变量<br>　　<strong>show <em>var</em></strong>：显示环境变量的值</p>
-<h2 id="1-4_调试执行程序">1.4 调试执行程序</h2><p>　　对于待调试程序编译时候，总应该使用-g选项生成调试信息。
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/开发基础/">开发基础</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内核/">内核</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/201701/gnu-gdb-debug.html#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-  
-  
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
-    </nav>
-  
-</div>
-      <footer id="footer">
-    <div class="outer">
-        <div id="footer-info">
-            <div class="footer-left">
-                <i class="fa fa-copyright"></i> 
-                2017-至今 Lil-hui
+                        </header>
+                        <div class="article-entry" itemprop="articleBody">
+                            <p>　　人家都说Windows平台下的程序员是幸福的，因为Visual Studio实在是太好用了。
+                                <br>　　我想一听到上面这句话，绝大多数Linux平台C/C++程序员都将会沉默，至少网上搜Linux平台下C/C++开发调试，很大一部分文章都是介绍搭建IDE的，这也侧面说明了Linux平台下没有一个占绝对主流地位好用的IDE。自己平时写程序是用的SlickEdit，这个IDE很贵，支持代码补全和跳转，调试过程也支持断点、Watch等特性，但是使用过程中还是有这样那样的小问题(比如非英文字串显式、速度比较慢)，但是总体比较而言还是比较优秀的跨平台C/C++ IDE。虽然线下编码调试使用这货当然可以，然则线上环境就无能为力了，再加上自己之前对gdb也只是了解个表明，这次就顺着gdb的文档深挖一下！
+                                <br>　　真是一看吓一跳，gdb的命令行调试要远比IDE的功能高级的多，如果只是通常的设置断点，监测变量什么的可能IDE比较方便，但是一旦上升到高级点的调试技巧，反而gdb在命令行的模式下更为的方便和高效。
+                                <br>　　前方预警：<strong>这将会是一篇很长很长的文档摘读</strong>。</p>
+                            <h1 id="一、开始使用gdb">一、开始使用gdb</h1>
+                            <h2 id="1-1_启动gdb">1.1 启动gdb</h2>
+                            <figure class="highlight bash">
+                                <table>
+                                    <tr>
+                                        <td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td>
+                                        <td class="code"><pre><div class="line">➜  ~ gdb program [core|pid]</div><div class="line">➜  ~ gdb --args g++ -O2 -o main main.cpp</div><div class="line">(gdb) shell <span class="built_in">echo</span> <span class="variable">$SHELL</span></div><div class="line">(gdb) <span class="built_in">set</span> logging on</div></pre></td>
+                                    </tr>
+                                </table>
+                            </figure>
+                            <p>　　gdb接需要调试的程序可执行文件，后面可以附加core文件或者pid进程号(调试正在运行的进程)，如果有第三个参数gdb总是先尝试解释他为core文件，然后才是进程号。第二种格式采用–args，待调试的程序执行的时候需要额外的参数，此时可执行程序后面的参数不再被gdb解释。
+                                <br>　　组合键Ctrl-D或者输入quit可以退出调试状态，如果之前attach到一个进程上面去了，可以用detach命令释放进程，如果quit有表达式那么表达式就作为gdb的退出状态，否则是被调试的子进程的退出状态。gdb中使用Ctrl-C不会终止gdb，而是会终止gdb正在运行的调试指令返回到gdb命令状态。
+                                <br>　　在gdb中可以使用shell或者!做前导来执行shell中的命令而不用退出gdb(gdb的退出和重启动的代价是很大的)，make命令可以用来重新编译程序而不用先导shell|!符号，而gdb自动重新加载符号。
+                                <br>　　通过set logging on可以打开日志功能，默认会将日志输出追加到当前目录的gdb.txt文件中。</p>
+                            <h2 id="1-2_gdb中的命令">1.2 gdb中的命令</h2>
+                            <p>　　gdb是很智能的，所有的命令都可以使用TAB、TAB-TAB进行补齐或者提示，不输入任何命令的空换行(在可能的情况下)表示重新执行前一条指令，这节省了重复输入step|list等指令的劳动。gdb允许指令和参数的缩减输入，没有歧义的时候会运行，而在遇到歧义的时候起会提示出各个歧义的命令列表供参考。
+                                <br>　　有些命令参数中可能含有特殊的符号(比如括号)，尤其在C++允许函数重载的时候需要使用参数类型来进行区分，此时参数需要使用 ‘ 单引号来包围，而且在需要的时候gdb也会自动帮你包围并给出候选列表的。</p>
+                            <h2 id="1-3_gdb帮助">1.3 gdb帮助</h2>
+                            <p>　　gdb本身附带了很多帮助命令，比如：
+                                <br>　　<strong>help <em>command</em></strong>：显示名的帮助信息
+                                <br>　　<strong>apropos <em>args</em></strong>：会在命令名、文档中搜索指定的表达式
+                                <br>　　<strong>info <em>args|registers|breakpoints|…</em></strong>：可以显示很多状态信息，具体可以查看help info
+                                <br>　　<strong>set <em>var val</em></strong>：设置环境变量
+                                <br>　　<strong>show <em>var</em></strong>：显示环境变量的值</p>
+                            <h2 id="1-4_调试执行程序">1.4 调试执行程序</h2>
+                            <p>　　对于待调试程序编译时候，总应该使用-g选项生成调试信息。
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/开发基础/">开发基础</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内核/">内核</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发基础/">开发基础</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书笔记/">读书笔记</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/201701/gnu-gdb-debug.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+                <nav id="page-nav">
+                    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+                </nav>
             </div>
-            <div class="footer-right">
-                <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
-                    <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
-                </a>
-                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
-                </script>
-                Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a>  enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
-            </div>
+            <footer id="footer">
+                <div class="outer">
+                    <div id="footer-info">
+                        <div class="footer-left">
+                            <i class="fa fa-copyright"></i> 2017-至今 Lil-hui
+                        </div>
+                        <div class="footer-right">
+                            <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
+                                <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
+                            </a>
+                            <script type="text/javascript">
+                            var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+                            document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
+                            </script>
+                            Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a> enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
-    </div>
-</footer>
-
-    </div>
-    
-    <script src="/js/GithubRepoWidget.js"></script>
-
-<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
-<script src="/js/search.js"></script> 
-
-
-    <script>
+        <script src="/js/GithubRepoWidget.js"></script>
+        <script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+        <script src="/js/search.js"></script>
+        <script>
         $(document).ready(function() {
             var iPad = window.navigator.userAgent.indexOf('iPad');
             if (iPad > -1 || $(".left-col").css("display") === "none") {
                 var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
                 var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
-                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
-            }
-            else {
+                $("body").css({
+                    "background-color": bgColorList[bgColor],
+                    "background-size": "cover"
+                });
+            } else {
                 var backgroundnum = 10;
                 var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
-                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+                $("body").css({
+                    "background": backgroundimg,
+                    "background-attachment": "fixed",
+                    "background-size": "cover"
+                });
             }
         })
-    </script>
-
-
-
-
-    <script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    tex2jax: {
-        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-        processEscapes: true,
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    }
-});
-
-MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-        all[i].SourceElement().parentNode.className += ' has-jax';                 
-    }       
-});
-</script>
-
-<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-
-
-<div class="scroll" id="scroll">
-    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
-    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
-    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
-</div>
-
-    <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
-
-
-   <script type="text/javascript">      
-     var search_path = "search.xml";
-	 if (search_path.length == 0) {
-	 	search_path = "search.xml";
-	 }
-	 var path = "/" + search_path;
-     searchFunc(path, 'local-search-input', 'local-search-result');
-   </script>
-
-</script>
-
-  </div>
+        </script>
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true, skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] } }); MathJax.Hub.Queue(function() { var all = MathJax.Hub.getAllJax(), i; for(i=0; i
+            < all.length; i +=1 ) { all[i].SourceElement().parentNode.className +=' has-jax' ; } }); </script>
+                <script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+                </script>
+                <div class="scroll" id="scroll">
+                    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+                    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+                    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+                </div>
+                <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+                <script type="text/javascript">
+                var search_path = "search.xml";
+                if (search_path.length == 0) {
+                    search_path = "search.xml";
+                }
+                var path = "/" + search_path;
+                searchFunc(path, 'local-search-input', 'local-search-result');
+                </script>
+        </script>
+    </div>
 </body>
+
 </html>
