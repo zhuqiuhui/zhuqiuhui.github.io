@@ -246,51 +246,6 @@
                         </div>
                     </div>
                 </article>
-                <article id="post-study-note-of-scalable-backend-(4)-cache" class="article article-type-post" itemscope itemprop="blogPost">
-                    <div class="article-meta">
-                        <a href="/201702/study-note-of-scalable-backend-(4)-cache.html" class="article-date">
-                            <time datetime="2017-02-23T15:21:03.000Z" itemprop="datePublished">2017-02-23</time>
-                        </a>
-                    </div>
-                    <div class="article-inner">
-                        <input type="hidden" class="isFancy" />
-                        <header class="article-header">
-                            <h1 itemprop="name">
-      <a class="article-title" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a>
-    </h1>
-                        </header>
-                        <div class="article-entry" itemprop="articleBody">
-                            <p>　　缓存技术在计算机体系中使用的极为广泛：CPU内部多级缓存、硬盘缓存、Linux文件系统缓存、数据库查询缓存、DNS解析缓存、浏览器和应用APP缓存等，缓存在加快系统响应的同时，也降低了对某些资源的消耗，善用缓存会整个系统的性能将会有极大的改善。
-                                <br>　　因为缓存通常可以从源头重建，所以即使被删除或者丢失了也不会产生太大的问题，不过也有一些诸如缓存失败导致服务器雪崩的问题。缓存最主要考量的是命中率，这个指标收到缓存键集合大小、内存空间大小和缓存寿命相互制约。</p>
-                            <h1 id="一、基于HTTP缓存">一、基于HTTP缓存</h1>
-                            <p>　　HTTP层的缓存一个重要特性就是其为通读缓存，通读缓存通常作为中介(代理)的角色，透明地给HTTP链接添加缓存功能，他可以拦截客户端请求并用缓存对象返回给客户端作为响应，只有当缓存没有合适的数据的生活，才会链接到原始服务器并转发客户端请求给他。因为服务和通读缓存的接口是一样的，这种情况下客户端也可以直接连接到原始服务器而跳过缓存。通读缓存很具有吸引力，因为他的存在对客户端来说是透明的，客户端无法区分响应来自缓存还是原始服务器，所以通读缓存扮演着可插拔的角色，客户端无须因为他的存在与否而做任何修改。</p>
-                            <h2 id="1-1_HTTP规范的缓存头">1.1 HTTP规范的缓存头</h2>
-                            <p>　　HTTP协议虽然广为使用，而且其可被缓存特性也广受赞誉，不过协议上其相关选项和实现缺较为的混乱。HTTP协议中和缓存相关的参数有：
-                                <br>　　<strong>Cache-Control</strong>
-                                <br>　　private: 指出请求结果对请求用户是特定的，响应不能提供给其他用户。该用法也就意味着只有浏览器可以缓存响应，因为中间缓存无法识别特定用户。
-                                <br>　　public: 只要它为过期，指示响应可以在用户间被共享。注意这个选项和private是互斥的。
-                                <br>　　no-store: 指示响应不能被任何中间缓存存储到磁盘上，即响应可以被缓存在内存，但是不能持久化到磁盘。当你在响应中包含用户敏感信息的时候应该包含这个选项，使得缓存信息不回存储这些数据到磁盘上。
-                                <br>　　no-cache: 指示响应不能被缓存，更精确的意思是针对这个请求，缓存在每次用户请求相同资源的时候都需要询问服务器此时是否仍然合法，其效果和 Cache-Control:max-age=0相当。
-                        </div>
-                        <div class="article-info article-info-index">
-                            <div class="article-category tagcloud">
-                                <a class="article-category-link" href="/categories/开发进阶/">开发进阶</a>
-                            </div>
-                            <div class="article-tag tagcloud">
-                                <ul class="article-tag-list">
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li>
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li>
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li>
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li>
-                                </ul>
-                            </div>
-                            <p class="article-more-link">
-                                <a href="/201702/study-note-of-scalable-backend-(4)-cache.html#more">阅读全文 >></a>
-                            </p>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                </article>
                 <article id="post-gnu-gdb-debug" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
                         <a href="/201701/gnu-gdb-debug.html" class="article-date">
