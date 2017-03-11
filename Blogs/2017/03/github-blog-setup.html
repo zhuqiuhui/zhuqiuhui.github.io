@@ -5,17 +5,14 @@
     <meta charset="utf-8">
     <title>Github博客搭建过程 | 恋恋风尘的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="RPC当前在大公司的开发中越来越流行了，各大厂的开源RPC框架也呈百花开放的状态。在通过前面的文章做了一个对Google出品之gRPC的使用手册，也算是在使用方面有了一个基本的了解。恰巧最近逛别人博客的时候，看到几篇关于RPC原理和设计方面的文章，觉得十分不错，于是这里就将这些文章进行整理，对RPC设计、使用和实现中的那些乱七八糟的问题进行一个归纳总结。
-一、RPC的原理和关键点1.1 RPC">
+    <meta name="description" content="经历了半个多月的时间，总算把自己的Github博客搭建起来了，其中参考了很多模板，改动的地方也颇多，主要参考了MOxFIVE的设计思路，自己不是做前端的，希望改进的地方能给读者以很多启发。">
     <meta property="og:type" content="article">
     <meta property="og:title" content="Github博客搭建过程">
     <meta property="og:url" content="http://zhuqiuhui.github.io/Blogs/2017/01/github-blog-setup.html">
     <meta property="og:site_name" content="恋恋风尘的博客">
-    <meta property="og:description" content="RPC当前在大公司的开发中越来越流行了，各大厂的开源RPC框架也呈百花开放的状态。在通过前面的文章做了一个对Google出品之gRPC的使用手册，也算是在使用方面有了一个基本的了解。恰巧最近逛别人博客的时候，看到几篇关于RPC原理和设计方面的文章，觉得十分不错，于是这里就将这些文章进行整理，对RPC设计、使用和实现中的那些乱七八糟的问题进行一个归纳总结。
-一、RPC的原理和关键点1.1 RPC">
-    <meta property="og:image" content="https://taozj.org/post_images/images/201701/796a12cc.png">
-    <meta property="og:image" content="https://taozj.org/post_images/images/201701/780cf908.png">
-    <meta property="og:updated_time" content="2017-02-08T08:10:03.000Z">
+    <meta property="og:description" content="经历了半个多月的时间，总算把自己的Github博客搭建起来了，其中参考了很多模板，改动的地方也颇多，主要参考了MOxFIVE的设计思路，自己不是做前端的，希望改进的地方能给读者以很多启发。">
+    <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">
+    <meta property="og:updated_time" content="2017-03-11T08:10:03.000Z">
     <link rel="icon" href="/favicon.ico">
     <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
     <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
@@ -89,6 +86,7 @@
                                 <nav class="header-menu">
                                     <ul>
                                         <li><a href="/archives">文章归档</a></li>
+                                        <li><a href="/tags">文章概览</a></li>
                                         <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
                                         <li><a href="/about">请你读我</a></li>
                                         <li><a href="/search.html">搜索本站</a></li>
@@ -120,33 +118,6 @@
                                         <li><a href="/categories/其他/">其他</a></li>
                                     </ul>
                                 </nav>
-                                <!--<div class="widget tagcloud" id="js-tagcloud">
-                                    <ul class="tag-list">
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li>
-                                    </ul>
-                                </div>-->
                             </section>
                         </div>
                     </div>
@@ -155,7 +126,8 @@
         </div>
         <div class="mid-col">
             <!--手机端显示头部主页-->
-            <nav id="mobile-nav"><!--手机显示侧边栏
+            <nav id="mobile-nav">
+                <!--手机显示侧边栏
                 <div class="overlay">
                     <div class="slider-trigger"></div>
                     <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">Lil-hui</a></h1>
@@ -172,6 +144,7 @@
                         <nav class="header-menu">
                             <ul>
                                 <li><a href="/archives">文章归档</a></li>
+                                <li><a href="/tags">文章概览</a></li>
                                 <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
                                 <li><a href="/about">请你读我</a></li>
                                 <li><a href="/search.html">搜索本站</a></li>
@@ -192,95 +165,71 @@
                 <link class="menu-list" tags="标签" friends="友情链接" about="关于我" />
             </nav>
             <div class="body-wrap">
-                <article id="post-rpc-principle-and-tips" class="article article-type-post" itemscope itemprop="blogPost">
+                <!--文章开始-->
+                <article id="github-blog-setup" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
-                        <a href="/201701/rpc-principle-and-tips.html" class="article-date">
-                            <time datetime="2017-01-15T04:33:03.000Z" itemprop="datePublished">2017-01-15</time>
-                        </a>
+                        <time datetime="2017-03-11T04:33:03.000Z" itemprop="datePublished">2017-03-11</time>
                     </div>
                     <div class="article-inner">
                         <input type="hidden" class="isFancy" />
                         <header class="article-header">
-                            <h1 class="article-title" itemprop="name">
-      RPC设计和使用中的一些杂谈
-    </h1>
+                            <h1 class="article-title" itemprop="name">Github博客搭建过程</h1>
                         </header>
                         <div class="article-info article-info-post">
                             <div class="article-category tagcloud">
-                                <a class="article-category-link" href="/categories/分布式/">分布式</a>
+                                <a class="article-category-link" href="/categories/Web前端/">Web前端</a>
                             </div>
                             <div class="article-tag tagcloud">
                                 <ul class="article-tag-list">
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li>
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/互联网/">互联网</a></li>
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li>
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后台开发/">后台开发</a></li>
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/架构/">架构</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li>
                                 </ul>
                             </div>
                             <div class="clearfix"></div>
                         </div>
                         <div class="article-entry" itemprop="articleBody">
-                            <p>　　RPC当前在大公司的开发中越来越流行了，各大厂的开源RPC框架也呈百花开放的状态。在通过前面的<a href="/201612/learn-note-of-google-grpc.html">文章</a>做了一个对Google出品之gRPC的使用手册，也算是在使用方面有了一个基本的了解。恰巧最近逛别人博客的时候，看到几篇关于RPC原理和设计方面的文章，觉得十分不错，于是这里就将这些文章进行整理，对RPC设计、使用和实现中的那些乱七八糟的问题进行一个归纳总结。</p>
-                            <h1 id="一、RPC的原理和关键点">一、RPC的原理和关键点</h1>
-                            <h2 id="1-1_RPC的原理">1.1 RPC的原理</h2>
-                            <p><img src="/post_images/images/201701/796a12cc.png" alt="rpc">
-                                <br>　　RPC的原理可以说是再简单不过了，一张图足以说明问题，总体来说会经历以下的步骤：
-                                <br>　　(1). client代码像普通函数调用一样调用client stub函数，这个调用是本地调用，调用参数会和平常函数调用一样进行返回地址和调用参数压栈操作；
-                                <br>　　(2). client stub会把调用参数和其它信息(比如调用方法名、调用属性等，可以称为metadata)进行打包封装成message，然后通过系统调用发送该message，这个打包的过程是个序列化的过程；
-                                <br>　　(3). client寻求到服务端的地址，然后通过本地操作系统经由某种协议，将上述message发送给server端；
-                                <br>　　(4). server端的操作系统接收message后将其传递给server stub；
-                                <a id="more"></a>
-                                <br>　　(5). server stub将message解包，得到原始传递过来的各项调用参数，解包的过程是反序列化的过程；
-                                <br>　　(6). server stub调用server端的本地函数，然后将得到的结果按照上述类似的步骤反向传递给client作为结果返回。当然整个过程也可能不那么顺利，那么也应该产生合适的状态码、异常信息作为返回。
-                                <br>　　所以RPC实际是通过client stub和server stub起到一个代理的作用，将client的请求转发到server端去操作，并将操作得到的结果回传，因为传递是跨进程、跨主机的，所以必须进行序列化和反序列化的过程来保证消息的正确性。</p>
-                            <h2 id="1-2_RPC设计中的要点">1.2 RPC设计中的要点</h2>
-                            <p>　　相比于当前流行的HTTP/JSON开发，RPC等同于在实现相同功能的前提下将服务和传输等细节封装好，实现一种业务代码对特定服务开箱即用的效果。针对上面的RPC工作的流程看来，下面的几点是RPC设计实现中的几点要素：
-                                <br>　　(1). <strong>调用接口设计</strong>
-                                <br>　　调用接口是客户端和服务端的一种约定，接触到的RPC框架大多都是服务于C/C++的，这类静态语言需要在编译期间确定调用接口，而且现在许多主流的编程语言都没有内置stub生成的支持，所以通常的解决方式都是用一种IDL(Interface Definition Language)的方式来描述调用接口，然后通过对应的功能辅助生成stub代码，这一点无论是上个世纪的Sun RPC(rpcgen)还是当下的gRPC(protobuf)、Thrift(thrift)都是这么干的。同时，想做到客户端和服务端跨语言的支持，也可以通过IDL然后生成特定语言种类的辅助代码来屏蔽差别性。
-                                <br><img src="/post_images/images/201701/780cf908.png" alt="idl">
-                                <br>　　(2). <strong>序列化和网络传输</strong>
-                                <br>　　序列化的技术当前十分成熟了(json、msgpack、protobuf、xml……)，而且大多序列化库能够保证序列化和反序列化后能够生成特定于语言、字节序、架构的数据正确表示，现在序列化库所最求的极致，除了立志于多平台多语言支持外，就是序列化和反序列过程的速度和数据压缩效率，从这一点说Google的protobuf有着很明显的优势，看看其流行程度就知道了。
-                                <br>　　还值得一提的是，序列化还可以对数据结构进行序列化，比如C的结构体、指针等信息，感兴趣的可以参看这个小库<a href="http://www.happyponyland.net/cserialization/readme.html" target="_blank" rel="external">C serialization library</a>！但是在RPC中要实现调用参数Call-by-ref一定要谨慎，通常不要这么干。
-                                <br>　　RPC的好处就是对底层传输协议没有任何细节要求，承载client-server主机的通信协议可以选用诸如UDP、TCP、HTTP、MessageQueue甚至自设计协议，当然这也跟业务需求密切相关的，通用的RPC库通常会提供多个传输协议可供自由选择使用。
-                                <br>　　(3). <strong>RPC服务发布</strong>
-                                <br>　　<strong>rpcbind</strong>：最初的Sun RPC就是这么干的，RPC服务提供者启动后将自己绑定到随机端口上，然后向rpcbind注册告知自己提供的服务和侦听的端口，而当客户端发起RPC调用的时候会首先联系rpcbind服务(周知111端口)以寻求提供服务的主机端口，然后再向这个地址发起真正的RPC请求。不过观当前流行的RPC框架，都是服务端直接绑定到某个约定的端口上面～
-                                <br>　　<strong>名字服务</strong>：这个就厉害了，前面的<a href="/201701/learn-note-of-distributed-system-%286%29-application.html">文章</a>介绍了zookeeper可以做很多事情，其中RPC服务可以方便的采用zookeeper进行发布：RPC的名字可以定义为ZNode，然后在其子节点上创建提供服务的主机信息，就可以实现诸如负载均衡、地址变更、主备冗余切换等功能。
-                                <br>　　(4). <strong>错误和异常处理</strong>
-                                <br>　　RPC过程涉及到的过程和细节众多，客户端、服务端、网络传输都有可能出问题，为此gRPC为可能的情况都定义了对应的出错码，但是除了OK之外感觉其他提示都是不可靠，针对这种问题，会有一种<em>调用语义</em>的概念。
-                                <br>　　<strong>调用语义</strong>：诸如RPC这种跨网络的服务，要达到像本地函数调用那种exactly once semantic是理想化而不可能实现的，通常只能实现at least once和at most once两种调用语义，这之中的权衡一方面需要考虑具体业务的特点和需求，再则需要查看RPC所执行的任务是否是幂等(idempotent)的。</p>
-                            <h1 id="二、RPC和MessageQueue的联系区别">二、RPC和MessageQueue的联系区别</h1>
-                            <p>　　这两种方式都是企业用来进行业务解耦的重要手段，比如在经历多个项目后，发现有些服务或者功能可以独立出来给大家分享，这种情况就派上了用场了。RPC和MessageQueue虽然功能类似，但是使用手法还是有所区别的：
-                                <br>　　<strong>同步和异步</strong>：RPC模拟远程函数作为一个本地函数调用，所以函数调用上特别适合于Request/Response同步交互方式的使用场景，业务开发使用起来也更为的简单和直观；MessageQueue会将发送的消息进行排队处理，所以天然支持异步的工作模式，反而在需要同步返回结果的情况下MessageAQueue会比较麻烦。
-                                <br>　　同步方式使用的最大痛点就是并发量无法做的很高(针对那些使用线程处理请求的模式，协程另说)，而这一点MessageQueue可以将请求放入队列中，起到了错峰流控的作用。虽然gRPC、Thrift等开源RPC框架也提供异步使用方式，但是又额外多出来了CompleteQueue、CallBack之类的东西，每个调用还需要使用requestID/tag之类的东西进行标识，增加了RPC框架使用的复杂度，有违RPC简化业务实现的初衷，尤其是那种原本本地调用的业务代码向RPC迁移的时候，异步化过程中大动干戈的修改代码是比较忌讳的。
-                                <br>　　大家对这样的使用如此的一致，以至于默认就认为RPC是同步类型的调用，消息队列是异步类型的调用了。
-                                <br>　　<strong>固化</strong>：MessageQueue的一个好处就是可以将收到的消息立即固化到磁盘上，然后再进行消息的处理和应答工作，所以即使这个过程中有意外情况发生，消息也不会丢失，从某中程度上提供了一种更可靠的通信，此外这种固化还起到生产者和消费者长时间间隔完全解耦、接收端不可用的情况下针对发送端的可用性、备份等作用。这点对RPC的方式来说是很难实现的，RPC一般不会暂存请求。
-                                <br>　　<strong>消费模式</strong>：RPC只是Client和Server之间的一对一的关系，而MessageQueue通常采用Sender-Broker-Receiver的方式构成，这三者的联系可以出演化出各种各样的消费模式，尤其对于类似于“一对多”的使用场景只有MessageQueue才能支持。
-                                <br>　　<strong>静态语言的接口限制</strong>：对于C/C++这类强制性静态语言来说，调用接口需要在编译期间确定，基于Protobuf实现的RPC需要修改proto接口定义文件然后重新生成特定语言的辅助代码，对于客户端和服务端这种频繁升级都将是灾难性的。通过MessageQueue的方式就没有这么多的问题，MessageQueue的主体是消息，而Protobuf就是用于定义消息格式的，Google对Protobuf消息的向后兼容性是着重考虑的，所以软件的平滑升级是可行的。
-                                <br>　　不过也有大侠指出，一般开发环境都不会这么裸露地直接使用RPC开发业务的，通常会在业务层和RPC层中间做个隔离层，让变化性强的代码不侵入到业务当中，减少RPC频繁变动对业务代码的影响。
-                                <br>　　<strong>易用性</strong>：上面比较起来RPC对比于MessageQueue性能低、资源占用多、灵活性和扩展性不太方便，似乎是一无是处。我感觉RPC的最大优势就是简单易用(所以常常这点会作为RPC框架评价的重要指标)，程序开发充斥着无数函数调用，能把远程服务作为像函数调用一样使用真是让程序员再开心不过了。还有，比如RPC-&gt;RPC-&gt;RPC这样的嵌套调用场景，其中任何一个步骤发生了问题，调用过程都可以失败方式返回，业务上的错误处理和回滚等操作也直接明了一些吧，但是如果在异步模式下的开发，除非记录相关状态，否则这种回溯是很麻烦的！</p>
-                            <p>　　当然，本文还是恪守于传统的RPC，所以只需要定位到函数名就可以了；对于支持面向对象的编程来说，还有RMI(Remote Method Invoke)远程方法调用，使用过程中还要找到特定的对象然后再调用该对象上的方法，通常可以通过url、名字服务等方式定位远程对象，不知道现在用的多不多，就没深究下去了。
-                                <br>　　RPC的使用的话，PhxSQL项目里面有个PhxRPC，而Raft协议实现中，各个节点的消息传递也是采用的RPC的方式进行的。</p>
+                            <p>　　经历了半个多月的时间，总算把自己的Github博客搭建起来了，其中参考了很多模板，改动的地方也颇多，主要参考了<a href="http://moxfive.xyz/" target="_blank">MOxFIVE</a>的设计思路，自己不是做前端的，希望改进的地方能给读者以很多启发。</p>
+                            <h1 id="一、基本环境配置">一、基本环境配置</h1>
+                            <h2 id="1-1_Github账号注册">1.1 Github账号注册</h2>
+                            <p>　　如果你没有<a href="https://github.com/" target="_blank">Github账号</a>，旁边空地上做1000个蹲起先，Github账号已经成为了一个高素质程序员的ID，具体怎么注册，怎么使用自己好好摸索一下（个人认为要深入理解Git的原理是很有好处的，目前大部分公司都采用的是Git分支开发流程）。
+                                <br>　　有了Github账号，首先clone下自己喜欢的主题（见本文参考部分），把结构（下节讲）熟悉下后就可以自己反复地commit就行了，其实就是这么简单，比较花费时间的是排版格式问题（排版成自己喜欢的样式或者结构）。
+                            </p>
+                            <h2 id="1-2_Jekyll本地安装">1.2 Jekyll本地安装</h2>
+                            <p>　　Jekyll集成了一个开发用的服务器，可以让你使用浏览器在本地进行预览。读者可以根据自己本地的电脑环境来安装jekyll，安装流程可以参考<a href="http://jekyll.com.cn/" target="_blank">jekyll官方主页</a>，你可能在安装过程中遇到过很多问题（我的是mac，遇到过很多问题），具体解决方案比较全面的可以参考文章<a href="https://segmentfault.com/a/1190000007243257" target="_blank">《Jekyll搭建个人博客》</a>。
+                            </p>
+                            <h1 id="二、Github网站结构">二、Github网站结构</h1>
+                            <p>　　以本网站的代码结构为例，见下图：<br>
+                            <img src="/post_images/images/2017/03/blog_file_folder.png" title="我的代码结构" /><br>
+                            <ul>
+                                <li>tags：里面存放的是博文的标签，根据不同的标签把博文的title信息放到相应的标签文件夹中</li>
+                                <li>post_images：里面存放的是博文中的图片</li>
+                                <li>page：初次跳到网站主面对就的分页内容</li>
+                                <li>need_html：存放一些小需求的html</li>
+                                <li>categories：存放的是不同类别博客下的title信息</li>
+                                <li>Blogs：里面存放的是完整的博文，根据不同的时间把博文放到相应的时间文件夹中</li>
+                                <li>archives：以年份的形式把本年度所写博客的title信息列表出来</li>
+                                <li>about：与博主有关的相关信息</li>
+                            </ul>
+                            明白以上代码结构，再加上不断地熟悉，并尝试新建一篇，便很快能掌握，喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！
+                            </p>
                             <p>本文完！</p>
                             <h1 id="参考">参考</h1>
                             <ul>
-                                <li><a href="https://en.wikipedia.org/wiki/Remote_procedure_call" target="_blank" rel="external">Remote procedure call</a></li>
-                                <li><a href="https://www.qcloud.com/community/article/164816001481011874" target="_blank" rel="external">如何设计一个RPC系统</a></li>
-                                <li><a href="https://yq.aliyun.com/articles/3229?spm=5176.100239.bloglist.84.IZX9xy" target="_blank" rel="external">你应该知道的RPC原理</a></li>
-                                <li><a href="http://www.cnblogs.com/metoy/p/4321311.html" target="_blank" rel="external">RPC原理详解</a></li>
-                                <li><a href="http://ternarysearch.blogspot.com/2013/01/message-queues-and-rpc.html" target="_blank" rel="external">Message Queues and RPC</a></li>
-                                <li><a href="http://www.happyponyland.net/cserialization/readme.html" target="_blank" rel="external">C serialization library</a></li>
-                                <li><a href="https://www.cs.rutgers.edu/~pxk/417/notes/08-rpc.html" target="_blank" rel="external">Remote Procedure Calls</a></li>
-                                <li><a href="http://www.grpc.io/docs/guides/error.html" target="_blank" rel="external">gRPC Error Handling</a></li>
+                                <li><a href="https://pages.github.com/" target="_blank" rel="external">Github Pages</a></li>
+                                <li><a href="https://hexo.io/zh-cn/docs/" target="_blank" rel="external">Hexo文档主页</a></li>
+                                <li><a href="https://github.com/zhuqiuhui" target="_blank" rel="external">我的Github主页</a></li>
+                                <li><a href="http://huangxuan.me/" target="_blank" rel="external">参见博客主题一</a></li>
+                                <li><a href="http://baixin.io/" target="_blank" rel="external">参见博客主题二</a></li>
+                                <li><a href="http://www.ezlippi.com/" target="_blank" rel="external">参见博客主题三</a></li>
+                                <li><a href="http://moxfive.xyz/" target="_blank" rel="external">参见博客主题四</a></li>
                             </ul>
                         </div>
                     </div>
                     <div class="copyright">
                         <p><span>本文标题:</span>Github博客搭建过程</p>
-                        <p><span>最后更新:</span>2017-03-010, 16:10:03</p>
+                        <p><span>最后更新:</span>2017-03-11, 16:10:03</p>
                         <p>
-                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/01/github-blog-setup.html" title="Github博客搭建过程">http://zhuqiuhui.github.io/Blogs/2017/01/github-blog-setup.html</a>
-                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.github.io/Blogs/2017/01/github-blog-setup.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/01/github-blog-setup.html" title="Github博客搭建过程">http://zhuqiuhui.github.io/Blogs/2017/03/github-blog-setup.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.github.io/Blogs/2017/03/github-blog-setup.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
                             <script>
                             var clipboard = new Clipboard('.copy-path');
                             </script>
@@ -291,15 +240,14 @@
                     </div>
                     <!--上一篇和下一篇地址-->
                     <nav id="article-nav">
+                        <!--
                         <div id="article-nav-newer" class="article-nav-title">
                             <a href="/201701/https-principle.html">
                     HTTPS原理简单介绍
                 </a>
-                        </div>
+                        </div>-->
                         <div id="article-nav-older" class="article-nav-title">
-                            <a href="/201701/learn-note-of-distributed-system-(6)-application.html">
-                    分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景
-                </a>
+                            <a href="#">没有了</a>
                         </div>
                     </nav>
                     <! -- 添加捐赠图标 -->
@@ -352,20 +300,19 @@
                     <!-- 多说公共JS代码 end -->
                 </div>
                 <div class="scroll" id="post-nav-button">
-                    <a href="/201701/https-principle.html" title="上一篇: HTTPS原理简单介绍">
+                    <!--上一篇-->
+                    <a href="#" title="到头了哦">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
-                    <a href="/201701/learn-note-of-distributed-system-(6)-application.html" title="下一篇: 分布式系统入门笔记（六）：基于ZooKeeper的分布式系统的应用场景">
+                    <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+                    <!--下一篇-->
+                    <a href="#" title="太心急了，还没更新哦">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 </div>
                 <!--左侧栏文章列表-->
                 <ul class="post-list">
-                    <li class="post-list-item"><a class="post-list-link" href="/Blogs/2017/01/github-blog-setup.html">Github博客搭建过程</a></li>
-                    <li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(4)-cache.html">后台开发那些常用技术再次小结（四）：缓存部分</a></li>
-                    <li class="post-list-item"><a class="post-list-link" href="/201702/cmake-cheatsheet.html">CMake工具使用手册</a></li>
-                    <li class="post-list-item"><a class="post-list-link" href="/201702/study-note-of-scalable-backend-(3)-storage.html">后台开发那些常用技术再次小结（三）：存储部分</a></li>
+                    <li class="post-list-item"><a class="post-list-link" href="/Blogs/2017/03/github-blog-setup.html">Github博客搭建过程</a></li>
                 </ul>
                 <script>
                 </script>
@@ -376,15 +323,7 @@
                         <div class="footer-left">
                             <i class="fa fa-copyright"></i> 2017-至今 Lil-hui
                         </div>
-                        <div class="footer-right"><!--
-                            <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
-                                <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
-                            </a>
-                            <script type="text/javascript">
-                            var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-                            document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
-                            </script>
-                            Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a> enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>-->
+                        <div class="footer-right">
                         </div>
                     </div>
                 </div>
