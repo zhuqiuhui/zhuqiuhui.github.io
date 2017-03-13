@@ -3,16 +3,23 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Github博客搭建过程 | 恋恋风尘的博客</title>
+    <!--!!!!!!!!!!!!!!-->
+    <title>学习Java框架笔记一 | 恋恋风尘的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="经历了半个多月的时间，总算把自己的Github博客搭建起来了，其中参考了很多模板，改动的地方也颇多，主要参考了MOxFIVE的设计思路，自己不是做前端的，希望改进的地方能给读者以很多启发。">
+    <!--!!!!!!!!!!!!!!-->
+    <meta name="description" content="刚入职没有多久，开发任务不是太重，很多功能的开发不能全部参与，闲暇之余，mentor给了一个小的开发任务“把美周内部共享的电子书全部爬取下来”，其实刚接到这个任务不知道怎么入手，便查了相关的爬虫工具，如nutch、Heritrix、crawler4j、WebMagic等等。其中WebMagic是国人黄亿华先生的良心大作，WebMagic是一个无须配置、便于二次开发的爬虫框架，它提供简单灵活的API，只需少量代码即可实现一个爬虫，这里给出了两个例子，一个是爬取CSDN博客信息，一个是爬虫电子书。">
     <meta property="og:type" content="article">
-    <meta property="og:title" content="Github博客搭建过程">
-    <meta property="og:url" content="http://zhuqiuhui.github.io/Blogs/2017/03/github-blog-setup.html">
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:title" content="学习Java框架笔记一">
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:url" content="http://zhuqiuhui.github.io/Blogs/2017/03/study-web-note-1.html.html">
     <meta property="og:site_name" content="恋恋风尘的博客">
-    <meta property="og:description" content="经历了半个多月的时间，总算把自己的Github博客搭建起来了，其中参考了很多模板，改动的地方也颇多，主要参考了MOxFIVE的设计思路，自己不是做前端的，希望改进的地方能给读者以很多启发。">
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:description" content="刚入职没有多久，开发任务不是太重，很多功能的开发不能全部参与，闲暇之余，mentor给了一个小的开发任务“把美周内部共享的电子书全部爬取下来”，其实刚接到这个任务不知道怎么入手，便查了相关的爬虫工具，如nutch、Heritrix、crawler4j、WebMagic等等。其中WebMagic是国人黄亿华先生的良心大作，WebMagic是一个无须配置、便于二次开发的爬虫框架，它提供简单灵活的API，只需少量代码即可实现一个爬虫，这里给出了两个例子，一个是爬取CSDN博客信息，一个是爬虫电子书。">
+    <!--!!!!!!!!!!!!!!-->
     <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">
-    <meta property="og:updated_time" content="2017-03-11T08:10:03.000Z">
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:updated_time" content="2017-03-13T08:10:03.000Z">
     <link rel="icon" href="/favicon.ico">
     <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
     <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
@@ -168,18 +175,19 @@
             </nav>
             <div class="body-wrap">
                 <!--文章开始-->
-                <article id="github-blog-setup" class="article article-type-post" itemscope itemprop="blogPost">
+                <!--!!!!!!!!!!!!!!-->
+                <article id="study-web-note-1" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
-                        <time datetime="2017-03-11T04:33:03.000Z" itemprop="datePublished">2017-03-11</time>
+                        <time datetime="2017-03-12T13:33:03.000Z" itemprop="datePublished">2017-03-13</time>
                     </div>
                     <div class="article-inner">
                         <input type="hidden" class="isFancy" />
                         <header class="article-header">
-                            <h1 class="article-title" itemprop="name">Github博客搭建过程</h1>
+                            <h1 class="article-title" itemprop="name">学习Java框架笔记一</h1>
                         </header>
                         <div class="article-info article-info-post">
                             <div class="article-category tagcloud">
-                                <a class="article-category-link" href="/categories/Web前端/">Web前端</a>
+                                <a class="article-category-link" href="/categories/Java/">Java</a>
                             </div>
                             <div class="article-tag tagcloud">
                                 <ul class="article-tag-list">
@@ -189,49 +197,27 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="article-entry" itemprop="articleBody">
-                            <p>　　经历了半个多月的时间，总算把自己的Github博客搭建起来了，其中参考了很多模板，改动的地方也颇多，主要参考了<a href="http://moxfive.xyz/" target="_blank">MOxFIVE</a>的设计思路，自己不是做前端的，希望改进的地方能给读者以很多启发。</p>
-                            <h1 id="一、基本环境配置">一、基本环境配置</h1>
-                            <h2 id="1-1_Github账号注册">1.1 Github账号注册</h2>
-                            <p>　　如果你没有<a href="https://github.com/" target="_blank">Github账号</a>，旁边空地上做1000个蹲起先，Github账号已经成为了一个高素质程序员的ID，具体怎么注册，怎么使用自己好好摸索一下（个人认为要深入理解Git的原理是很有好处的，目前大部分公司都采用的是Git分支开发流程）。
-                                <br>　　有了Github账号，首先clone下自己喜欢的主题（见本文参考部分），把结构（下节讲）熟悉下后就可以自己反复地commit就行了，其实就是这么简单，比较花费时间的是排版格式问题（排版成自己喜欢的样式或者结构）。
+                            <h1 id="记录学习笔记">一、记录学习笔记</h1>
+                            <p>
+                            <ol>
+                            <li>web.xml的加载顺序：context-param->listener->filter->servlet->spring。</li>
+                                
+                            </ol>
                             </p>
-                            <h2 id="1-2_Jekyll本地安装">1.2 Jekyll本地安装</h2>
-                            <p>　　Jekyll集成了一个开发用的服务器，可以让你使用浏览器在本地进行预览。读者可以根据自己本地的电脑环境来安装jekyll，安装流程可以参考<a href="http://jekyll.com.cn/" target="_blank">jekyll官方主页</a>，你可能在安装过程中遇到过很多问题（我的是mac，遇到过很多问题），具体解决方案比较全面的可以参考文章<a href="https://segmentfault.com/a/1190000007243257" target="_blank">《Jekyll搭建个人博客》</a>。
-                            </p>
-                            <h1 id="二、Github网站结构">二、Github网站结构</h1>
-                            <p>　　以本网站的代码结构为例，见下图：<br>
-                            <img src="/post_images/images/2017/03/blog_file_folder.png" title="我的代码结构" /><br>
-                            <ul>
-                                <li>tags：里面存放的是博文的标签，根据不同的标签把博文的title信息放到相应的标签文件夹中</li>
-                                <li>post_images：里面存放的是博文中的图片</li>
-                                <li>page：初次跳到网站主面对就的分页内容</li>
-                                <li>need_html：存放一些小需求的html</li>
-                                <li>categories：存放的是不同类别博客下的title信息</li>
-                                <li>Blogs：里面存放的是完整的博文，根据不同的时间把博文放到相应的时间文件夹中</li>
-                                <li>archives：以年份的形式把本年度所写博客的title信息列表出来</li>
-                                <li>about：与博主有关的相关信息</li>
-                            </ul>
-                            明白以上代码结构，再加上不断地熟悉，并尝试新建一篇，便很快能掌握，喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！
-                            </p>
-                            <p>本文完！</p>
+                            <p>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！本文完！</p>
                             <h1 id="参考">参考</h1>
                             <ul>
-                                <li><a href="https://pages.github.com/" target="_blank" rel="external">Github Pages</a></li>
-                                <li><a href="https://hexo.io/zh-cn/docs/" target="_blank" rel="external">Hexo文档主页</a></li>
-                                <li><a href="https://github.com/zhuqiuhui" target="_blank" rel="external">我的Github主页</a></li>
-                                <li><a href="http://huangxuan.me/" target="_blank" rel="external">参见博客主题一</a></li>
-                                <li><a href="http://baixin.io/" target="_blank" rel="external">参见博客主题二</a></li>
-                                <li><a href="http://www.ezlippi.com/" target="_blank" rel="external">参见博客主题三</a></li>
-                                <li><a href="http://moxfive.xyz/" target="_blank" rel="external">参见博客主题四</a></li>
+                                <li><a href="http://webmagic.io" target="_blank" rel="external">Web Magic</a></li>
+                                <li><a href="http://blog.csdn.net/qq598535550/article/details/51287630" target="_blank" rel="external">基于WebMagic写的一个csdn小爬虫</a></li>
                             </ul>
                         </div>
                     </div>
                     <div class="copyright">
-                        <p><span>本文标题:</span>Github博客搭建过程</p>
-                        <p><span>最后更新:</span>2017-03-11, 16:10:03</p>
+                        <p><span>本文标题:</span>学习Java框架笔记一</p>
+                        <p><span>最后更新:</span>2017-03-13, 08:10:03</p>
                         <p>
-                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/03/github-blog-setup.html" title="Github博客搭建过程">http://zhuqiuhui.github.io/Blogs/2017/03/github-blog-setup.html</a>
-                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.github.io/Blogs/2017/03/github-blog-setup.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/03/study-web-note-1.html" title="学习Java框架笔记一">http://zhuqiuhui.github.io/Blogs/2017/03/study-web-note-1.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.github.io/Blogs/2017/03/study-web-note-1.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
                             <script>
                             var clipboard = new Clipboard('.copy-path');
                             </script>
@@ -242,12 +228,10 @@
                     </div>
                     <!--上一篇和下一篇地址-->
                     <nav id="article-nav">
-                        <!--
+                        
                         <div id="article-nav-newer" class="article-nav-title">
-                            <a href="/201701/https-principle.html">
-                    HTTPS原理简单介绍
-                </a>
-                        </div>-->
+                            <a href="/Blogs/2017/03/webmagic-csdn-crawler.html">基于WebMagic的CSDN博客爬虫</a>
+                        </div>
                         <div id="article-nav-older" class="article-nav-title">
                             <a href="#">没有了</a>
                         </div>
@@ -283,7 +267,8 @@
                 </article>
                 <div class="duoshuo" id="comments">
                     <!-- 多说评论框 start -->
-                    <div class="ds-thread" data-thread-key="/Blogs/2017/03/github-blog-setup.html" data-title="" data-url="http://zhuqiuhui.github.io/Blogs/2017/03/github-blog-setup.html"></div>
+                    <!--!!!!!!!!!!!!!!-->
+                    <div class="ds-thread" data-thread-key="/Blogs/2017/03/study-web-note-1.html" data-title="" data-url="http://zhuqiuhui.github.io/Blogs/2017/03/study-web-note-1.html"></div>
                     <!-- 多说评论框 end -->
                     <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
                     <script type="text/javascript">
@@ -303,18 +288,21 @@
                 </div>
                 <div class="scroll" id="post-nav-button">
                     <!--上一篇-->
-                    <a href="#" title="到头了哦">
+                    <a href="/Blogs/2017/03/webmagic-csdn-crawler.html" title="基于WebMagic的CSDN博客爬虫">
                         <i class="fa fa-angle-left"></i>
-                    </a><!--
+                    </a>
+                    <!--
                     <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>-->
                     <!--下一篇-->
-                    <a href="/Blogs/2017/03/webmagic-csdn-crawler.html" title="基于WebMagic的CSDN博客爬虫">
+                    <a href="#" title="太心急了，还没更新哦">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 </div>
-                <!--左侧栏文章列表
+                <!--左侧栏文章列表不加了，太麻烦-->
+                <!--
                 <ul class="post-list">
                     <li class="post-list-item"><a class="post-list-link" href="/Blogs/2017/03/github-blog-setup.html">Github博客搭建过程</a></li>
+                    <li class="post-list-item"><a class="post-list-link" href="/Blogs/2017/03/webmagic-csdn-crawler.html">基于WebMagic的CSDN博客爬虫</a></li>
                 </ul>-->
                 <script>
                 </script>
