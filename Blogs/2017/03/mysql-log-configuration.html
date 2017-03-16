@@ -4,22 +4,22 @@
 <head>
     <meta charset="utf-8">
     <!--!!!!!!!!!!!!!!-->
-    <title>学习Java框架笔记一 | 恋恋风尘的博客</title>
+    <title>MySQL日志文件配置 | 恋恋风尘的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <!--!!!!!!!!!!!!!!-->
-    <meta name="description" content="开始看开发项目，但很多知识与配置都处于懵懂状态，都了解不是很深入，想通过一些基础的用法来记录下来，都是一些关于框架的小用法。">
+    <meta name="description" content="开发过程中遇到的sql问题，总想看下数据库执行的日志，便研究了下怎么看sql操作日志的方法，特分享如下，看了很多资料，总结了一下，希望支持。">
     <meta property="og:type" content="article">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:title" content="学习Java框架笔记一">
+    <meta property="og:title" content="MySQL日志文件配置">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:url" content="http://zhuqiuhui.github.io/Blogs/2017/03/study-web-note-1.html">
+    <meta property="og:url" content="http://zhuqiuhui.github.io/Blogs/2017/03/mysql-log-configuration.html">
     <meta property="og:site_name" content="恋恋风尘的博客">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:description" content="开始看开发项目，但很多知识与配置都处于懵懂状态，都了解不是很深入，想通过一些基础的用法来记录下来，都是一些关于框架的小用法。">
+    <meta property="og:description" content="开发过程中遇到的sql问题，总想看下数据库执行的日志，便研究了下怎么看sql操作日志的方法，特分享如下，看了很多资料，总结了一下，希望支持。">
     <!--!!!!!!!!!!!!!!
     <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">-->
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:updated_time" content="2017-03-13T08:10:03.000Z">
+    <meta property="og:updated_time" content="2017-03-17T08:10:03.000Z">
     <link rel="icon" href="/favicon.ico">
     <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
     <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
@@ -92,7 +92,7 @@
                             <section class="switch-part switch-part1">
                                 <nav class="header-menu">
                                     <ul>
-                                    <li><a href="/">博客首页</a></li>
+                                        <li><a href="/">博客首页</a></li>
                                         <li><a href="/archives">文章归档</a></li>
                                         <li><a href="/tags">文章概览</a></li>
                                         <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
@@ -151,7 +151,7 @@
                         <p class="header-subtitle">Java后台开发</p>
                         <nav class="header-menu">
                             <ul>
-                            <li><a href="/">博客首页</a></li>
+                                <li><a href="/">博客首页</a></li>
                                 <li><a href="/archives">文章归档</a></li>
                                 <li><a href="/tags">文章概览</a></li>
                                 <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
@@ -176,18 +176,18 @@
             <div class="body-wrap">
                 <!--文章开始-->
                 <!--!!!!!!!!!!!!!!-->
-                <article id="study-web-note-1" class="article article-type-post" itemscope itemprop="blogPost">
+                <article id="mysql-log-configuration" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
-                        <time datetime="2017-03-12T13:33:03.000Z" itemprop="datePublished">2017-03-13</time>
+                        <time datetime="2017-03-17T13:33:03.000Z" itemprop="datePublished">2017-03-17</time>
                     </div>
                     <div class="article-inner">
                         <input type="hidden" class="isFancy" />
                         <header class="article-header">
-                            <h1 class="article-title" itemprop="name">学习Java框架笔记一</h1>
+                            <h1 class="article-title" itemprop="name">MySQL日志文件配置</h1>
                         </header>
                         <div class="article-info article-info-post">
                             <div class="article-category tagcloud">
-                                <a class="article-category-link" href="/categories/Java/">Java</a>
+                                <a class="article-category-link" href="/categories/数据库/">数据库</a>
                             </div>
                             <div class="article-tag tagcloud">
                                 <ul class="article-tag-list">
@@ -197,13 +197,18 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="article-entry" itemprop="articleBody">
-                            <h1 id="记录学习笔记">一、记录学习笔记</h1>
-                            <p>    开始看开发项目，但很多知识与配置都处于懵懂状态，都了解不是很深入，想通过一些基础的用法来记录下来，都是一些关于框架的小用法。</p>
+                            <p> 开发过程中遇到的sql问题，总想看下数据库执行的日志，便研究了下怎么看sql操作日志的方法，特分享如下，看了很多资料，都写的不是太全，总结了一下，希望支持。</p>
+                            <h1 id="my.cnf配置">一、my.cnf配置</h1>
+                            <p> 不同的操作系统my.cnf放的位置是不一样的。</p>
                             <p>
-                            <ol>
-                            <li>web.xml的加载顺序：context-param->listener->filter->servlet->spring。</li>
-                                
-                            </ol>
+                                <ol>
+                                    <li>windows下mysql配置文件存放在“C:/Program Files/MySQL/MySQL Server 5.5/my.ini”下。</li>
+                                    <li>Mac OS X中默认是没有my.cnf文件的，需要对mysql进行定制的（定制过程见第二节）。</li>
+                                    <p>
+                                        验证Mac下没有my.cnf文件，可使用命令:
+                                        <br><code>sudo find / -name my.cnf</code>
+                                    </p>
+                                </ol>
                             </p>
                             <p>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！未完待续......</p>
                             <h1 id="参考">参考</h1>
@@ -215,11 +220,11 @@
                         </div>
                     </div>
                     <div class="copyright">
-                        <p><span>本文标题:</span>学习Java框架笔记一</p>
-                        <p><span>最后更新:</span>2017-03-13, 08:10:03</p>
+                        <p><span>本文标题:</span>MySQL日志文件配置</p>
+                        <p><span>最后更新:</span>2017-03-17, 08:10:03</p>
                         <p>
-                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/03/study-web-note-1.html" title="学习Java框架笔记一">http://zhuqiuhui.github.io/Blogs/2017/03/study-web-note-1.html</a>
-                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.github.io/Blogs/2017/03/study-web-note-1.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/03/mysql-log-configuration.html" title="MySQL日志文件配置">http://zhuqiuhui.github.io/Blogs/2017/03/mysql-log-configuration.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.github.io/Blogs/2017/03/mysql-log-configuration.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
                             <script>
                             var clipboard = new Clipboard('.copy-path');
                             </script>
@@ -230,12 +235,11 @@
                     </div>
                     <!--上一篇和下一篇地址-->
                     <nav id="article-nav">
-                        
                         <div id="article-nav-newer" class="article-nav-title">
-                            <a href="/Blogs/2017/03/webmagic-csdn-crawler.html">基于WebMagic的CSDN博客爬虫</a>
+                            <a href="/Blogs/2017/03/study-web-note-1.html">学习Java框架笔记一</a>
                         </div>
                         <div id="article-nav-older" class="article-nav-title">
-                            <a href="/Blogs/2017/03/mysql-log-configuration.html">MySQL日志文件配置</a>
+                            <a href="#">没有了</a>
                         </div>
                     </nav>
                     <! -- 添加捐赠图标 -->
@@ -270,7 +274,7 @@
                 <div class="duoshuo" id="comments">
                     <!-- 多说评论框 start -->
                     <!--!!!!!!!!!!!!!!-->
-                    <div class="ds-thread" data-thread-key="/Blogs/2017/03/study-web-note-1.html" data-title="" data-url="http://zhuqiuhui.github.io/Blogs/2017/03/study-web-note-1.html"></div>
+                    <div class="ds-thread" data-thread-key="/Blogs/2017/03/mysql-log-configuration.html" data-title="" data-url="http://zhuqiuhui.github.io/Blogs/2017/03/mysql-log-configuration.html"></div>
                     <!-- 多说评论框 end -->
                     <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
                     <script type="text/javascript">
@@ -290,13 +294,13 @@
                 </div>
                 <div class="scroll" id="post-nav-button">
                     <!--上一篇-->
-                    <a href="/Blogs/2017/03/webmagic-csdn-crawler.html" title="基于WebMagic的CSDN博客爬虫">
+                    <a href="/Blogs/2017/03/study-web-note-1.html" title="学习Java框架笔记一">
                         <i class="fa fa-angle-left"></i>
                     </a>
                     <!--
                     <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>-->
                     <!--下一篇-->
-                    <a href="/Blogs/2017/03/mysql-log-configuration.html" title="MySQL日志文件配置">
+                    <a href="#" title="太心急了，还没更新哦">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 </div>
