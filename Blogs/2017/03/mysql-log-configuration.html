@@ -197,19 +197,49 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="article-entry" itemprop="articleBody">
-                            <p> 开发过程中遇到的sql问题，总想看下数据库执行的日志，便研究了下怎么看sql操作日志的方法，特分享如下，看了很多资料，都写的不是太全，总结了一下，希望支持。</p>
-                            <h1 id="my.cnf配置">一、my.cnf配置</h1>
-                            <p> 不同的操作系统my.cnf放的位置是不一样的。</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;开发过程中遇到的sql问题，总想看下数据库执行的日志，便研究了下怎么看sql操作日志的方法，特分享如下，看了很多资料，都写的不是太全，总结了一下，希望支持。</p>
+                            <h1 id="my.cnf文件查找">一、my.cnf文件查找</h1>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;不同的操作系统my.cnf放的位置是不一样的。</p>
                             <p>
                                 <ol>
                                     <li>windows下mysql配置文件存放在“C:/Program Files/MySQL/MySQL Server 5.5/my.ini”下。</li>
                                     <li>Mac OS X中默认是没有my.cnf文件的，需要对mysql进行定制的（定制过程见第二节）。</li>
                                     <p>
                                         验证Mac下没有my.cnf文件，可使用命令:
-                                        <br><code>sudo find / -name my.cnf</code>
+                                        <figure class="highlight bash">
+                                            <table>
+                                                <tr>
+                                                    <td class="gutter"><pre><div class="line">1</div></pre></td>
+                                                    <td class="code"><pre><div class="line">sudo find / -name my.cnf</div></pre></td>
+                                                </tr>
+                                            </table>
+                                        </figure>
+                                        <br> 进行搜索一下，搜索结果什么也没有，便得以验证。也可以使用命令：
+                                        <figure class="highlight bash">
+                                            <table>
+                                                <tr>
+                                                    <td class="gutter"><pre><div class="line">1</div></pre></td>
+                                                    <td class="code"><pre><div class="line">sudo mysql --help | grep my.cnf</div></pre></td>
+                                                </tr>
+                                            </table>
+                                        </figure>
+                                        来查看下有关my.cnf的help信息，该命令在mac上的搜索结果如下：
+                                        <figure class="highlight bash">
+                                            <table>
+                                                <tr>
+                                                    <td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td>
+                                                    <td class="code"><pre><div class="line">Default options are read from the following files in the given order:</div><div class="line">/etc/my.cnf /etc/mysql/my.cnf /usr/etc/my.cnf ~/.my.cnf</div></pre></td>
+                                                </tr>
+                                            </table>
+                                        </figure>
+                                        官方的解释是：
+                                        <br><code>You can now check for files using the above output at /etc/my.cnf, then /etc/mysql/my.cnf and so on. If there isn't one at one of those locations, you can create one and know MySQL will use it.</code>
+                                        <br>意思是在上述路径中没有找到my.cnf的话，你就可以新建一个my.cnf了。
                                     </p>
                                 </ol>
                             </p>
+                            <h1 id="my.cnf定制及日志文件配置">二、my.cnf定制及日志文件配置</h1>
+                            <p></p>
                             <p>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！未完待续......</p>
                             <h1 id="参考">参考</h1>
                             <!--
