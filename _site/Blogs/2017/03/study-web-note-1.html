@@ -49,6 +49,19 @@
     <script>
     yiliaConfig.rootUrl = "/";
     </script>
+    <script>
+    (function() {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script>
 </head>
 
 <body>
@@ -92,7 +105,7 @@
                             <section class="switch-part switch-part1">
                                 <nav class="header-menu">
                                     <ul>
-                                    <li><a href="/">博客首页</a></li>
+                                        <li><a href="/">博客首页</a></li>
                                         <li><a href="/archives">文章归档</a></li>
                                         <li><a href="/tags">文章概览</a></li>
                                         <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
@@ -151,7 +164,7 @@
                         <p class="header-subtitle">Java后台开发</p>
                         <nav class="header-menu">
                             <ul>
-                            <li><a href="/">博客首页</a></li>
+                                <li><a href="/">博客首页</a></li>
                                 <li><a href="/archives">文章归档</a></li>
                                 <li><a href="/tags">文章概览</a></li>
                                 <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
@@ -200,32 +213,32 @@
                             <h1 id="记录学习笔记">一、记录学习笔记</h1>
                             <p>&nbsp;&nbsp;&nbsp;&nbsp;开始看开发项目，但很多知识与配置都处于懵懂状态，都了解不是很深入，想通过一些基础的用法来记录下来，都是一些关于框架的小用法。</p>
                             <p>
-                            <ol>
-                            <li>web.xml的加载顺序：context-param->listener->filter->servlet->spring。</li>
-                            <li>lombok使用
-                                <p>lombok注解使用
-                                    <ul>
-                                        <li>@Cleanup：自动帮助我们调用close()方法</li>
-                                        <li>@Getter / @Setter：自动生成Getter / Setter方法</li>
-                                        <li>@NoArgsConstructor：自动生成无参构造函数</li>
-                                        <li>@AllArgsConstructor：自动生成全参构造函数</li>
-                                        <li>@Data：自动为所有字段添加@ToString、@EqualsAndHashCode、@Getter方法，为非final字段添加@Setter和@RequiredArgsConstructor方法</li>
-                                        <li>@EqualsAndHashCode：实现equals（）方法和hashCode（）方法</li>
-                                        <li>@ToString：实现toString（）方法</li>
-                                        <li>@NonNull：注解在属性上，用来检验参数</li>
-                                    </ul>
-                                </p>
-                                <p>lombok原理实现，如下图
-                                    <ol>
-                                        <li>javac对源代码进行分析，生成一棵抽象语法树(AST)</li>
-                                        <li>运行过程中调用实现了"JSR 269 API"的lombok程序 </li>
-                                        <li>此时lombok对第一步骤生成的AST进行处理，找到如@Data注解所在类对应的语法树（AST），然后修改语法树，增加如getter和setter方法定义的相应树节点</li>
-                                        <li>javac使用修改后的抽象语法树(AST)生成字节码文件</li>
-                                    </ol>
-                                    <img src="/post_images/images/2017/03/lombok_pic.png" title="lombok实现原理图">
-                                </p>
-                            </li>
-                            </ol>
+                                <ol>
+                                    <li>web.xml的加载顺序：context-param->listener->filter->servlet->spring。</li>
+                                    <li>lombok使用
+                                        <p>lombok注解使用
+                                            <ul>
+                                                <li>@Cleanup：自动帮助我们调用close()方法</li>
+                                                <li>@Getter / @Setter：自动生成Getter / Setter方法</li>
+                                                <li>@NoArgsConstructor：自动生成无参构造函数</li>
+                                                <li>@AllArgsConstructor：自动生成全参构造函数</li>
+                                                <li>@Data：自动为所有字段添加@ToString、@EqualsAndHashCode、@Getter方法，为非final字段添加@Setter和@RequiredArgsConstructor方法</li>
+                                                <li>@EqualsAndHashCode：实现equals（）方法和hashCode（）方法</li>
+                                                <li>@ToString：实现toString（）方法</li>
+                                                <li>@NonNull：注解在属性上，用来检验参数</li>
+                                            </ul>
+                                        </p>
+                                        <p>lombok原理实现，如下图
+                                            <ol>
+                                                <li>javac对源代码进行分析，生成一棵抽象语法树(AST)</li>
+                                                <li>运行过程中调用实现了"JSR 269 API"的lombok程序 </li>
+                                                <li>此时lombok对第一步骤生成的AST进行处理，找到如@Data注解所在类对应的语法树（AST），然后修改语法树，增加如getter和setter方法定义的相应树节点</li>
+                                                <li>javac使用修改后的抽象语法树(AST)生成字节码文件</li>
+                                            </ol>
+                                            <img src="/post_images/images/2017/03/lombok_pic.png" title="lombok实现原理图">
+                                        </p>
+                                    </li>
+                                </ol>
                             </p>
                             <p>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！未完待续......</p>
                             <h1 id="参考">参考</h1>
@@ -252,7 +265,6 @@
                     </div>
                     <!--上一篇和下一篇地址-->
                     <nav id="article-nav">
-                        
                         <div id="article-nav-newer" class="article-nav-title">
                             <a href="/Blogs/2017/03/webmagic-csdn-crawler.html">基于WebMagic的CSDN博客爬虫</a>
                         </div>

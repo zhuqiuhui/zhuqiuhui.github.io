@@ -42,6 +42,19 @@
     <script>
     yiliaConfig.rootUrl = "/";
     </script>
+    <script>
+    (function() {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script>
 </head>
 
 <body>
@@ -85,7 +98,7 @@
                             <section class="switch-part switch-part1">
                                 <nav class="header-menu">
                                     <ul>
-                                    <li><a href="/">博客首页</a></li>
+                                        <li><a href="/">博客首页</a></li>
                                         <li><a href="/archives">文章归档</a></li>
                                         <li><a href="/tags">文章概览</a></li>
                                         <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
@@ -144,7 +157,7 @@
                         <p class="header-subtitle">Java后台开发</p>
                         <nav class="header-menu">
                             <ul>
-                            <li><a href="/">博客首页</a></li>
+                                <li><a href="/">博客首页</a></li>
                                 <li><a href="/archives">文章归档</a></li>
                                 <li><a href="/tags">文章概览</a></li>
                                 <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
@@ -199,19 +212,21 @@
                             <p>　　Jekyll集成了一个开发用的服务器，可以让你使用浏览器在本地进行预览。读者可以根据自己本地的电脑环境来安装jekyll，安装流程可以参考<a href="http://jekyll.com.cn/" target="_blank">jekyll官方主页</a>，你可能在安装过程中遇到过很多问题（我的是mac，遇到过很多问题），具体解决方案比较全面的可以参考文章<a href="https://segmentfault.com/a/1190000007243257" target="_blank">《Jekyll搭建个人博客》</a>。
                             </p>
                             <h1 id="二、Github网站结构">二、Github网站结构</h1>
-                            <p>　　以本网站的代码结构为例，见下图：<br>
-                            <img src="/post_images/images/2017/03/blog_file_folder.png" title="我的代码结构" /><br>
-                            <ul>
-                                <li>tags：里面存放的是博文的标签，根据不同的标签把博文的title信息放到相应的标签文件夹中</li>
-                                <li>post_images：里面存放的是博文中的图片</li>
-                                <li>page：初次跳到网站主面对就的分页内容</li>
-                                <li>need_html：存放一些小需求的html</li>
-                                <li>categories：存放的是不同类别博客下的title信息</li>
-                                <li>Blogs：里面存放的是完整的博文，根据不同的时间把博文放到相应的时间文件夹中</li>
-                                <li>archives：以年份的形式把本年度所写博客的title信息列表出来</li>
-                                <li>about：与博主有关的相关信息</li>
-                            </ul>
-                            明白以上代码结构，再加上不断地熟悉，并尝试新建一篇，便很快能掌握，喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！
+                            <p>　　以本网站的代码结构为例，见下图：
+                                <br>
+                                <img src="/post_images/images/2017/03/blog_file_folder.png" title="我的代码结构" />
+                                <br>
+                                <ul>
+                                    <li>tags：里面存放的是博文的标签，根据不同的标签把博文的title信息放到相应的标签文件夹中</li>
+                                    <li>post_images：里面存放的是博文中的图片</li>
+                                    <li>page：初次跳到网站主面对就的分页内容</li>
+                                    <li>need_html：存放一些小需求的html</li>
+                                    <li>categories：存放的是不同类别博客下的title信息</li>
+                                    <li>Blogs：里面存放的是完整的博文，根据不同的时间把博文放到相应的时间文件夹中</li>
+                                    <li>archives：以年份的形式把本年度所写博客的title信息列表出来</li>
+                                    <li>about：与博主有关的相关信息</li>
+                                </ul>
+                                明白以上代码结构，再加上不断地熟悉，并尝试新建一篇，便很快能掌握，喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！
                             </p>
                             <p>本文完！</p>
                             <h1 id="参考">参考</h1>
@@ -302,7 +317,8 @@
                     <!--上一篇-->
                     <a href="#" title="到头了哦">
                         <i class="fa fa-angle-left"></i>
-                    </a><!--
+                    </a>
+                    <!--
                     <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>-->
                     <!--下一篇-->
                     <a href="/Blogs/2017/03/webmagic-csdn-crawler.html" title="基于WebMagic的CSDN博客爬虫">
