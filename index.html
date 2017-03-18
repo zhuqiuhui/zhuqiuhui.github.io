@@ -51,6 +51,19 @@
     <script>
     yiliaConfig.rootUrl = "/";
     </script>
+    <script>
+    (function() {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script>
 </head>
 
 <body>
@@ -275,7 +288,6 @@
                     </div>
                 </article>
                 <!--此处添加下一篇文章的信息，包括摘要！-->
-                
                 <article id="study-web-note-1" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
                         <a href="/Blogs/2017/03/study-web-note-1.html" class="article-date">
