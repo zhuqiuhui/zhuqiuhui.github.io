@@ -4,22 +4,22 @@
 <head>
     <meta charset="utf-8">
     <!--!!!!!!!!!!!!!!-->
-    <title>大数据技能必备 | 恋恋风尘的博客</title>
+    <title>Guava简介 | 恋恋风尘的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <!--!!!!!!!!!!!!!!-->
-    <meta name="description" content="Git真是一个强大的工具，由于开发需要，本文特别总结了git的一些常用命令和基本配置，如Git与账户绑定、怎么新建项目和一些Git基本使用命令。">
+    <meta name="description" content="Guava 是一个 Google 的基于 java1.6的类库集合的扩展项目，包括 collections, caching, primitives support, concurrency libraries, common annotations, string processing, I/O 等等，这些高质量的 API 可以使你的JAVa代码更加优雅，更加简洁，让你工作更加轻松愉悦。">
     <meta property="og:type" content="article">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:title" content="大数据技能必备">
+    <meta property="og:title" content="Guava简介">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:url" content="http://zhuqiuhui.github.io/Blogs/2017/03/big-data-tech.html">
+    <meta property="og:url" content="http://zhuqiuhui.github.io/Blogs/2017/03/guava-api-collect.html">
     <meta property="og:site_name" content="恋恋风尘的博客">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:description" content="Git真是一个强大的工具，由于开发需要，本文特别总结了git的一些常用命令和基本配置，如Git与账户绑定、怎么新建项目和一些Git基本使用命令。">
+    <meta property="og:description" content="Guava 是一个 Google 的基于 java1.6的类库集合的扩展项目，包括 collections, caching, primitives support, concurrency libraries, common annotations, string processing, I/O 等等，这些高质量的 API 可以使你的JAVa代码更加优雅，更加简洁，让你工作更加轻松愉悦。">
     <!--!!!!!!!!!!!!!!
     <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">-->
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:updated_time" content="2017-03-19T08:10:03.000Z">
+    <meta property="og:updated_time" content="2017-03-21T08:10:03.000Z">
     <link rel="icon" href="/favicon.ico">
     <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
     <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
@@ -191,12 +191,12 @@
                 <!--!!!!!!!!!!!!!!-->
                 <article id="big-data-tech" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
-                        <time datetime="2017-03-19T13:33:03.000Z" itemprop="datePublished">2017-03-19</time>
+                        <time datetime="2017-03-21T13:33:03.000Z" itemprop="datePublished">2017-03-21</time>
                     </div>
                     <div class="article-inner">
                         <input type="hidden" class="isFancy" />
                         <header class="article-header">
-                            <h1 class="article-title" itemprop="name">（转）大数据技能必备</h1>
+                            <h1 class="article-title" itemprop="name">Guava简介</h1>
                         </header>
                         <div class="article-info article-info-post">
                             <div class="article-category tagcloud">
@@ -210,45 +210,40 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="article-entry" itemprop="articleBody">
-                            <h1 id="基础篇">一、基础篇</h1>
+                        <p>&nbsp;&nbsp;&nbsp;&nbsp;Guava 是一个 Google 的基于 java1.6的类库集合的扩展项目，包括 collections, caching, primitives support, concurrency libraries, common annotations, string processing, I/O 等等，这些高质量的 API 可以使你的JAVa代码更加优雅，更加简洁，让你工作更加轻松愉悦。</p>
+                            <h1 id="Guava简介">一、Guava简介</h1>
                             <p>
-                                <ol>
-                                    <li>几本书参考《Introduction to Data Mining》，这本书很浅显易懂，没有复杂高深的公式，很合适入门的人。另外可以用这本书做参考《Data Mining : Concepts and Techniques》，第二本比较厚，也多了一些数据仓库方面的知识。如果对算法比较喜欢，可以再阅读《Introduction to Machine Learning》。当然，还有《机器学习：实用案例解析》。</li>
-                                    <li>实现经典算法，有几个部分：
-                                        <ol>
-                                        	<li>关联规则挖掘 (Apriori, FPTree, etc.)</li>
-                                        	<li>分类 (C4.5, KNN, Logistic Regression, SVM, etc.)</li>
-                                        	<li>聚类 (Kmeans, DBScan, Spectral Clustering, etc.)</li>
-                                        	<li>降维 (PCA, LDA, etc.) </li>
-                                        	<li>推荐系统 (基于内容的推荐，协同过滤，如矩阵分解等) </li>
-                                        </ol>
-                                        然后在公开数据集上测试，看实现的效果，可以在下面的网站找到大量的公开数据集：UCI Machine Learning Repository/ 。
-                                    </li>
-                                    <li>熟悉几个开源的工具: Weka，LibSVM，scikit-learn，Shogun。</li>
-                                    <li>到 Kaggle: Go from Big Data to Big Analytics/ 上参加几个101的比赛，学会如何将一个问题抽象成模型，并从原始数据中构建有效的特征 (Feature Engineering)。</li>
-                                </ol>
+                                <ul>
+                                    <li>com.google.common.annotations：普通注解类型。</li>
+                                    <li>com.google.common.base：基本工具类库和接口。 </li>
+                                    <li>com.google.common.cache：缓存工具包，非常简单易用且功能强大的JVM内缓存。</li>
+                                    <li>com.google.common.collect：带泛型的集合接口扩展和实现，以及工具类，这里你会发现很多好玩的集合。</li>
+                                    <li>com.google.common.eventbus：发布订阅风格的事件总线。</li>
+                                    <li>com.google.common.hash： 哈希工具包。</li>
+                                    <li>com.google.common.io：I/O工具包。</li>
+                                    <li>com.google.common.math：原始算术类型和超大数的运算工具包。</li>
+                                    <li>com.google.common.net：网络工具包。</li>
+                                    <li>com.google.common.primitives：八种原始类型和无符号类型的静态工具包。</li>
+                                    <li>com.google.common.reflect：反射工具包。</li>
+                                    <li>com.google.common.util.concurrent：多线程工具包。</li>
+                                </ul>
                             </p>
-                            <h1 id="进阶篇">二、进阶篇</h1>
+                            <h1 id="常用集合类">二、常用集合类</h1>
                             <p>
-                                <ol>
-                                    <li>读书，下面几部都是大部头，但学完进步非常大。
-                                    <ul>
-                                    	<li>《Pattern Recognition and Machine Learning》</li>
-                                    	<li>《The Elements of Statistical Learning》</li>
-                                    	<li>《Machine Learning: A Probabilistic Perspective》</li>
-                                    	<code>备注：第一本比较偏Bayesian；第二本比较偏Frequentist；第三本在两者之间，但我觉得跟第一本差不多，不过加了不少新内容。当然除了这几本大而全的，还有很多介绍不同领域的书，例如《Boosting Foundations and Algorithms》，《Probabilistic Graphical Models Principles and Techniques》；以及理论一些的《Foundations of Machine Learning》，《Optimization for Machine Learning》等等。这些书的课后习题也非常有用，做了才会在自己写Paper的时候推公式。</code>
-                                    </ul>
-                                    </li>
-                                    <li>读论文。包括几个相关会议：KDD，ICML，NIPS，IJCAI，AAAI，WWW，SIGIR，ICDM；以及几个相关的期刊：TKDD，TKDE，JMLR，PAMI等。跟踪新技术跟新的热点问题。当然，如果做相关research，这一步是必须的。例如我们组的风格就是上半年读Paper，暑假找问题，秋天做实验，春节左右写/投论文。
-                                    </li>
-                                    <li>跟踪热点问题。例如最近几年的Recommendation System，Social Network，Behavior Targeting等等，很多公司的业务都会涉及这些方面。以及一些热点技术，例如现在很火的Deep Learning。
-                                    </li>
-                                    <li>学习大规模并行计算的技术，例如MapReduce、MPI，GPU Computing。基本每个大公司都会用到这些技术，因为现实的数据量非常大，基本都是在计算集群上实现的。</li>
-                                    <li>参加实际的数据挖掘的竞赛，例如KDDCUP，或 Kaggle: Go from Big Data to Big Analytics/ 上面的竞赛。这个过程会训练你如何在一个短的时间内解决一个实际的问题，并熟悉整个数据挖掘项目的全过程。
-                                    </li>
-                                    <li>参与一个开源项目，如上面提到的Shogun或scikit-learn还有Apache的Mahout，或为一些流行算法提供更加有效快速的实现，例如实现一个Map/Reduce平台下的SVM。这也是锻炼Coding的能力。
-                                    </li>
-                                </ol>
+                                <ul>
+                                    <li>Multimap接口：可以存放一个key值对应多个value实体，其子接口有ListMultimap、SetMultimap、SortedSetMultimap，实现类有ArrayListMultimap, ForwardingListMultimap, ForwardingMultimap, ForwardingSetMultimap, ForwardingSortedSetMultimap, HashMultimap, ImmutableListMultimap, ImmutableMultimap, ImmutableSetMultimap, LinkedHashMultimap, LinkedListMultimap, TreeMultimap。</li>
+                                    <li>BiMap接口：存放key和value均唯一的实体，其父接口是Map接口，实现类有：EnumBiMap（key和valu都是enum类型）, EnumHashBiMap, HashBiMap（key和value都有HashMap实现）, ImmutableBiMap（不可修改的BiMap）。</li>
+                                    <li>Multiset接口：能存放相同的元素，且元素之间的顺序是无序的。常用的实现类有：HashMultiSet(元素存放于HashMap中)、LinkedHashMultiset(元素存放于LinkedHashMap中)、TreeMultiset（元素被排序存放于TreeMap中）、EnumMultiset（元素是enum类型）、ImmutableMultiset（不可修改的Multiset）。</li>
+                                    <li>Immutable类集合：该类集合里面存放的是不可变对象，好处是保证线程安全、可以作为常量等，常用的有ImmutableCollection、ImmutableList、ImmutableSet、ImmutableSortedSet、ImmutableMap、ImmutableSortedMap、ImmutableMultiset、ImmutableSortedMultiset、ImmutableMultiMap、ImmutableListMultiMap、ImmutableSetMultiMap、ImmutableBiMap、ImmutableTable等。</li>
+                                    <li>Range：该类提供了和区间计算相关的数据结构及操作。</li>
+                                    <li>RangeSet接口：用来处理一系列不连续，非空的range。当添加一个range到一个RangeSet之后，任何有连续的range将被自动合并，而空的range将被自动去除。其实现类有：ImmutableRangeSet、TreeRangeSet。</li>
+                                    <li>RangeMap接口：它将不相交、且不为空的Range(作为key)映射给一个值（value），其实现类有ImmutableRangeMap、TreeRangeMap。</li>
+                                    <li>Preconditions：工具类base中，用于提供参数检验，其方法均为static类型的，可使用如：Preconditions.checkNotNull(student)。</li>
+                                    <li>Splitter：从输入的字符串中抽取不重复的子串，通常是分析给定的分割序列。</li>
+                                    <li>Lists类：主要提供了对List类的子类构造以及操作的静态方法，其方法都是静态的。</li>
+                                    <li>Iterators类：提供了返回Iterator类型的对象或者对Iterator类型对象操作的方法。</li>
+                                    <li>HashBiMap：实现了BiMap接口，继承了Abstract类，存储的键值都唯一。</li>
+                                </ul>
                             </p>
                             
                             <p><strong>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！</strong></p>
@@ -261,11 +256,11 @@
                         </div>
                     </div>
                     <div class="copyright">
-                        <p><span>本文标题:</span>大数据技能必备</p>
-                        <p><span>最后更新:</span>2017-03-19, 17:10:03</p>
+                        <p><span>本文标题:</span>Guava简介</p>
+                        <p><span>最后更新:</span>2017-03-21, 17:10:03</p>
                         <p>
-                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/03/big-data-tech.html" title="大数据技能必备">http://zhuqiuhui.github.io/Blogs/2017/03/big-data-tech.html</a>
-                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.github.io/Blogs/2017/03/big-data-tech.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/03/guava-api-collect.html" title="Guava简介">http://zhuqiuhui.github.io/Blogs/2017/03/guava-api-collect.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.github.io/Blogs/2017/03/guava-api-collect.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
                             <script>
                             var clipboard = new Clipboard('.copy-path');
                             </script>
@@ -277,10 +272,10 @@
                     <!--上一篇和下一篇地址-->
                     <nav id="article-nav">
                         <div id="article-nav-newer" class="article-nav-title">
-                            <a href="/Blogs/2017/03/git-usage.html">Git基本用法</a>
+                            <a href="/Blogs/2017/03/big-data-tech.html">大数据技能必备</a>
                         </div>
                         <div id="article-nav-older" class="article-nav-title">
-                            <a href="/Blogs/2017/03/guava-api-collect">Guava简介</a>
+                            <a href="#">没有了</a>
                         </div>
                     </nav>
                     <! -- 添加捐赠图标 -->
@@ -315,7 +310,7 @@
                 <div class="duoshuo" id="comments">
                     <!-- 多说评论框 start -->
                     <!--!!!!!!!!!!!!!!-->
-                    <div class="ds-thread" data-thread-key="/Blogs/2017/03/big-data-tech.html" data-title="" data-url="http://zhuqiuhui.github.io/Blogs/2017/03/big-data-tech.html"></div>
+                    <div class="ds-thread" data-thread-key="/Blogs/2017/03/guava-api-collect.html" data-title="" data-url="http://zhuqiuhui.github.io/Blogs/2017/03/guava-api-collect.html"></div>
                     <!-- 多说评论框 end -->
                     <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
                     <script type="text/javascript">
@@ -335,13 +330,13 @@
                 </div>
                 <div class="scroll" id="post-nav-button">
                     <!--上一篇-->
-                    <a href="/Blogs/2017/03/git-usage.html" title="Git基本用法">
+                    <a href="/Blogs/2017/03/big-data-tech.html" title="大数据技能必备">
                         <i class="fa fa-angle-left"></i>
                     </a>
                     <!--
                     <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>-->
                     <!--下一篇-->
-                    <a href="/Blogs/2017/03/guava-api-collect" title="Guava简介">
+                    <a href="#" title="太心急了，还没更新哦">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 </div>
