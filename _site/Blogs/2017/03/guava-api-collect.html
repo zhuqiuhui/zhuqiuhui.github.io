@@ -231,18 +231,23 @@
                             <h1 id="常用集合类">二、常用集合类</h1>
                             <p>
                                 <ul>
-                                    <li>Multimap接口：可以存放一个key值对应多个value实体，其子接口有ListMultimap、SetMultimap、SortedSetMultimap，实现类有ArrayListMultimap, ForwardingListMultimap, ForwardingMultimap, ForwardingSetMultimap, ForwardingSortedSetMultimap, HashMultimap, ImmutableListMultimap, ImmutableMultimap, ImmutableSetMultimap, LinkedHashMultimap, LinkedListMultimap, TreeMultimap。</li>
-                                    <li>BiMap接口：存放key和value均唯一的实体，其父接口是Map接口，实现类有：EnumBiMap（key和valu都是enum类型）, EnumHashBiMap, HashBiMap（key和value都有HashMap实现）, ImmutableBiMap（不可修改的BiMap）。</li>
-                                    <li>Multiset接口：能存放相同的元素，且元素之间的顺序是无序的。常用的实现类有：HashMultiSet(元素存放于HashMap中)、LinkedHashMultiset(元素存放于LinkedHashMap中)、TreeMultiset（元素被排序存放于TreeMap中）、EnumMultiset（元素是enum类型）、ImmutableMultiset（不可修改的Multiset）。</li>
-                                    <li>Immutable类集合：该类集合里面存放的是不可变对象，好处是保证线程安全、可以作为常量等，常用的有ImmutableCollection、ImmutableList、ImmutableSet、ImmutableSortedSet、ImmutableMap、ImmutableSortedMap、ImmutableMultiset、ImmutableSortedMultiset、ImmutableMultiMap、ImmutableListMultiMap、ImmutableSetMultiMap、ImmutableBiMap、ImmutableTable等。</li>
-                                    <li>Range：该类提供了和区间计算相关的数据结构及操作。</li>
-                                    <li>RangeSet接口：用来处理一系列不连续，非空的range。当添加一个range到一个RangeSet之后，任何有连续的range将被自动合并，而空的range将被自动去除。其实现类有：ImmutableRangeSet、TreeRangeSet。</li>
-                                    <li>RangeMap接口：它将不相交、且不为空的Range(作为key)映射给一个值（value），其实现类有ImmutableRangeMap、TreeRangeMap。</li>
-                                    <li>Preconditions：工具类base中，用于提供参数检验，其方法均为static类型的，可使用如：Preconditions.checkNotNull(student)。</li>
-                                    <li>Splitter：从输入的字符串中抽取不重复的子串，通常是分析给定的分割序列。</li>
-                                    <li>Lists类：主要提供了对List类的子类构造以及操作的静态方法，其方法都是静态的。</li>
-                                    <li>Iterators类：提供了返回Iterator类型的对象或者对Iterator类型对象操作的方法。</li>
-                                    <li>HashBiMap：实现了BiMap接口，继承了Abstract类，存储的键值都唯一。</li>
+                                    <li><strong>Multimap接口：可以存放一个key值对应多个value实体，</strong>其子接口有ListMultimap、SetMultimap、SortedSetMultimap，实现类有ArrayListMultimap, ForwardingListMultimap, ForwardingMultimap, ForwardingSetMultimap, ForwardingSortedSetMultimap, HashMultimap, ImmutableListMultimap, ImmutableMultimap, ImmutableSetMultimap, LinkedHashMultimap, LinkedListMultimap, TreeMultimap。</li>
+                                    <li><strong>BiMap接口：存放key和value均唯一的实体，其父接口是Map接口，</strong>实现类有：EnumBiMap（key和valu都是enum类型）, EnumHashBiMap, HashBiMap（key和value都有HashMap实现）, ImmutableBiMap（不可修改的BiMap）。</li>
+                                    <li><strong>Multiset接口：能存放相同的元素，且元素之间的顺序是无序的。</strong>常用的实现类有：HashMultiSet(元素存放于HashMap中)、LinkedHashMultiset(元素存放于LinkedHashMap中)、TreeMultiset（元素被排序存放于TreeMap中）、EnumMultiset（元素是enum类型）、ImmutableMultiset（不可修改的Multiset）。</li>
+                                    <li><strong>Immutable类集合：该类集合里面存放的是不可变对象，好处是保证线程安全、可以作为常量等，</strong>常用的有ImmutableCollection、ImmutableList、ImmutableSet、ImmutableSortedSet、ImmutableMap、ImmutableSortedMap、ImmutableMultiset、ImmutableSortedMultiset、ImmutableMultiMap、ImmutableListMultiMap、ImmutableSetMultiMap、ImmutableBiMap、ImmutableTable等。</li>
+                                    <li><strong>Range：该类提供了和区间计算相关的数据结构及操作。</strong></li>
+                                    <li><strong>RangeSet接口：用来处理一系列不连续，非空的range。</strong>当添加一个range到一个RangeSet之后，任何有连续的range将被自动合并，而空的range将被自动去除。其实现类有：ImmutableRangeSet、TreeRangeSet。</li>
+                                    <li><strong>RangeMap接口：它将不相交、且不为空的Range(作为key)映射给一个值（value）</strong>，其实现类有ImmutableRangeMap、TreeRangeMap。</li>
+                                    <li><strong>Preconditions：工具类base中，用于提供参数检验，</strong>其方法均为static类型的，可使用如：Preconditions.checkNotNull(student)。</li>
+                                    <li><strong>Splitter：从输入的字符串中抽取不重复的子串，通常是分析给定的分割序列。</strong></li>
+                                    <li><strong>Lists类：主要提供了对List类的子类构造以及操作的静态方法，其方法都是静态的。</strong></li>
+                                    <li><strong>Iterators类：提供了返回Iterator类型的对象或者对Iterator类型对象操作的方法。</strong></li>
+                                    <li><strong>HashBiMap：实现了BiMap接口，继承了Abstract类，存储的键值都唯一。</strong></li>
+                                    <li><strong>ArrayListMultimap：Multimap接口的ArrayList方法实现的类。</strong></li>
+                                    <li><strong>SetMultimap接口：实现了Multimap接口，子类实例中同一个key不能存储相同的value，</strong>实现类有：ForwardingSetMultimap, ForwardingSortedSetMultimap, HashMultimap, ImmutableSetMultimap, LinkedHashMultimap, TreeMultimap。</li>
+                                    <li><strong>AbstractSetMultimap：抽象类，实现SetMultimap接口，其具体实现都是调用了AbstractMapBasedMultimap类中的相应实现，只是将AbstractMapBasedMultimap类中返回类行为collection改为Set。</strong></li>
+                                    <li><strong>SortedSetMultimap接口：其实现类中key对应的value是有序的。</strong></li>
+                                    <li><strong>TreeMultimap：实现了Multimap接口，其中的key和value都是根据默认的自然排序或者用户指定的排序规则排好序的。</strong></li>
                                 </ul>
                             </p>
                             
