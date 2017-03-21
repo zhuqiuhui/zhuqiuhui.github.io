@@ -15,7 +15,6 @@
 * 修改search.xml文件（搜索用的）
 
 
-
-* 版权：恋恋风尘的博客
-* 时间：2017年3月10号
-* If you like, please star here!
+版权：恋恋风尘的博客
+时间：2017年3月10号
+If you like, please star here!
