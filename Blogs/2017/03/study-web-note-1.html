@@ -214,8 +214,8 @@
                             <p>&nbsp;&nbsp;&nbsp;&nbsp;开始看开发项目，但很多知识与配置都处于懵懂状态，都了解不是很深入，想通过一些基础的用法来记录下来，都是一些关于框架的小用法。</p>
                             <p>
                                 <ol>
-                                    <li>web.xml的加载顺序：context-param->listener->filter->servlet->spring。</li>
-                                    <li>lombok使用
+                                    <li><strong>web.xml的加载顺序</strong>：context-param->listener->filter->servlet->spring。</li>
+                                    <li><strong>lombok使用</strong>
                                         <p>lombok注解使用
                                             <ul>
                                                 <li>@Cleanup：自动帮助我们调用close()方法</li>
@@ -237,6 +237,34 @@
                                             </ol>
                                             <img src="/post_images/images/2017/03/lombok_pic.png" title="lombok实现原理图">
                                         </p>
+                                    </li>
+                                    <li><strong>Spring注解 @Resource : </strong>@Resource并不是Spring的注解，而是javax.annotation.Resource，但是Spring支持该注解的注入，其装配顺序：
+                                        <ul>
+                                            <li>如果同时指定了name和type，则从Spring上下文中找到唯一匹配的bean进行装配，找不到则抛出异常;</li>
+                                            <li>如果指定了name，则从上下文中查找名称（id）匹配的bean进行装配，找不到则抛出异常;</li>
+                                            <li>如果指定了type，则从上下文中找到类型匹配的唯一bean进行装配，找不到或者找到多个，都会抛出异常;</li>
+                                            <li>如果既没有指定name，又没有指定type，则自动按照byName方式进行装配；如果没有匹配，则回退为一个原始类型进行匹配，如果匹配则自动装配；</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Spring注解 @Autowired </strong>：不同于@Resource，@Autowired 是按 byType 自动注入。</li>
+                                    <li><strong>maven项目的classpath路径对应的文件目录</strong>：maven项目分为src目录，resource目录，test/src目录，test/resource目录：
+                                        <ul>
+                                            <li>src和resource对应到项目的target/classes目录，如果在src目录调用classpath，则class的根目录为target/classes。</li>
+                                            <li>test/src、test/resource对应到test-classes目录，如果在test/src目录调用classpath，则class的根目录为target/test-classes。</li>
+                                        </ul>
+                                        其中，spring可以通过指定 "classpath*:"、"classpath:"前缀加路径的方式从classpath加载文件
+                                        <ul>
+                                        	<li>"classpath*:"的出现是为了从多个jar文件中加载相同的文件</li>
+                                        	<li>"classpath:"只能加载找到的第一个文件</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>使用 IntelliJ IDEA 几个概念</strong>
+                                    <ul>
+                                    	<li>IntelliJ系中的 Project 相当于Eclipse系中的 Workspace</li>
+                                    	<li>IntelliJ系中的 Module 相当于Eclipse系中的 Project</li>
+                                    	<li>IntelliJ中一个 Project 可以包括多个 Module</li>
+                                    	<li>Eclipse中一个 Workspace 可以包括多个 Project</li>
+                                    </ul>
                                     </li>
                                 </ol>
                             </p>
