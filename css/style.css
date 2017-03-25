@@ -2509,7 +2509,8 @@ pre,
 
 .article-entry pre,
 .article-entry code {
-    font-family: "FixedsysExcelsior301Regular", monospace, "Source Code Pro", "Microsoft YaHei", "Microsoft YaHei", "Hiragino Sans GB", "WenQuanYi Micro Hei", Menlo, Consolas, "Source Code Pro", Inconsolata, Monaco;
+    font-family: consolas, Menlo, "PingFang SC", "Microsoft YaHei", monospace;
+    /*font-family: "FixedsysExcelsior301Regular", monospace, "Source Code Pro", "Microsoft YaHei", "Microsoft YaHei", "Hiragino Sans GB", "WenQuanYi Micro Hei", Menlo, Consolas, "Source Code Pro", Inconsolata, Monaco;*/
     font-size: 1em;
 }
 
@@ -2522,7 +2523,7 @@ pre code {
     text-shadow: none;
     padding: 0;
     background: none;
-    color: #4d4d4c;
+    /*color: #4d4d4c;*/
 }
 
 .highlight {
