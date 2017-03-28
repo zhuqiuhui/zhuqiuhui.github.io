@@ -374,6 +374,20 @@
                                             <li>git log -n 1 -p ：查看最后一次提交更改的细节</li>
                                         </ul>
                                     </li>
+                                    <li>使用git diff来查看改动内容，其中HEAD代表commit版本，Index代表staged版本
+                                        <ul>
+                                            <li>git diff：比较工作目录(Working tree)和暂存区域快照(index)之间的差异，也就是修改之后还没有暂存起来的变化内容。</li>
+                                            <li>git diff --cached：查看已经暂存起来的文件(staged)和上次提交时的快照之间(HEAD)的差异</li>
+                                            <li>git diff --staged：显示的是下一次commit时会提交到HEAD的内容</li>
+                                            <li>git diff HEAD：查看workspace和local repository的差别</li>
+                                            <li>git diff b1 b2 或 git diff b1..b2：将b1和b2分支上的最新提交做diff</li>
+                                            <li>git diff test：查看当前目录和test分支的差别</li>
+                                            <li>git diff HEAD^ HEAD：比较上次提交commit和上上次提交</li>
+                                        </ul>
+                                        <p>
+                                            <img src="/post_images/images/2017/03/git_diff" title="git_diff_pic">
+                                        </p>
+                                    </li>
                                 </ul>
                             </p>
                             <p><strong>未完待续，喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！</strong></p>
