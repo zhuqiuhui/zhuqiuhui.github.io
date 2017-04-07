@@ -254,19 +254,63 @@
                                         </ul>
                                         其中，spring可以通过指定 "classpath*:"、"classpath:"前缀加路径的方式从classpath加载文件
                                         <ul>
-                                        	<li>"classpath*:"的出现是为了从多个jar文件中加载相同的文件</li>
-                                        	<li>"classpath:"只能加载找到的第一个文件</li>
+                                            <li>"classpath*:"的出现是为了从多个jar文件中加载相同的文件</li>
+                                            <li>"classpath:"只能加载找到的第一个文件</li>
                                         </ul>
                                     </li>
                                     <li><strong>使用 IntelliJ IDEA 几个概念</strong>
-                                    <ul>
-                                    	<li>IntelliJ系中的 Project 相当于Eclipse系中的 Workspace</li>
-                                    	<li>IntelliJ系中的 Module 相当于Eclipse系中的 Project</li>
-                                    	<li>IntelliJ中一个 Project 可以包括多个 Module</li>
-                                    	<li>Eclipse中一个 Workspace 可以包括多个 Project</li>
-                                    </ul>
+                                        <ul>
+                                            <li>IntelliJ系中的 Project 相当于Eclipse系中的 Workspace</li>
+                                            <li>IntelliJ系中的 Module 相当于Eclipse系中的 Project</li>
+                                            <li>IntelliJ中一个 Project 可以包括多个 Module</li>
+                                            <li>Eclipse中一个 Workspace 可以包括多个 Project</li>
+                                        </ul>
                                     </li>
-                                    <li><strong>Log4j建议只使用四个级别，优先级从高到低分别是 ERROR > WARN > INFO > DEBUG</strong><br>通过在这里定义的级别，您可以控制到应用程序中相应级别的日志信息的开关。比如在这里定义了INFO级别，则应用程序中所有DEBUG级别的日志信息将不被打印出来，也是说大于等于的级别的日志才输出。日志记录的级别有继承性，子类会记录父类的所有的日志级别。</li>
+                                    <li><strong>Log4j建议只使用四个级别，优先级从高到低分别是 ERROR > WARN > INFO > DEBUG</strong>
+                                        <br>通过在这里定义的级别，您可以控制到应用程序中相应级别的日志信息的开关。比如在这里定义了INFO级别，则应用程序中所有DEBUG级别的日志信息将不被打印出来，也是说大于等于的级别的日志才输出。日志记录的级别有继承性，子类会记录父类的所有的日志级别。</li>
+                                    <li><strong>@RequestBody与@ResponseBody</strong>
+                                        <ul>
+                                            <li>@RequestBody
+                                                <ol>
+                                                    <li>该注解用于读取Request请求的body部分数据，使用系统默认配置的HttpMessageConverter进行解析，然后把相应的数据绑定到要返回的对象上；</li>
+                                                    <li>再把HttpMessageConverter返回的对象数据绑定到 controller中方法的参数上。</li>
+                                                </ol>
+                                                <p><strong>使用时机：</strong>
+                                                    <ol>
+                                                        <li>GET、POST方式提时， 根据request header Content-Type的值来判断：
+                                                            <ul>
+                                                                <li>application/x-www-form-urlencoded，可选（即非必须，因为这种情况的数据@RequestParam, @ModelAttribute也可以处理，当然@RequestBody也能处理）；</li>
+                                                                <li>multipart/form-data, 不能处理（即使用@RequestBody不能处理这种格式的数据）；</li>
+                                                                <li>其他格式， 必须（其他格式包括application/json, application/xml等。这些格式的数据，必须使用@RequestBody来处理）；</li>
+                                                            </ul>
+                                                        </li>
+                                                        <li>PUT方式提交时， 根据request header Content-Type的值来判断：
+                                                            <ul>
+                                                                <li>application/x-www-form-urlencoded， 必须；</li>
+                                                                <li>multipart/form-data, 不能处理；</li>
+                                                                <li>其他格式， 必须；</li>
+                                                            </ul>
+                                                        </li>
+                                                    </ol>
+                                                    说明：request的body部分的数据编码格式由header部分的Content-Type指定；
+                                                </p>
+                                            </li>
+                                            <li>@ResponseBody：该注解用于将Controller的方法返回的对象，通过适当的HttpMessageConverter转换为指定格式后，写入到Response对象的body数据区。</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>org.springframework.beans.BeanUtils中的copyProperties()方法</strong>
+                                        <ul>
+                                            <li>优点与缺点：BeanUtils.copyProperties()方法比较耗（使用get/set方法基本上没有消耗时间的），但省去了人工操作。</li>
+                                            <li>限制：只有当两个类的属性相同才会进行处理，对不同属性的不做处理；对java.util.Date类不支持，但是对java.sql.Date支持；对Integer,Boolean,Long类型不支持；</li>
+                                            <li>需要的jar包：
+                                                <ul>
+                                                    <li>commons-beanutils-*.jar</li>
+                                                    <li>commons-logging-*.jar</li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
                                 </ol>
                             </p>
                             <p><strong>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！未完待续......</strong></p>
