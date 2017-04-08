@@ -3,14 +3,23 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Category: Web前端 | 恋恋风尘的博客</title>
+    <!--!!!!!!!!!!!!!!-->
+    <title>如何让百度检索Github博客 | 恋恋风尘的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="淡泊明志，宁静致远！">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="恋恋风尘的博客">
-    <meta property="og:url" content="https://zhuqiuhui.github.io/categories/机器学习/index.html">
+    <!--!!!!!!!!!!!!!!-->
+    <meta name="description" content="Github上的博客，百度无法收录这是一个普遍的问题，这样导致的后果在百度无法检索到自己的文章，而对于有着大量用户的中国，这一点确实不爽！要做到检索需要时间和耐心。本博客采用的是把博客源码托管在Coding Net上，结合域名定向（不需要备案）的方法达到检索的目的。">
+    <meta property="og:type" content="article">
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:title" content="如何让百度检索Github博客">
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/git-blog-index.html">
     <meta property="og:site_name" content="恋恋风尘的博客">
-    <meta property="og:description" content="淡泊明志，宁静致远！">
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:description" content="Github上的博客，百度无法收录这是一个普遍的问题，这样导致的后果在百度无法检索到自己的文章，而对于有着大量用户的中国，这一点确实不爽！要做到检索需要时间和耐心。本博客采用的是把博客源码托管在Coding Net上，结合域名定向（不需要备案）的方法达到检索的目的。">
+    <!--!!!!!!!!!!!!!!
+    <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">-->
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:updated_time" content="2017-04-08T08:10:03.000Z">
     <link rel="icon" href="/favicon.ico">
     <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
     <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
@@ -28,14 +37,27 @@
         fancybox: true,
         animate: true,
         isHome: false,
-        isPost: false,
+        isPost: true,
         isArchive: false,
         isTag: false,
-        isCategory: true,
+        isCategory: false,
         open_in_new: true,
         fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
         scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
     }
+    </script>
+    <script>
+    (function() {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
     </script>
     <script>
     yiliaConfig.rootUrl = "/";
@@ -44,6 +66,7 @@
 
 <body>
     <div id="container">
+        <!--首页左侧栏目-->
         <div class="left-col">
             <div class="overlay"></div>
             <div class="intrude-less">
@@ -82,7 +105,7 @@
                             <section class="switch-part switch-part1">
                                 <nav class="header-menu">
                                     <ul>
-                                    <li><a href="/">博客首页</a></li>
+                                        <li><a href="/">博客首页</a></li>
                                         <li><a href="/archives">文章归档</a></li>
                                         <li><a href="/tags">文章概览</a></li>
                                         <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
@@ -116,33 +139,6 @@
                                         <li><a href="/categories/其他/">其他</a></li>
                                     </ul>
                                 </nav>
-                                <!--<div class="widget tagcloud" id="js-tagcloud">
-                                    <ul class="tag-list">
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/C-与Boost/">C++与Boost</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux开发/">Linux开发</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/互联网/">互联网</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/内核/">内核</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/协议/">协议</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/博客/">博客</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/后台开发/">后台开发</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/工作/">工作</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/工作相关/">工作相关</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/开发基础/">开发基础</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/数学/">数学</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构和算法/">数据结构和算法</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/服务运维/">服务运维</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/构架/">构架</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/生活杂感/">生活杂感</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/软件/">软件</a></li>
-                                        <li class="tag-list-item"><a class="tag-list-link" href="/tags/运维/">运维</a></li>
-                                    </ul>
-                                </div>-->
                             </section>
                         </div>
                     </div>
@@ -168,7 +164,7 @@
                         <p class="header-subtitle">Java后台开发</p>
                         <nav class="header-menu">
                             <ul>
-                            <li><a href="/">博客首页</a></li>
+                                <li><a href="/">博客首页</a></li>
                                 <li><a href="/archives">文章归档</a></li>
                                 <li><a href="/tags">文章概览</a></li>
                                 <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
@@ -191,74 +187,115 @@
                 <link class="menu-list" tags="标签" friends="友情链接" about="关于我" />
             </nav>
             <div class="body-wrap">
-                <section class="archives-wrap">
-                    <!--有文章的话，显示该div!!!-->
-                    <div class="archive-year-wrap">
-                        <a href="/archives/2017" class="archive-year">2017</a>
+                <!--文章开始-->
+                <!--!!!!!!!!!!!!!!-->
+                <article id="git-blog-index" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <time datetime="2017-04-08T13:33:03.000Z" itemprop="datePublished">2017-04-08</time>
                     </div>
-                    <div class="archives">
-
-                    
-                    <article class="archive-article archive-type-post">
-                            <div class="archive-article-inner">
-                                <header class="archive-article-header">
-                                    <div class="article-meta">
-                                        <a href="/Blogs/2017/04/git-blog-index.html" class="archive-article-date">
-                                            <time datetime="2017-04-08T16:43:58.000Z" itemprop="datePublished">04-08</time>
-                                        </a>
-                                    </div>
-                                    <h1 itemprop="name">
-      <a class="archive-article-title" href="/Blogs/2017/04/git-blog-index.html.html">如何让百度检索Github博客</a>
-    </h1>
-                                    <div class="article-info info-on-archive">
-                                        <div class="article-category tagcloud">
-                                            <a class="article-category-link" href="/categories/Web前端/">Web前端</a>
-                                        </div>
-                                        <div class="article-tag tagcloud">
-                                            <ul class="article-tag-list">
-                                                <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </header>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 class="article-title" itemprop="name">如何让百度检索Github博客</h1>
+                        </header>
+                        <div class="article-info article-info-post">
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/Web前端/">Web前端</a>
                             </div>
-                        </article>
-
-
-
-                        <article class="archive-article archive-type-post">
-                            <div class="archive-article-inner">
-                                <header class="archive-article-header">
-                                    <div class="article-meta">
-                                        <a href="/Blogs/2017/03/github-blog-setup.html" class="archive-article-date">
-                                            <time datetime="2017-03-11T16:43:58.000Z" itemprop="datePublished">03-11</time>
-                                        </a>
-                                    </div>
-                                    <h1 itemprop="name">
-      <a class="archive-article-title" href="/Blogs/2017/03/github-blog-setup.html">Github博客搭建过程</a>
-    </h1>
-                                    <div class="article-info info-on-archive">
-                                        <div class="article-category tagcloud">
-                                            <a class="article-category-link" href="/categories/Web前端/">Web前端</a>
-                                        </div>
-                                        <div class="article-tag tagcloud">
-                                            <ul class="article-tag-list">
-                                                <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </header>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li>
+                                </ul>
                             </div>
-                        </article>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="article-entry" itemprop="articleBody">
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Github上的博客，百度无法收录这是一个普遍的问题，这样导致的后果在百度无法检索到自己的文章，而对于有着大量用户的中国，这一点确实不爽！要做到检索需要时间和耐心。本博客采用的是把博客源码托管在Coding Net上，结合域名定向（不需要备案）的方法达到检索的目的。</p>
+                            <h1 id="域名申请">一、域名申请</h1>
+                            <h1 id="域名定向">二、域名定向</h1>
+                            <h1 id="Coding Net托管">三、Coding Net托管</h1>
+                            <h1 id="百度站长测试">四、百度站长测试</h1>
+                            <p><strong>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！</strong></p>
+                        </div>
                     </div>
-                </section><!--有文章的话显示该div!!!-->
-                <nav id="page-nav">
-                    <span class="page-number current">1</span>
+                    <div class="copyright">
+                        <p><span>本文标题:</span>如何让百度检索Github博客</p>
+                        <p><span>最后更新:</span>2017-04-08, 17:10:03</p>
+                        <p>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/git-blog-index.html" title="如何让百度检索Github博客">http://zhuqiuhui.space/Blogs/2017/04/git-blog-index.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/git-blog-index.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <script>
+                            var clipboard = new Clipboard('.copy-path');
+                            </script>
+                        </p>
+                        <p>
+                            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+                        </p>
+                    </div>
+                    <!--上一篇和下一篇地址-->
+                    <nav id="article-nav">
+                        <div id="article-nav-newer" class="article-nav-title">
+                            <a href="/Blogs/2017/03/mysql-log-configuration-2.html">MySQL日志文件配置之二</a>
+                        </div>
+                        <div id="article-nav-older" class="article-nav-title">
+                            <a href="#">太心急了，还没更新哦</a>
+                        </div>
+                    </nav>
+                    <! -- 添加捐赠图标 -->
+                    <div class="post-donate">
+                        <div id="donate_board" class="donate_bar center">
+                            <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+                            <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+                            <br>
+                        </div>
+                        <div id="donate_guide" class="donate_bar center hidden">
+                            <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
+                                <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+                            </a>
+                            <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+                                <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+                            </a>
+                        </div>
+                        <script type="text/javascript">
+                        document.getElementById('btn_donate').onclick = function() {
+                            $('#donate_board').addClass('hidden');
+                            $('#donate_guide').removeClass('hidden');
+                        }
+                        </script>
+                    </div>
+                    <! -- 添加捐赠图标 -->
+                </article>
+                <!-- 网易云跟帖 start -->
+                <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+                <script>
+                var cloudTieConfig = {
+                    url: document.location.href,
+                    sourceId: "",
+                    productKey: "b845cecf8b7548bc8f9b779bc10be038",
+                    target: "cloud-tie-wrapper"
+                };
+                </script>
+                <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+                <!-- 网易云跟帖 end -->
+                <div class="scroll" id="post-nav-button">
+                    <!--上一篇-->
+                    <a href="/Blogs/2017/04/mysql-log-configuration-2.html" title="MySQL日志文件配置之二">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
                     <!--
-                    <span class="page-number current">1</span><a class="page-number" href="/categories/机器学习/page/2/">2</a><a class="extend next" rel="next" href="/categories/机器学习/page/2/">Next &raquo;</a>-->
-                </nav>
+                    <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>-->
+                    <!--下一篇-->
+                    <a href="#" title="太心急了，还没更新哦">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                </div>
+                <script>
+                </script>
             </div>
             <footer id="footer">
                 <div class="outer">
@@ -267,15 +304,6 @@
                             <i class="fa fa-copyright"></i> 2017-至今 Lil-hui
                         </div>
                         <div class="footer-right">
-                            <!--
-                            <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">
-                                <img src="/post_images/icons/icp_min.png" alt="粤ICP备17002382号-1">粤ICP备17002382号-1
-                            </a>
-                            <script type="text/javascript">
-                            var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-                            document.write(unescape("%3Cspan id='cnzz_stat_icon_1258402767'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/stat.php%3Fid%3D1258402767%26online%3D2' type='text/javascript'%3E%3C/script%3E"));
-                            </script>
-                            Powered by <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>, theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a> enhanced by Nicol <i class="fa fa-heart animated infinite pulse"></i>-->
                         </div>
                     </div>
                 </div>
