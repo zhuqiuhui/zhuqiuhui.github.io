@@ -222,12 +222,12 @@ cond.put("deleted", 1);
 TRunnable<String> resRunnable1= new TRunnable<String>() {
     @Override
     public String tRun() throws TException {
-        return iTestDao.selectList(cond);       // ----------------------------------- 1
+        return iTestDao.selectList(cond);       // ---------------- 1
     }
 };
 worker.add2Run(resRunnable1);
  
-cond.clear();                                   // ----------------------------------- 2
+cond.clear();                                   // ---------------- 2
 cond.put("name", "zhuqiuhui");
 cond.put("type", 2);
 cond.put("cityId", cityId);
@@ -235,7 +235,7 @@ cond.put("deleted", 1);
 TRunnable<String> resRunnable2 = new TRunnable<String>() {
     @Override
     public String tRun() throws TException {
-        return iTestDao.selectList(cond);       // ----------------------------------- 3
+        return iTestDao.selectList(cond);       // ---------------- 3
     }
 };
 worker.add2Run(resRunnable2);
