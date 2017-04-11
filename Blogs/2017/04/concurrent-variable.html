@@ -4,22 +4,22 @@
 <head>
     <meta charset="utf-8">
     <!--!!!!!!!!!!!!!!-->
-    <title>MySQL日志文件配置之二 | 恋恋风尘的博客</title>
+    <title>并发情况下使用同一变量问题 | 恋恋风尘的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <!--!!!!!!!!!!!!!!-->
-    <meta name="description" content="接着文章MySQL日志文件配置的分析，本文主要对mysql中的二进制日志文件怎么查看进行展开。">
+    <meta name="description" content="">
     <meta property="og:type" content="article">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:title" content="MySQL日志文件配置之二">
+    <meta property="og:title" content="并发情况下使用同一变量问题">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:url" content="http://zhuqiuhui.github.io/Blogs/2017/03/mysql-log-configuration-2.html">
+    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/concurrent-variable.html">
     <meta property="og:site_name" content="恋恋风尘的博客">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:description" content="接着文章MySQL日志文件配置的分析，本文主要对mysql中的二进制日志文件怎么查看进行展开。">
+    <meta property="og:description" content="">
     <!--!!!!!!!!!!!!!!
     <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">-->
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:updated_time" content="2017-03-31T08:10:03.000Z">
+    <meta property="og:updated_time" content="2017-04-11T08:10:03.000Z">
     <link rel="icon" href="/favicon.ico">
     <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
     <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
@@ -189,18 +189,18 @@
             <div class="body-wrap">
                 <!--文章开始-->
                 <!--!!!!!!!!!!!!!!-->
-                <article id="mysql-log-configuration-2" class="article article-type-post" itemscope itemprop="blogPost">
+                <article id="sql-study" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
-                        <time datetime="2017-03-31T13:33:03.000Z" itemprop="datePublished">2017-03-31</time>
+                        <time datetime="2017-04-11T13:33:03.000Z" itemprop="datePublished">2017-04-11</time>
                     </div>
                     <div class="article-inner">
                         <input type="hidden" class="isFancy" />
                         <header class="article-header">
-                            <h1 class="article-title" itemprop="name">MySQL日志文件配置之二</h1>
+                            <h1 class="article-title" itemprop="name">并发情况下使用同一变量问题</h1>
                         </header>
                         <div class="article-info article-info-post">
                             <div class="article-category tagcloud">
-                                <a class="article-category-link" href="/categories/数据库/">数据库</a>
+                                <a class="article-category-link" href="/categories/Java/">Java</a>
                             </div>
                             <div class="article-tag tagcloud">
                                 <ul class="article-tag-list">
@@ -210,143 +210,97 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="article-entry" itemprop="articleBody">
-                            <p>&nbsp;&nbsp;&nbsp;&nbsp;接着文章<a href="http://zhuqiuhui.github.io/Blogs/2017/03/mysql-log-configuration.html">MySQL日志文件配置</a>的分析，本文主要对mysql中的二进制日志文件怎么查看进行展开。</p>
-                            <h1 id="mysql日志文件配置">一、mysql日志文件配置</h1>
-                            <p>&nbsp;&nbsp;&nbsp;&nbsp;常用的mysql日志类型有：
-                                <ul>
-                                    <li>错误日志：log-error </li>
-                                    <li>查询日志：general_log_file </li>
-                                    <li>慢查询日志：slow_query_log_file </li>
-                                    <li>二进制日志：log-bin</li>
-                                    在my.cnf的详细配置如下图，注意变量的弃用问题！
-                                    <img src="/post_images/images/2017/03/mysql-log-conf.png" title="mysql-log-conf">
-                                </ul>
-                            </p>
-                            <h1 id="查看mysql二进制日志的两种方式">二、查看mysql二进制日志的两种方式</h1>
+                            <h1>一、场景</h1>
                             <p>
-                                <ul>
-                                    <li>使用show binlog events方式可以获取当前以及指定binlog的日志，不适宜提取大量日志。</li>
-                                    <li>使用mysqlbinlog命令行提取(适宜批量提取日志)。</li>
-                                </ul>
+                                <pre>
+                                <code class="java">
+TPWorker worker = new TPWorker();
+ 
+final Map<String, Object> cond = Maps.newHashMap();
+cond.put("id", 5);
+cond.put("deleted", 1);
+TRunnable<String> resRunnable1= new TRunnable<String>() {
+    @Override
+    public String tRun() throws TException {
+        return iTestDao.selectList(cond);       // ----------------------------------- 1
+    }
+};
+worker.add2Run(resRunnable1);
+ 
+cond.clear();                                   // ----------------------------------- 2
+cond.put("name", "zhuqiuhui");
+cond.put("type", 2);
+cond.put("cityId", cityId);
+cond.put("deleted", 1);
+TRunnable<String> resRunnable2 = new TRunnable<String>() {
+    @Override
+    public String tRun() throws TException {
+        return iTestDao.selectList(cond);       // ----------------------------------- 3
+    }
+};
+worker.add2Run(resRunnable2);
+ 
+worker.wait2Finished();
+ 
+//获取并行结果
+String res1 = resRunnable1.getResult();
+String res2 = resRunnable2.getResult();
+                                </code>
+                                </pre> 上述代码上用到了并发执行结果（运用到TTP并行调用框架），通过并发来提高代码的执行效率，最终获取到并行结果res1和res2。
                             </p>
-                            <h2>2.1 mysqlbinlog命令提取</h2>
-                            <p>该命令的查看比较容易，一般形式如下：
-                                <figure class="highlight bash">
-                                    <table>
-                                        <tr>
-                                            <td class="gutter"><pre><div class="line">1</div></pre></td>
-                                            <td class="code"><pre><div class="line">mysqlbinlog mysql-bin.000001</div></pre></td>
-                                        </tr>
-                                    </table>
-                                </figure>
-                                有可能以后显示的内容出现乱码，这主要针对于 “ binlog_format=row ”的模式时候，直接显示为base64编码格式，要生成常规的sql语句，可使用如下命令即可显示出正常语句了。
-                                <figure class="highlight bash">
-                                    <table>
-                                        <tr>
-                                            <td class="gutter"><pre><div class="line">1</div></pre></td>
-                                            <td class="code"><pre><div class="line">mysqlbinlog --base64-output=decode-rows -v mysql-bin.000001</div></pre></td>
-                                        </tr>
-                                    </table>
-                                </figure>
-                                有时也可以把二进制文件转化为utf8格式的文件来直接查看，可使用命令：
-                                <figure class="highlight bash">
-                                    <table>
-                                        <tr>
-                                            <td class="gutter"><pre><div class="line">1</div></pre></td>
-                                            <td class="code"><pre><div class="line">mysqlbinlog --database=mybatisTest --set-charset=utf8 mysql-bin.000001 > test.sql </div></pre></td>
-                                        </tr>
-                                    </table>
-                                </figure>
+                            <h1>二、后果</h1>
+                            <p>上述代码运行后，总得不到意向的结果，查sql语句发现条件设置混乱。
                             </p>
-                            <h2>2.2 show binlog events方式</h2>
+                            <h1>三、分析</h1>
+                            <p>由于cond是一个引用，1处保存条件，但并未执行，于是执行到2处，重新clear，然后put新的条件值，这样导致1处执行的条件混乱，sql语句自然处于混乱状态。可尝试在并发代码中打印出cond值，发现两个cond值是一样的！！！
+                            </p>
+                            <h1>四、解决</h1>
                             <p>
-                                <ol>
-                                    <li>查看所有二进制日志文件及其大小：
-                                        <figure class="highlight bash">
-                                            <table>
-                                                <tr>
-                                                    <td class="gutter"><pre><div class="line">1</div></pre></td>
-                                                    <td class="code"><pre><div class="line">show binary logs;</div></pre></td>
-                                                </tr>
-                                            </table>
-                                        </figure>
-                                    </li>
-                                    <li>查看当前二进制日志文件：
-                                        <figure class="highlight bash">
-                                            <table>
-                                                <tr>
-                                                    <td class="gutter"><pre><div class="line">1</div></pre></td>
-                                                    <td class="code"><pre><div class="line">show master status;</div></pre></td>
-                                                </tr>
-                                            </table>
-                                        </figure>
-                                    </li>
-                                    <li>默认查看当第一个二进制日志文件：
-                                        <img src="/post_images/images/2017/03/binlog-1.png" title="binlog-1">
-                                    </li>
-                                    <li>查看指定二进制日志文件（输出格式按行）：
-                                        <img src="/post_images/images/2017/03/binlog-2.png" title="binlog-2">
-                                        <code>备注：若出现info列中没有sql语句的情况，该模式可能处于“基于行的复制(row-based replication, RBR)”模式中，可设置命令：
-                                        <figure class="highlight bash">
-                                            <table>
-                                                <tr>
-                                                    <td class="gutter"><pre><div class="line">1</div></pre></td>
-                                                    <td class="code"><pre><div class="line">set binlog_rows_query_log_events=ON;</div></pre></td>
-                                                </tr>
-                                            </table>
-                                        </figure>
-                                        binlog_rows_query_log_events (5.6.2引入)只作用于RBR格式，默认不启用，如果启用，会把用户写直的原生态DML操作记录到binlog中。</code>
-                                    </li>
-                                    <li>查看指定二进制日志文件（输出格式按列，其中\G参数，将输出按列显示）：
-                                        <img src="/post_images/images/2017/03/binlog-3.png" title="binlog-3">
-                                    </li>
-                                    <li>MySQL binlog操作事件类型
-                                        <ul>
-                                            <li>QUERY_EVENT：以文本的形式来记录事务的操作，QUERY_EVENT类型的事件通常在以下几种情况下使用：
-                                                <ol>
-                                                    <li>事务开始时，执行的BEGIN操作</li>
-                                                    <li>STATEMENT格式中的DML操作</li>
-                                                    <li>ROW格式中的DDL操作</li>
-                                                </ol>
-                                            </li>
-                                            <li>FORMAT_DESCRIPTION_EVENT：binlog文件中的第一个事件，该事件只会在binlog中出现一次，mysql会根据FORMAT_DESCRIPTION_EVENT的定义来解析其它事件，它通常指定了MySQL Server的版本、binlog的版本、binlog文件的创建时间。</li>
-                                            <li>ROWS_EVENT：对于ROW格式的binlog，所有的DML语句都是记录在ROWS_EVENT中，ROWS_EVENT分为三种：WRITE_ROWS_EVENT，UPDATE_ROWS_EVENT，DELETE_ROWS_EVENT，分别对应insert，update和delete操作。
-                                                <ol>
-                                                    <li>对于insert操作，WRITE_ROWS_EVENT包含了要插入的数据</li>
-                                                    <li>对于update操作，UPDATE_ROWS_EVENT不仅包含了修改后的数据，还包含了修改前的值</li>
-                                                    <li>对于delete操作，仅仅需要指定删除的主键（在没有主键的情况下，会给定所有列）</li>
-                                                </ol>
-                                                <code>备注：对于QUERY_EVENT事件，是以文本形式记录DML操作的，而对于ROWS_EVENT事件，并不是文本形式，所以在通过mysqlbinlog查看基于ROW格式的binlog时，需要指定-vv --base64-output=decode-rows。</code>
-                                            </li>
-                                            <li>XID_EVENT：该事件记录了该事务的ID，在MySQL进行崩溃恢复时，根据事务在binlog中的提交情况来决定是否提交存储引擎中状态为prepared的事务</li>
-                                            <li>STOP_EVENT：当MySQL数据库停止时，会在当前的binlog末尾添加一个STOP_EVENT事件表示数据库停止。</li>
-                                            <li>GTID_LOG_EVENT：在启用GTID模式后，MySQL实际上为每个事务都分配了个GTID，事物是全局唯一的，且一个事务对应一个GTID，一个GTID在一个服务器上只执行一次，避免重复执行导致数据混乱或者主从不一致。</li>
-                                            <li>Table_map_log_event：它保存了本次DML操作对应的table_id、数据库名、表名、字段数、字段类型等。</li>
-                                        </ul>
-                                    </li>
-                                    <li>清空二进制日志文件
-                                        <figure class="highlight bash">
-                                            <table>
-                                                <tr>
-                                                    <td class="gutter"><pre><div class="line">1</div></pre></td>
-                                                    <td class="code"><pre><div class="line">reset master;</div></pre></td>
-                                                </tr>
-                                            </table>
-                                        </figure>
-                                    </li>
-                                    <li>关闭二进制日志文件： 彻底禁用MySQL日志，修改/etc/my.cnf文件，找到log-bin相关选项，将其注释掉即可。
-                                    </li>
-                                </ol>
+                            <pre>
+                                <code class="java">
+TPWorker worker = new TPWorker();
+ 
+final Map<String, Object> cond = Maps.newHashMap();
+cond.put("id", 5);
+cond.put("deleted", 1);
+TRunnable<String> resRunnable1= new TRunnable<String>() {
+    @Override
+    public String tRun() throws TException {
+        return iTestDao.selectList(cond);
+    }
+};
+worker.add2Run(resRunnable1);
+ 
+final Map<String, Object> conds = Maps.newHashMap();       // 重新定义一个
+conds.put("name", "zhuqiuhui");
+conds.put("type", 2);
+conds.put("cityId", cityId);
+conds.put("deleted", 1);
+TRunnable<String> resRunnable2 = new TRunnable<String>() {
+    @Override
+    public String tRun() throws TException {
+        return iTestDao.selectList(conds);;
+    }
+};
+worker.add2Run(resRunnable2);
+ 
+worker.wait2Finished();
+ 
+//获取并行结果
+String res1 = resRunnable1.getResult();
+String res2 = resRunnable2.getResult();
+                                </code>
+                            </pre>
                             </p>
                             <p><strong>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！</strong></p>
                         </div>
                     </div>
                     <div class="copyright">
-                        <p><span>本文标题:</span>MySQL日志文件配置之二</p>
-                        <p><span>最后更新:</span>2017-03-31, 17:10:03</p>
+                        <p><span>本文标题:</span>并发情况下使用同一变量问题</p>
+                        <p><span>最后更新:</span>2017-04-11, 17:10:03</p>
                         <p>
-                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/03/mysql-log-configuration-2.html" title="MySQL日志文件配置">http://zhuqiuhui.github.io/Blogs/2017/03/mysql-log-configuration-2.html</a>
-                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.github.io/Blogs/2017/03/mysql-log-configuration-2.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/concurrent-variable.html" title="并发情况下使用同一变量问题">http://zhuqiuhui.space/Blogs/2017/04/concurrent-variable.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/concurrent-variable.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
                             <script>
                             var clipboard = new Clipboard('.copy-path');
                             </script>
@@ -358,7 +312,7 @@
                     <!--上一篇和下一篇地址-->
                     <nav id="article-nav">
                         <div id="article-nav-newer" class="article-nav-title">
-                            <a href="/Blogs/2017/03/spring-classpath.html">Spring maven 项目中的classpath路径问题</a>
+                            <a href="/Blogs/2017/04/sql-study.html">SQL学习总结</a>
                         </div>
                         <div id="article-nav-older" class="article-nav-title">
                             <a href="#">太心急了，还没更新哦</a>
@@ -407,7 +361,7 @@
                 <!-- 网易云跟帖 end -->
                 <div class="scroll" id="post-nav-button">
                     <!--上一篇-->
-                    <a href="/Blogs/2017/03/spring-classpath.html" title="Spring maven 项目中的classpath路径问题">
+                    <a href="/Blogs/2017/04/sql-study.html" title="SQL学习总结">
                         <i class="fa fa-angle-left"></i>
                     </a>
                     <!--

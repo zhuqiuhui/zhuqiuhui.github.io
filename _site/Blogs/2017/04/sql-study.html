@@ -4,22 +4,22 @@
 <head>
     <meta charset="utf-8">
     <!--!!!!!!!!!!!!!!-->
-    <title>如何让百度检索Github博客 | 恋恋风尘的博客</title>
+    <title>SQL学习总结 | 恋恋风尘的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <!--!!!!!!!!!!!!!!-->
-    <meta name="description" content="Github上的博客，百度无法收录这是一个普遍的问题，这样导致的后果在百度无法检索到自己的文章，而对于有着大量用户的中国，这一点确实不爽！要做到检索需要时间和耐心。本博客采用的是把博客源码托管在Coding Net上，结合域名定向（不需要备案）的方法达到检索的目的。">
+    <meta name="description" content="开发过程中遇到的sql问题总结，也算是一个学习过程。本博客总结了字段递增、unique唯一索引、非主键字段值递增、mybatis sql中的where、delete相关问题和ON DUPLICATE KEY UPDATE语句使用等等。">
     <meta property="og:type" content="article">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:title" content="如何让百度检索Github博客">
+    <meta property="og:title" content="SQL学习总结">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/git-blog-index.html">
+    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/sql-study.html">
     <meta property="og:site_name" content="恋恋风尘的博客">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:description" content="Github上的博客，百度无法收录这是一个普遍的问题，这样导致的后果在百度无法检索到自己的文章，而对于有着大量用户的中国，这一点确实不爽！要做到检索需要时间和耐心。本博客采用的是把博客源码托管在Coding Net上，结合域名定向（不需要备案）的方法达到检索的目的。">
+    <meta property="og:description" content="开发过程中遇到的sql问题总结，也算是一个学习过程。本博客总结了字段递增、unique唯一索引、非主键字段值递增、mybatis sql中的where、delete相关问题和ON DUPLICATE KEY UPDATE语句使用等等。">
     <!--!!!!!!!!!!!!!!
     <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">-->
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:updated_time" content="2017-04-08T08:10:03.000Z">
+    <meta property="og:updated_time" content="2017-04-11T08:10:03.000Z">
     <link rel="icon" href="/favicon.ico">
     <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
     <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
@@ -189,50 +189,113 @@
             <div class="body-wrap">
                 <!--文章开始-->
                 <!--!!!!!!!!!!!!!!-->
-                <article id="git-blog-index" class="article article-type-post" itemscope itemprop="blogPost">
+                <article id="sql-study" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
-                        <time datetime="2017-04-08T13:33:03.000Z" itemprop="datePublished">2017-04-08</time>
+                        <time datetime="2017-04-11T13:33:03.000Z" itemprop="datePublished">2017-04-11</time>
                     </div>
                     <div class="article-inner">
                         <input type="hidden" class="isFancy" />
                         <header class="article-header">
-                            <h1 class="article-title" itemprop="name">如何让百度检索Github博客</h1>
+                            <h1 class="article-title" itemprop="name">SQL学习总结</h1>
                         </header>
                         <div class="article-info article-info-post">
                             <div class="article-category tagcloud">
-                                <a class="article-category-link" href="/categories/Web前端/">Web前端</a>
+                                <a class="article-category-link" href="/categories/数据库/">数据库</a>
                             </div>
                             <div class="article-tag tagcloud">
                                 <ul class="article-tag-list">
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li>
                                 </ul>
                             </div>
                             <div class="clearfix"></div>
                         </div>
                         <div class="article-entry" itemprop="articleBody">
-                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Github上的博客，百度无法收录这是一个普遍的问题，这样导致的后果在百度无法检索到自己的文章，而对于有着大量用户的中国，这一点确实不爽！要做到检索需要时间和耐心。本博客采用的是把博客源码托管在Coding Net上，结合域名定向（不需要备案）的方法达到检索的目的。</p>
-                            <h1 id="域名申请">一、域名申请</h1>
-                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;域名申请推荐阿里云或者百度云，都可以，十分便宜！自行申请。给出链接：<a href="https://wanwang.aliyun.com/">阿里云域名注册</a></p>
-                            <h1 id="域名定向">二、域名定向</h1>
-                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;域名定向就是根据不同的链接来指向不同的解析，把国外的访问指向如<a href="http://zhuqiuhui.github.io/">http://zhuqiuhui.github.io/</a>，而国内的链接指向<a href="http://zhuqiuhui.coding.me">http://zhuqiuhui.coding.me</a>，配置如下图，本博客没有用阿里云内的域名解析定向，而是用到的<a href="https://www.dnspod.cn/">DNSPOD</a></p>（采用CNAME方式，自行查阅）。
-                            <img src="/post_images/images/2017/04/DNSPOD.png" title="DNSPOD">
-                            <h1 id="Coding Net托管">三、Coding Net托管</h1>
-                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Coding Net类似于Github，可以理解为中国的Github，使用方式同Github的使用方式，使用Coding Net托管是使百度能够检索到Github博客最为简单的方式，使用Coding Net并不意味着可以放弃Github，您可以把博客源码放到两个上面（Github和CodingNet），而只使用一句命令即可，使用的命令可使用<a href="http://zhuqiuhui.space/Blogs/2017/03/git-usage.html">git给远程库添加多个url地址</a>的方式，一个命令便可以提交到两个远程仓库上面，很简单！</p>
-                            <h1 id="百度站长测试">四、百度站长测试</h1>
-                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;完成上面的步骤后，可以尝试<a href="http://zhanzhang.baidu.com/">百度站长</a>来尝试抓取页面，应该100%成功的。此后，需要在博客页面添加百度自动抓取页面的js代码，可参考<a href="http://zhanzhang.baidu.com/">百度站长</a>自动推送方式，不再多说！
-                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;到此基本已经大功告成了，剩下的时间就是等着百度抓取页面，并建立索引了，下面是我的博客一些索引情况（建立索引过程非常慢，昨天索引又增加2，算是个惊喜！）。
-                            <img src="/post_images/images/2017/04/index-1.png" title="百度索引变化图">
-                            <img src="/post_images/images/2017/04/index-2.png" title="百度索引量">
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;开发过程中遇到的sql问题总结，也算是一个学习过程。本博客总结了字段递增、unique唯一索引、非主键字段值递增、mybatis sql中的where、delete相关问题和ON DUPLICATE KEY UPDATE语句使用等等。</p>
+                            <p>
+                                <ol>
+                                    <li><strong>递增问题</strong>，用语句来给字段设置递增属性
+                                        <figure class="highlight bash">
+                                            <table>
+                                                <tr>
+                                                    <td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td>
+                                                    <td class="code"><pre><div class="line">alter table user drop column user_id;</div><div class="line">alter table user add user_id int identity (1,1) not null;</div></pre></td>
+                                                </tr>
+                                            </table>
+                                        </figure>
+                                    </li>
+                                    <li><strong>unique</strong>
+                                        <ul>
+                                            <li>创建唯一索引的目的不是为了提高访问速度，而只是为了避免数据出现重复。唯一索引可以有多个但索引列的值必须唯一，索引列的值允许有空值。</li>
+                                            <li>创建唯一索引语句：
+                                                <figure class="highlight bash">
+                                                    <table>
+                                                        <tr>
+                                                            <td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td>
+                                                            <td class="code"><pre><div class="line">create unique index name ON user(user_name); </div><div class="line">alter table user add unique index(user_id,user_name);</div></pre></td>
+                                                        </tr>
+                                                    </table>
+                                                </figure>
+                                            </li>
+                                            <li>删除唯一索引：
+                                                <figure class="highlight bash">
+                                                    <table>
+                                                        <tr>
+                                                            <td class="gutter"><pre><div class="line">1</div></pre></td>
+                                                            <td class="code"><pre><div class="line">alter table user drop index name;</div></pre></td>
+                                                        </tr>
+                                                    </table>
+                                                </figure>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>非主键字段值递增</strong>
+                                        <figure class="highlight bash">
+                                            <table>
+                                                <tr>
+                                                    <td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td>
+                                                    <td class="code"><pre><div class="line">insert into t_seq(seq, description) values((select IFNULL(max(seq),0)+1 from t_seq),'商品23'); //报错：You can't specify target table for update in FROM clause，即查的时候不能更改 </div><div class="line"></div><div class="line">//改成下面语句，先查询出一个视图来</div><div class="line">insert into t_seq(seq, description) values((select IFNULL(max(seq),0)+1 from (select seq from t_seq) as t),'商品23');</div><div class="line"></div><div class="line">//也可改成 select case when......</div></pre></td>
+                                                </tr>
+                                            </table>
+                                        </figure>
+                                        总结：这样的查询语句虽然可以解决问题，但在大大降低了查询效率，不建议使用，可以使用锁机制来做。
+                                    </li>
+                                    <li><strong>mybatis sql中的where</strong>
+                                        <br>where 元素知道只有在一个以上的if条件有值的情况下才去插入“WHERE”子句。而且，若最后的内容是“AND”或“OR”开头的，where 元素也知道如何将他们去除。
+                                    </li>
+                                    <li><strong>MySQL数据库delete数据时，不支持给表起别名。</strong></li>
+                                    <li><strong>MySQL中的“INSERT ... ON DUPLICATE KEY UPDATE”语句</strong>
+                                        <br>使用场景：如user表，含有user_id（主键）、user_num（unique类型，意义可理解为学号）、count（int类型），当插入学生信息时，若学号相同，则使coun加1，语句如下：
+                                        <figure class="highlight bash">
+                                            <table>
+                                                <tr>
+                                                    <td class="gutter"><pre><div class="line">1</div></pre></td>
+                                                    <td class="code"><pre><div class="line">insert into user(user_num) values (2014223040012) on duplicate key update count = count + 1; //若user表中已经有学号为“2014223040012”，则count加1</div></pre></td>
+                                                </tr>
+                                            </table>
+                                        </figure>
+                                    </li>
+                                    <li><strong>处理mysql表中字段为保留字的插入情况</strong>
+                                        <br> 如表结构：user表，含有user_id（主键）、user_num（unique类型，意义可理解为学号）、delete（int类型，意义可理解为是否已经删除）
+                                        <figure class="highlight bash">
+                                            <table>
+                                                <tr>
+                                                    <td class="gutter"><pre><div class="line">1</div></pre></td>
+                                                    <td class="code"><pre><div class="line">iinsert into user(user_id, user_num, `delete`) values(6, 45, 2); // 其中delete是由反引号括起来，否则会报错！</div></pre></td>
+                                                </tr>
+                                            </table>
+                                        </figure>
+                                    </li>
+                                </ol>
                             </p>
                             <p><strong>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！</strong></p>
                         </div>
                     </div>
                     <div class="copyright">
-                        <p><span>本文标题:</span>如何让百度检索Github博客</p>
-                        <p><span>最后更新:</span>2017-04-08, 17:10:03</p>
+                        <p><span>本文标题:</span>SQL学习总结</p>
+                        <p><span>最后更新:</span>2017-04-11, 17:10:03</p>
                         <p>
-                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/git-blog-index.html" title="如何让百度检索Github博客">http://zhuqiuhui.space/Blogs/2017/04/git-blog-index.html</a>
-                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/git-blog-index.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/sql-study.html" title="SQL学习总结">http://zhuqiuhui.space/Blogs/2017/04/sql-study.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/sql-study.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
                             <script>
                             var clipboard = new Clipboard('.copy-path');
                             </script>
@@ -244,10 +307,10 @@
                     <!--上一篇和下一篇地址-->
                     <nav id="article-nav">
                         <div id="article-nav-newer" class="article-nav-title">
-                            <a href="/Blogs/2017/03/mysql-log-configuration-2.html">MySQL日志文件配置之二</a>
+                            <a href="/Blogs/2017/04/git-blog-index.html">如何让百度检索Github博客</a>
                         </div>
                         <div id="article-nav-older" class="article-nav-title">
-                            <a href="/Blogs/2017/04/sql-study.html">SQL学习总结</a>
+                            <a href="/Blogs/2017/04/concurrent-variable.html">并发情况下使用同一变量问题</a>
                         </div>
                     </nav>
                     <! -- 添加捐赠图标 -->
@@ -293,13 +356,13 @@
                 <!-- 网易云跟帖 end -->
                 <div class="scroll" id="post-nav-button">
                     <!--上一篇-->
-                    <a href="/Blogs/2017/03/mysql-log-configuration-2.html" title="MySQL日志文件配置之二">
+                    <a href="/Blogs/2017/04/git-blog-index.html" title="如何让百度检索Github博客">
                         <i class="fa fa-angle-left"></i>
                     </a>
                     <!--
                     <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>-->
                     <!--下一篇-->
-                    <a href="/Blogs/2017/04/sql-study.html" title="SQL学习总结">
+                    <a href="/Blogs/2017/04/concurrent-variable.html" title="并发情况下使用同一变量问题">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 </div>
