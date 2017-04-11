@@ -190,6 +190,122 @@
             </nav>
             <!--下面是主页文章的开始-->
             <div class="body-wrap">
+
+            <article id="concurrent-variable" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/Blogs/2017/04/concurrent-variable.html" class="article-date">
+                            <time datetime="2017-04-11T11:48:05.000Z" itemprop="datePublished">2017-04-11</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
+      <a class="article-title" href="/Blogs/2017/04/concurrent-variable.html">【置顶】并发情况下使用同一变量问题</a>
+    </h1>
+                        </header>
+                        <div class="article-entry" itemprop="articleBody"><h1>一、场景</h1>
+                            <p>
+                                <pre>
+                                <code class="java">
+TPWorker worker = new TPWorker();
+ 
+final Map<String, Object> cond = Maps.newHashMap();
+cond.put("id", 5);
+cond.put("deleted", 1);
+TRunnable<String> resRunnable1= new TRunnable<String>() {
+    @Override
+    public String tRun() throws TException {
+        return iTestDao.selectList(cond);       // ---------------- 1
+    }
+};
+worker.add2Run(resRunnable1);
+ 
+cond.clear();                                   // ---------------- 2
+cond.put("name", "zhuqiuhui");
+cond.put("type", 2);
+cond.put("cityId", cityId);
+cond.put("deleted", 1);
+TRunnable<String> resRunnable2 = new TRunnable<String>() {
+    @Override
+    public String tRun() throws TException {
+        return iTestDao.selectList(cond);       // ---------------- 3
+    }
+};
+worker.add2Run(resRunnable2);
+ 
+worker.wait2Finished();
+ 
+//获取并行结果
+String res1 = resRunnable1.getResult();
+String res2 = resRunnable2.getResult();
+                                </code>
+                                </pre> 上述代码上用到了并发执行结果（运用到TTP并行调用框架），通过并发来提高代码的执行效率，最终获取到并行结果res1和res2。
+                            </p>
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-pop-out tagcloud">
+                                <a class="">置顶</a>
+                            </div>
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/Java/">Java</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java并发/">java并发</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/Blogs/2017/04/concurrent-variable.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+
+
+
+
+            <article id="mysql-study" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <a href="/Blogs/2017/04/mysql-study.html" class="article-date">
+                            <time datetime="2017-04-11T11:48:05.000Z" itemprop="datePublished">2017-04-11</time>
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 itemprop="name">
+      <a class="article-title" href="/Blogs/2017/04/mysql-study.html">【置顶】SQL学习总结</a>
+    </h1>
+                        </header>
+                        <div class="article-entry" itemprop="articleBody">
+                            开发过程中遇到的sql问题总结，也算是一个学习过程。本博客总结了字段递增、unique唯一索引、非主键字段值递增、mybatis sql中的where、delete相关问题和ON DUPLICATE KEY UPDATE语句使用等等。
+                        </div>
+                        <div class="article-info article-info-index">
+                            <div class="article-pop-out tagcloud">
+                                <a class="">置顶</a>
+                            </div>
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/数据库/">数据库</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li>
+                                </ul>
+                            </div>
+                            <p class="article-more-link">
+                                <a href="/Blogs/2017/04/mysql-study.html#more">阅读全文 >></a>
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </article>
+
+
+
+
+
             <article id="git-blog-index" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
                         <a href="/Blogs/2017/04/git-blog-index.html" class="article-date">
