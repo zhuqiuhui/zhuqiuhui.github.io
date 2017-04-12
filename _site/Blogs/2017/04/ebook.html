@@ -4,22 +4,22 @@
 <head>
     <meta charset="utf-8">
     <!--!!!!!!!!!!!!!!-->
-    <title>并发情况下使用同一变量问题 | 恋恋风尘的博客</title>
+    <title>IT最全电子书集合 | 恋恋风尘的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <!--!!!!!!!!!!!!!!-->
-    <meta name="description" content="">
+    <meta name="description" content="收藏的IT行业的电子书，拿出来分享一下，收集不易，自取的人欢迎打赏或者评论，链接失效的请留言，看到留言后会更新链接，如果需要全部打包文件，请联系博主。">
     <meta property="og:type" content="article">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:title" content="并发情况下使用同一变量问题">
+    <meta property="og:title" content="IT最全电子书集合">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/concurrent-variable.html">
+    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/ebook.html">
     <meta property="og:site_name" content="恋恋风尘的博客">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:description" content="">
+    <meta property="og:description" content="收藏的IT行业的电子书，拿出来分享一下，收集不易，自取的人欢迎打赏或者评论，链接失效的请留言，看到留言后会更新链接，如果需要全部打包文件，请联系博主。">
     <!--!!!!!!!!!!!!!!
     <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">-->
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:updated_time" content="2017-04-11T08:10:03.000Z">
+    <meta property="og:updated_time" content="2017-04-13T08:10:03.000Z">
     <link rel="icon" href="/favicon.ico">
     <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
     <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
@@ -189,14 +189,14 @@
             <div class="body-wrap">
                 <!--文章开始-->
                 <!--!!!!!!!!!!!!!!-->
-                <article id="concurrent-variable" class="article article-type-post" itemscope itemprop="blogPost">
+                <article id="ebook" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
-                        <time datetime="2017-04-11T13:33:03.000Z" itemprop="datePublished">2017-04-11</time>
+                        <time datetime="2017-04-13T13:33:03.000Z" itemprop="datePublished">2017-04-13</time>
                     </div>
                     <div class="article-inner">
                         <input type="hidden" class="isFancy" />
                         <header class="article-header">
-                            <h1 class="article-title" itemprop="name">并发情况下使用同一变量问题</h1>
+                            <h1 class="article-title" itemprop="name">IT最全电子书集合</h1>
                         </header>
                         <div class="article-info article-info-post">
                             <div class="article-category tagcloud">
@@ -204,103 +204,51 @@
                             </div>
                             <div class="article-tag tagcloud">
                                 <ul class="article-tag-list">
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java并发/">java并发</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java工具类/">java工具类</a></li>
                                 </ul>
                             </div>
                             <div class="clearfix"></div>
                         </div>
                         <div class="article-entry" itemprop="articleBody">
-                            <h1>一、场景</h1>
                             <p>
-                                <pre>
-                                <code class="java">
-TPWorker worker = new TPWorker();
- 
-final Map<String, Object> cond = Maps.newHashMap();
-cond.put("id", 5);
-cond.put("deleted", 1);
-TRunnable<String> resRunnable1= new TRunnable<String>() {
-    @Override
-    public String tRun() throws TException {
-        return iTestDao.selectList(cond);       // ---------------- 1
-    }
-};
-worker.add2Run(resRunnable1);
- 
-cond.clear();                                   // ---------------- 2
-cond.put("name", "zhuqiuhui");
-cond.put("type", 2);
-cond.put("cityId", cityId);
-cond.put("deleted", 1);
-TRunnable<String> resRunnable2 = new TRunnable<String>() {
-    @Override
-    public String tRun() throws TException {
-        return iTestDao.selectList(cond);       // ---------------- 3
-    }
-};
-worker.add2Run(resRunnable2);
- 
-worker.wait2Finished();
- 
-//获取并行结果
-String res1 = resRunnable1.getResult();
-String res2 = resRunnable2.getResult();
-                                </code>
-                                </pre> 上述代码上用到了并发执行结果（运用到TTP并行调用框架），通过并发来提高代码的执行效率，最终获取到并行结果res1和res2。
-                            </p>
-                            <h1>二、后果</h1>
-                            <p>上述代码运行后，总得不到意向的结果，查sql语句发现条件设置混乱。
-                            </p>
-                            <h1>三、分析</h1>
-                            <p>由于cond是一个引用，1处保存条件，但并未执行，于是执行到2处，重新clear，然后put新的条件值，这样导致1处执行的条件混乱，sql语句自然处于混乱状态。可尝试在并发代码中打印出cond值，发现两个cond值是一样的！！！
-                            </p>
-                            <h1>四、解决</h1>
-                            <p>
-                            <pre>
-                                <code class="java">
-TPWorker worker = new TPWorker();
- 
-final Map<String, Object> cond = Maps.newHashMap();
-cond.put("id", 5);
-cond.put("deleted", 1);
-TRunnable<String> resRunnable1= new TRunnable<String>() {
-    @Override
-    public String tRun() throws TException {
-        return iTestDao.selectList(cond);
-    }
-};
-worker.add2Run(resRunnable1);
- 
-final Map<String, Object> conds = Maps.newHashMap();       // 重新定义一个
-conds.put("name", "zhuqiuhui");
-conds.put("type", 2);
-conds.put("cityId", cityId);
-conds.put("deleted", 1);
-TRunnable<String> resRunnable2 = new TRunnable<String>() {
-    @Override
-    public String tRun() throws TException {
-        return iTestDao.selectList(conds);;
-    }
-};
-worker.add2Run(resRunnable2);
- 
-worker.wait2Finished();
- 
-//获取并行结果
-String res1 = resRunnable1.getResult();
-String res2 = resRunnable2.getResult();
-                                </code>
-                            </pre>
+                                收藏的IT行业的电子书，拿出来分享一下，收集不易，自取的人欢迎打赏或者评论，链接失效的请留言，看到留言后会更新链接，如果需要全部打包文件，请联系博主。
+                                <h1>一、Java系列</h1>
+                                <table>
+                                    <tr>
+                                        <td style="text-align: center;width: 100px;">
+                                            <a href="#"><img src="/post_images/images/2017/04/ebook/spring_action_3.png" height="150" width="95"></a>
+                                        </td>
+                                        <td>
+                                            <h3>Spring 实战（第3版）</h3>
+                                            作&nbsp;&nbsp;&nbsp;者： [美] Craig Walls 著  耿渊 张卫滨 译
+                                            <br>出版社： 人民邮电出版社 北京
+                                            <br>链&nbsp;&nbsp;&nbsp;接： <a href="https://pan.baidu.com/s/1c227IEk">https://pan.baidu.com/s/1c227IEk</a>
+                                            <br>提取码： 6qsm
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: center;width: 130px;">
+                                            <a href="#"><img src="/post_images/images/2017/04/ebook/spring_action_4.png" height="150" width="120"></a>
+                                        </td>
+                                        <td>
+                                            <h3>Spring 实战（第4版）</h3>
+                                            作&nbsp;&nbsp;&nbsp;者： [美] Craig Walls 著  耿渊 张卫滨 译
+                                            <br>出版社： 人民邮电出版社 北京
+                                            <br>链&nbsp;&nbsp;&nbsp;接： <a href="https://pan.baidu.com/s/1miDgIFY">https://pan.baidu.com/s/1miDgIFY</a>
+                                            <br>提取码： h694
+                                        </td>
+                                    </tr>
+                                </table>
                             </p>
                             <p><strong>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！</strong></p>
                         </div>
                     </div>
                     <div class="copyright">
-                        <p><span>本文标题:</span>并发情况下使用同一变量问题</p>
-                        <p><span>最后更新:</span>2017-04-11, 17:10:03</p>
+                        <p><span>本文标题:</span>IT最全电子书集合</p>
+                        <p><span>最后更新:</span>2017-04-13, 17:10:03</p>
                         <p>
-                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/concurrent-variable.html" title="并发情况下使用同一变量问题">http://zhuqiuhui.space/Blogs/2017/04/concurrent-variable.html</a>
-                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/concurrent-variable.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/ebook.html" title="IT最全电子书集合">http://zhuqiuhui.space/Blogs/2017/04/ebook.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/ebook.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
                             <script>
                             var clipboard = new Clipboard('.copy-path');
                             </script>
@@ -312,10 +260,10 @@ String res2 = resRunnable2.getResult();
                     <!--上一篇和下一篇地址-->
                     <nav id="article-nav">
                         <div id="article-nav-newer" class="article-nav-title">
-                            <a href="/Blogs/2017/04/sql-study.html">SQL学习总结</a>
+                            <a href="/Blogs/2017/04/concurrent-variable.html">并发情况下使用同一变量问题</a>
                         </div>
                         <div id="article-nav-older" class="article-nav-title">
-                            <a href="/Blogs/2017/04/ebook.html">IT最全电子书集合</a>
+                            <a href="#">太心急了，还没更新哦</a>
                         </div>
                     </nav>
                     <! -- 添加捐赠图标 -->
@@ -361,13 +309,13 @@ String res2 = resRunnable2.getResult();
                 <!-- 网易云跟帖 end -->
                 <div class="scroll" id="post-nav-button">
                     <!--上一篇-->
-                    <a href="/Blogs/2017/04/sql-study.html" title="SQL学习总结">
+                    <a href="/Blogs/2017/04/concurrent-variable.html" title="并发情况下使用同一变量问题">
                         <i class="fa fa-angle-left"></i>
                     </a>
                     <!--
                     <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>-->
                     <!--下一篇-->
-                    <a href="/Blogs/2017/04/ebook.html" title="IT最全电子书集合">
+                    <a href="#" title="太心急了，还没更新哦">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 </div>
