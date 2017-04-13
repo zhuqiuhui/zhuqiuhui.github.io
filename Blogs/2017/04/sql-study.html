@@ -280,10 +280,29 @@
                                             <table>
                                                 <tr>
                                                     <td class="gutter"><pre><div class="line">1</div></pre></td>
-                                                    <td class="code"><pre><div class="line">iinsert into user(user_id, user_num, `delete`) values(6, 45, 2); // 其中delete是由反引号括起来，否则会报错！</div></pre></td>
+                                                    <td class="code"><pre><div class="line">insert into user(user_id, user_num, `delete`) values(6, 45, 2); // 其中delete是由反引号括起来，否则会报错！</div></pre></td>
                                                 </tr>
                                             </table>
                                         </figure>
+                                    </li>
+                                    <li>
+                                        <strong>group_concat函数使用</strong>
+                                        <figure class="highlight bash">
+                                            <table>
+                                                <tr>
+                                                    <td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td>
+                                                    <td class="code"><pre><div class="line">select id,group_concat(name) from aa group by id;</div><div class="line">select id,group_concat(name separator ';') from aa group by id;</div><div class="line">select id,group_concat(distinct name) from aa group by id;</div><div class="line">select id,group_concat(name order by name desc) from aa group by id;</div></pre></td>
+                                                </tr>
+                                            </table>
+                                        </figure>
+                                    </li>
+                                    <li>
+                                        <strong>count(*)代码规范</strong>
+                                        <ol>
+                                            <li>【强制】不要使用 count(列名)或 count(常量)来替代 count(*)，count(*)就是 SQL92 定义的 标准统计行数的语法，跟数据库无关，跟 NULL 和非 NULL 无关。
+                                            <br>说明:count(*)会统计值为 NULL 的行，而 count(列名)不会统计此列为 NULL 值的行。</li>
+                                            <li>【强制】count(distinct col) 计算该列除 NULL 之外的不重复数量。注意 count(distinct col1, col2) 如果其中一列全为 NULL，那么即使另一列有不同的值，也返回为 0。</li>
+                                        </ol>
                                     </li>
                                 </ol>
                             </p>
