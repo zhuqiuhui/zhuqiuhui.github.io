@@ -4,22 +4,22 @@
 <head>
     <meta charset="utf-8">
     <!--!!!!!!!!!!!!!!-->
-    <title>IT最全电子书集合 | 恋恋风尘的博客</title>
+    <title>Spring事务之二（JDBC连接数据库的四种方式） | 恋恋风尘的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <!--!!!!!!!!!!!!!!-->
-    <meta name="description" content="收藏的IT行业的电子书，拿出来分享一下，收集不易，自取的人欢迎打赏或者评论，链接失效的请留言，看到留言后会更新链接，如果需要全部打包文件，请联系博主。">
+    <meta name="description" content="实质上，JDBC连接数据库的方式一般可以分为两种，一种采用java.sql.DriverManager类（即JDBC驱动程序管理器），另一种采用JDBC中提供的实现DataSource接口的类（数据源）。更多人喜欢使用数据源的方式，相对于DriverManager的优点有">
     <meta property="og:type" content="article">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:title" content="IT最全电子书集合">
+    <meta property="og:title" content="Spring事务之二（JDBC连接数据库的四种方式）">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/ebook.html">
+    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/spring-tx-2.html">
     <meta property="og:site_name" content="恋恋风尘的博客">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:description" content="收藏的IT行业的电子书，拿出来分享一下，收集不易，自取的人欢迎打赏或者评论，链接失效的请留言，看到留言后会更新链接，如果需要全部打包文件，请联系博主。">
+    <meta property="og:description" content="实质上，JDBC连接数据库的方式一般可以分为两种，一种采用java.sql.DriverManager类（即JDBC驱动程序管理器），另一种采用JDBC中提供的实现DataSource接口的类（数据源）。更多人喜欢使用数据源的方式，相对于DriverManager的优点有">
     <!--!!!!!!!!!!!!!!
     <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">-->
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:updated_time" content="2017-04-13T08:10:03.000Z">
+    <meta property="og:updated_time" content="2017-04-19T08:10:03.000Z">
     <link rel="icon" href="/favicon.ico">
     <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
     <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
@@ -189,14 +189,14 @@
             <div class="body-wrap">
                 <!--文章开始-->
                 <!--!!!!!!!!!!!!!!-->
-                <article id="ebook" class="article article-type-post" itemscope itemprop="blogPost">
+                <article id="spring-tx-2" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
-                        <time datetime="2017-04-13T13:33:03.000Z" itemprop="datePublished">2017-04-13</time>
+                        <time datetime="2017-04-19T13:33:03.000Z" itemprop="datePublished">2017-04-19</time>
                     </div>
                     <div class="article-inner">
                         <input type="hidden" class="isFancy" />
                         <header class="article-header">
-                            <h1 class="article-title" itemprop="name">IT最全电子书集合</h1>
+                            <h1 class="article-title" itemprop="name">Spring事务之二（JDBC连接数据库的四种方式）</h1>
                         </header>
                         <div class="article-info article-info-post">
                             <div class="article-category tagcloud">
@@ -204,51 +204,173 @@
                             </div>
                             <div class="article-tag tagcloud">
                                 <ul class="article-tag-list">
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java工具类/">Java工具类</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li>
                                 </ul>
                             </div>
                             <div class="clearfix"></div>
                         </div>
                         <div class="article-entry" itemprop="articleBody">
                             <p>
-                                收藏的IT行业的电子书，拿出来分享一下，收集不易，自取的人欢迎打赏或者评论，链接失效的请留言，看到留言后会更新链接，如果需要全部打包文件，请联系博主。
-                                <h1>一、Java系列</h1>
-                                <table>
-                                    <tr>
-                                        <td style="text-align: center;width: 100px;">
-                                            <img src="/post_images/images/2017/04/ebook/spring_action_3.png" height="150" width="95" title="Spring 实战（第3版）">
-                                        </td>
-                                        <td>
-                                            <h3>Spring 实战（第3版）</h3>
-                                            作&nbsp;&nbsp;&nbsp;者： [美] Craig Walls 著  耿渊 张卫滨 译
-                                            <br>出版社： 人民邮电出版社 北京
-                                            <br>链&nbsp;&nbsp;&nbsp;接： <a href="https://pan.baidu.com/s/1c227IEk">https://pan.baidu.com/s/1c227IEk</a>
-                                            <br>提取码： 6qsm
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;width: 130px;">
-                                            <img src="/post_images/images/2017/04/ebook/spring_action_4.png" height="150" width="120" title="Spring 实战（第3版）">
-                                        </td>
-                                        <td>
-                                            <h3>Spring 实战（第4版）</h3>
-                                            作&nbsp;&nbsp;&nbsp;者： [美] Craig Walls 著  耿渊 张卫滨 译
-                                            <br>出版社： 人民邮电出版社 北京
-                                            <br>链&nbsp;&nbsp;&nbsp;接： <a href="https://pan.baidu.com/s/1miDgIFY">https://pan.baidu.com/s/1miDgIFY</a>
-                                            <br>提取码： h694
-                                        </td>
-                                    </tr>
-                                </table>
+                                <h1>一、概览</h1>
+                                <p>
+                                    实质上，JDBC连接数据库的方式一般可以分为两种，一种采用java.sql.DriverManager类（即JDBC驱动程序管理器），另一种采用JDBC中提供的实现DataSource接口的类（数据源）。更多人喜欢使用数据源的方式，相对于DriverManager的优点有：
+                                    <ul>
+                                        <li>首先，程序不需要像使用DriverManager一样对加载的数据库驱动程序信息进行硬编码，程序员可以选择先在JNDI中注册这个数据源对象，然后在程序中使用一个逻辑名称来引用它，JNDI会自动根据你给出的名称找到与这个名称绑定的DataSource对象，然后就可以使用这个 DataSource对象来建立和具体数据库的连接了。</li>
+                                        <li>其次，使用实现了DataSource接口的类所具有的第二个优势体现在连接池和分布式事务上。连接池通过对连接的复用而不是新建一个物理连接来显著地提高程序的效率，从而适用于任务繁忙、负担繁重的企业级分布式事务。</li>
+                                    </ul>
+                                    通俗一点：
+                                    <ul>
+                                        <li>DataSource创建的connection既有基本实现，也有连接池实现（可以复用，DataSource帮我们实现了复用机制），而DriverManager创建的connection则不能复用（当然自己写连接池，自己来实现复用机制也是可以的），所以sun公司规定连接池技术需要实现DataSource接口。</li>
+                                        <li>DataSource中封装了DriverManager的使用，使用DataSource的一个好处是可以在外边配置（如C3P0直接修改xml文件，不用自己写配置文件db.properties）。</li>
+                                        <li>配置DataSource，由容器来获取Connection并结合连接池的应用比直接使用DriverManager操作JDBC效率高一些。</li>
+                                    </ul>
+                                </p>
+                                <h1>二、连接方式</h1>
+                                <p>
+                                    <h2>2.1 使用java.sql.DriverManager类（传统方式）</h2>
+                                    <p>
+                                        <pre>
+                                            <code class="java">
+//1.驱动注册程序  --内部执行了RegisterDriver 
+Class.forName("com.mysql.jdbc.Driver"); 
+   
+//2.获取连接对象 
+conn = DriverManager.getConnection(url, user, password); 
+   
+//3.创建Statement 
+stmt = conn.createStatement(); 
+   
+//4.准备sql 
+String sql = "sql语句"; 
+   
+//5.发送sql语句，执行sql语句,得到返回结果 
+int count = stmt.executeUpdate(sql); 
+   
+//6.输出 
+System.out.println("影响了"+count+"行！")
+                                            </code>
+                                        </pre>
+                                    </p>
+                                    <h2>2.2 实现javax.sql.DataSource接口的类</h2>
+                                    <p>
+                                        作为DriverManager设施的替代项，DataSource对象是获取连接的首选方法，实现 DataSource接口的对象通常在基于 JavaTM Naming and Directory Interface (JNDI) API的命名服务中注册。
+                                        <br>DataSource 接口由驱动程序供应商实现，共有三种类型的实现：
+                                        <ol>
+                                            <li>基本实现 - 生成标准 Connection 对象</li>
+                                            <li>连接池实现 - 生成自动参与连接池的 Connection 对象，此实现与中间层连接池管理器一起使用。</li>
+                                            <li>分布式事务实现 - 生成一个 Connection 对象，该对象可用于分布式事务，并且几乎始终参与连接池，此实现与中间层事务管理器一起使用，并且几乎始终与连接池管理器一起使用。</li>
+                                            <ol>注意的地方：
+                                                <li>DataSource是一个接口，而具体的实现是由驱动提供厂商来确定的，也就是说，是否实现连接池技术，也由厂商确定的。</li>
+                                                <li>通过 DataSource 对象访问的驱动程序不会向 DriverManager 注册。通过查找操作检索 DataSource 对象，然后使用该对象创建 Connection 对象。使用基本的实现，通过 DataSource 对象获取的连接与通过 DriverManager 设施获取的连接相同。</li>
+                                            </ol>
+                                        </ol>
+                                    </p>
+                                    <h2>2.3 DBCP连接池（实现了javax.sql.DataSource接口）</h2>
+                                    <p>
+                                        DBCP（Database Connection Pool）是一个依赖Jakarta commons-pool对象池机制的数据库连接池，J2EE 服务器启动时会建立一定数量的池连接，并一直维持不少于此数目的池连接。客户端程序需要连接时，池驱动程序会返回一个未使用的池连接并将其表记为忙。如果当前没有空闲连接，池驱动程序就新建一定数量的连接，新建连接的数量有配置参数决定。当使用的池连接调用完成后，池驱动程序将此连接表记为空闲，其他调用 就可以使用这个连接。 相当于是优化了DataSource的一种工具。
+                                        <br>
+                                        <br>核心类是：BasicDataSource，其实现了javax.sql.DataSource接口，还是看源码比较方便：
+                                        <pre>
+                                            <code class="java">
+public class BasicDataSource implements DataSource {
+     
+    static {
+        DriverManager.getDrivers();
+    }
+  
+    //有兴趣可以研究源码，这里不再列出......
+}
+                                            </code>
+                                        </pre> 在Spring中配置方式：
+                                        <!--
+                                        <figure class="highlight xml">
+                                            <table>
+                                                <tr>
+                                                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td>
+                                                    <td class="code"><pre><span class="line">&lt;bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"&gt;</span><span class="line">&lt;property name="driverClassName" value="com.mysql.jdbc.Driver"/&gt;</span><span class="line"></span><span class="line"></span><span class="line"></span></pre>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </figure>
+                                        <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"//cdn.com/foundation.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">background: url(//static.example.com/images/bg.jpg)</span><br></pre></td></tr></table></figure>
+                                        -->
+                                        <pre><code>
+    &lt;bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        &lt;property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        &lt;property name="url" value="jdbc:mysql://localhost:3306/mybatisTest" />
+        &lt;property name="username" value="root" />
+        &lt;property name="password" value="123456" />
+    &lt;/bean></code></pre>
+                                    代码方式：
+                                    <pre>
+                                        <code class="java">
+// DBCP连接池核心类 
+BasicDataSource dataSouce = new BasicDataSource(); 
+// 连接池参数配置：初始化连接数、最大连接数 / 连接字符串、驱动、用户、密码 
+dataSouce.setUrl("jdbc:mysql://localhost:3306/mybatisTest");
+dataSouce.setDriverClassName("com.mysql.jdbc.Driver");
+dataSouce.setUsername("root");                         
+dataSouce.setPassword("123456");                         
+dataSouce.setInitialSize(3);  // 初始化连接 
+dataSouce.setMaxActive(6);    // 最大连接 
+// 获取连接 
+Connection con = dataSouce.getConnection(); 
+con.prepareStatement("delete from admin where id=3").executeUpdate(); 
+// 关闭 
+con.close();
+                                        </code>
+                                    </pre>
+                                    </p>
+                                    <h2>2.4 使用C3P0连接池（Spring框架自带）</h2>
+                                    <p>在Spring中的配置方式：
+                                        <pre>
+                                            <code>
+&lt;bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+     &lt;property name="driverClass" value="${jdbc.driverClassName}" />
+     &lt;property name="jdbcUrl" value="${jdbc.url}" />
+     &lt;property name="user" value="${jdbc.username}" />
+     &lt;property name="password" value="${jdbc.password}" />
+     &lt;property name="checkoutTimeout" value="30000" />
+     &lt;property name="maxPoolSize" value="15" />
+     &lt;property name="idleConnectionTestPeriod" value="180" />
+     &lt;property name="maxIdleTime" value="180" />
+&lt;/bean>
+                                            </code>
+                                        </pre>
+                                        代码方式：
+                                        <pre><code>
+ComboPooledDataSource dataSource = new ComboPooledDataSource(); 
+// 设置连接参数：url、驱动、用户密码、初始连接数、最大连接数 
+dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/jdbc_demo"); 
+dataSource.setDriverClass("com.mysql.jdbc.Driver"); 
+dataSource.setUser("root"); 
+dataSource.setPassword("root"); 
+dataSource.setInitialPoolSize(3); 
+dataSource.setMaxPoolSize(6); 
+dataSource.setMaxIdleTime(1000); 
+    
+Connection con = dataSource.getConnection(); 
+// 执行更新 
+con.prepareStatement("delete from admin where id=7").executeUpdate(); 
+// 关闭 
+con.close();
+                                        </code></pre>
+                                    </p>
+                                </p>
                             </p>
                             <p><strong>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！</strong></p>
+                            <h1 id="参考">参考</h1>
+                            <ul>
+                                <li><a href="http://blog.csdn.net/cece_2012/article/details/7485482" target="_blank" rel="external">java连接数据库的四种方式</a></li>
+                            </ul>
                         </div>
                     </div>
                     <div class="copyright">
-                        <p><span>本文标题:</span>IT最全电子书集合</p>
-                        <p><span>最后更新:</span>2017-04-13, 17:10:03</p>
+                        <p><span>本文标题:</span>Spring事务之二（JDBC连接数据库的四种方式）</p>
+                        <p><span>最后更新:</span>2017-04-19, 17:10:03</p>
                         <p>
-                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/ebook.html" title="IT最全电子书集合">http://zhuqiuhui.space/Blogs/2017/04/ebook.html</a>
-                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/ebook.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/spring-tx-2.html" title="Spring事务之二（JDBC连接数据库的四种方式）">http://zhuqiuhui.space/Blogs/2017/04/spring-tx-2.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/spring-tx-2.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
                             <script>
                             var clipboard = new Clipboard('.copy-path');
                             </script>
@@ -260,10 +382,10 @@
                     <!--上一篇和下一篇地址-->
                     <nav id="article-nav">
                         <div id="article-nav-newer" class="article-nav-title">
-                            <a href="/Blogs/2017/04/sql-study.html">SQL学习总结</a>
+                            <a href="/Blogs/2017/04/spring-tx-1.html">Spring事务之一（JDBC简介）</a>
                         </div>
                         <div id="article-nav-older" class="article-nav-title">
-                            <a href="/Blogs/2017/04/spring-tx-1.html">Spring事务之一（JDBC简介）</a>
+                            <a href="/Blogs/2017/04/spring-tx-3.html">Spring事务之三（DriverManagerDataSource）</a>
                         </div>
                     </nav>
                     <! -- 添加捐赠图标 -->
@@ -308,13 +430,14 @@
                 <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
                 <!-- 网易云跟帖 end -->
                 <div class="scroll" id="post-nav-button">
-                    <a href="/Blogs/2017/04/sql-study.html" title="SQL学习总结">
+                    <!--上一篇-->
+                    <a href="/Blogs/2017/04/spring-tx-1.html" title="Spring事务之一（JDBC简介）">
                         <i class="fa fa-angle-left"></i>
                     </a>
                     <!--
                     <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>-->
                     <!--下一篇-->
-                    <a href="/Blogs/2017/04/spring-tx-1.html" title="Spring事务之一（JDBC简介）">
+                    <a href="/Blogs/2017/04/spring-tx-3.html" title="Spring事务之三（DriverManagerDataSource）">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 </div>

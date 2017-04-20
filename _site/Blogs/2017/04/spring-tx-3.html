@@ -4,22 +4,22 @@
 <head>
     <meta charset="utf-8">
     <!--!!!!!!!!!!!!!!-->
-    <title>IT最全电子书集合 | 恋恋风尘的博客</title>
+    <title>Spring事务之三（DriverManagerDataSource） | 恋恋风尘的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <!--!!!!!!!!!!!!!!-->
-    <meta name="description" content="收藏的IT行业的电子书，拿出来分享一下，收集不易，自取的人欢迎打赏或者评论，链接失效的请留言，看到留言后会更新链接，如果需要全部打包文件，请联系博主。">
+    <meta name="description" content="org.springframework.jdbc.datasource.DriverManagerDataSource （实现了javax.sql.DataSource接口，Spring框架自带的数据源，不常用）：每个连接请求时都新建一个连接，DriverManagerDataSource提供的连接没有进行池管理，当连接数到达一定的大小会出现异常。">
     <meta property="og:type" content="article">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:title" content="IT最全电子书集合">
+    <meta property="og:title" content="Spring事务之三（DriverManagerDataSource）">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/ebook.html">
+    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/spring-tx-3.html">
     <meta property="og:site_name" content="恋恋风尘的博客">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:description" content="收藏的IT行业的电子书，拿出来分享一下，收集不易，自取的人欢迎打赏或者评论，链接失效的请留言，看到留言后会更新链接，如果需要全部打包文件，请联系博主。">
+    <meta property="og:description" content="org.springframework.jdbc.datasource.DriverManagerDataSource （实现了javax.sql.DataSource接口，Spring框架自带的数据源，不常用）：每个连接请求时都新建一个连接，DriverManagerDataSource提供的连接没有进行池管理，当连接数到达一定的大小会出现异常。">
     <!--!!!!!!!!!!!!!!
     <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">-->
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:updated_time" content="2017-04-13T08:10:03.000Z">
+    <meta property="og:updated_time" content="2017-04-20T08:10:03.000Z">
     <link rel="icon" href="/favicon.ico">
     <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
     <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
@@ -189,14 +189,14 @@
             <div class="body-wrap">
                 <!--文章开始-->
                 <!--!!!!!!!!!!!!!!-->
-                <article id="ebook" class="article article-type-post" itemscope itemprop="blogPost">
+                <article id="spring-tx-3" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
-                        <time datetime="2017-04-13T13:33:03.000Z" itemprop="datePublished">2017-04-13</time>
+                        <time datetime="2017-04-20T13:33:03.000Z" itemprop="datePublished">2017-04-20</time>
                     </div>
                     <div class="article-inner">
                         <input type="hidden" class="isFancy" />
                         <header class="article-header">
-                            <h1 class="article-title" itemprop="name">IT最全电子书集合</h1>
+                            <h1 class="article-title" itemprop="name">Spring事务之三（DriverManagerDataSource）</h1>
                         </header>
                         <div class="article-info article-info-post">
                             <div class="article-category tagcloud">
@@ -204,51 +204,86 @@
                             </div>
                             <div class="article-tag tagcloud">
                                 <ul class="article-tag-list">
-                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java工具类/">Java工具类</a></li>
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li>
                                 </ul>
                             </div>
                             <div class="clearfix"></div>
                         </div>
                         <div class="article-entry" itemprop="articleBody">
                             <p>
-                                收藏的IT行业的电子书，拿出来分享一下，收集不易，自取的人欢迎打赏或者评论，链接失效的请留言，看到留言后会更新链接，如果需要全部打包文件，请联系博主。
-                                <h1>一、Java系列</h1>
-                                <table>
-                                    <tr>
-                                        <td style="text-align: center;width: 100px;">
-                                            <img src="/post_images/images/2017/04/ebook/spring_action_3.png" height="150" width="95" title="Spring 实战（第3版）">
-                                        </td>
-                                        <td>
-                                            <h3>Spring 实战（第3版）</h3>
-                                            作&nbsp;&nbsp;&nbsp;者： [美] Craig Walls 著  耿渊 张卫滨 译
-                                            <br>出版社： 人民邮电出版社 北京
-                                            <br>链&nbsp;&nbsp;&nbsp;接： <a href="https://pan.baidu.com/s/1c227IEk">https://pan.baidu.com/s/1c227IEk</a>
-                                            <br>提取码： 6qsm
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: center;width: 130px;">
-                                            <img src="/post_images/images/2017/04/ebook/spring_action_4.png" height="150" width="120" title="Spring 实战（第3版）">
-                                        </td>
-                                        <td>
-                                            <h3>Spring 实战（第4版）</h3>
-                                            作&nbsp;&nbsp;&nbsp;者： [美] Craig Walls 著  耿渊 张卫滨 译
-                                            <br>出版社： 人民邮电出版社 北京
-                                            <br>链&nbsp;&nbsp;&nbsp;接： <a href="https://pan.baidu.com/s/1miDgIFY">https://pan.baidu.com/s/1miDgIFY</a>
-                                            <br>提取码： h694
-                                        </td>
-                                    </tr>
-                                </table>
+                                org.springframework.jdbc.datasource.DriverManagerDataSource （实现了javax.sql.DataSource接口，Spring框架自带的数据源，不常用）：每个连接请求时都新建一个连接，DriverManagerDataSource提供的连接没有进行池管理，当连接数到达一定的大小会出现异常。参见DriverManagerDataSource源码：
+                                <pre>
+                                    <code class="java">
+public class DriverManagerDataSource extends AbstractDriverBasedDataSource {
+    public DriverManagerDataSource() {
+    }
+ 
+    public DriverManagerDataSource(String url) {
+        this.setUrl(url);
+    }
+ 
+    public DriverManagerDataSource(String url, String username, String password) {
+        this.setUrl(url);
+        this.setUsername(username);
+        this.setPassword(password);
+    }
+ 
+    public DriverManagerDataSource(String url, Properties conProps) {
+        this.setUrl(url);
+        this.setConnectionProperties(conProps);
+    }
+ 
+    public void setDriverClassName(String driverClassName) {
+        String driverClassNameToUse = driverClassName.trim();
+ 
+        try {
+            Class.forName(driverClassNameToUse, true, ClassUtils.getDefaultClassLoader());
+        } catch (ClassNotFoundException var4) {
+            throw new IllegalStateException("Could not load JDBC driver class [" + driverClassNameToUse + "]", var4);
+        }
+ 
+        if(this.logger.isInfoEnabled()) {
+            this.logger.info("Loaded JDBC driver: " + driverClassNameToUse);
+        }
+ 
+    }
+ 
+    protected Connection getConnectionFromDriver(Properties props) throws SQLException {
+        String url = this.getUrl();
+        if(this.logger.isDebugEnabled()) {
+            this.logger.debug("Creating new JDBC DriverManager Connection to [" + url + "]");
+        }
+ 
+        return this.getConnectionFromDriverManager(url, props);
+    }
+ 
+    protected Connection getConnectionFromDriverManager(String url, Properties props) throws SQLException {
+        return DriverManager.getConnection(url, props);  // 重要
+    }
+}
+                                    </code>
+                                </pre>
+                                下面是Spring中实现DataSource接口的类图：
+                                <img src="/post_images/images/2017/04/spring_datasource.jpeg" title="Spring中实现DataSource接口的类图">
+                                在Spring中的配置：
+                                        <pre><code>
+    &lt;bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        &lt;property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        &lt;property name="url" value="jdbc:mysql://localhost:3306/mybatisTest" />
+        &lt;property name="username" value="root" />
+        &lt;property name="password" value="123456" />
+    &lt;/bean></code></pre>
                             </p>
                             <p><strong>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！</strong></p>
+                            
                         </div>
                     </div>
                     <div class="copyright">
-                        <p><span>本文标题:</span>IT最全电子书集合</p>
-                        <p><span>最后更新:</span>2017-04-13, 17:10:03</p>
+                        <p><span>本文标题:</span>Spring事务之三（DriverManagerDataSource）</p>
+                        <p><span>最后更新:</span>2017-04-20, 17:10:03</p>
                         <p>
-                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/ebook.html" title="IT最全电子书集合">http://zhuqiuhui.space/Blogs/2017/04/ebook.html</a>
-                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/ebook.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/spring-tx-3.html" title="Spring事务之三（DriverManagerDataSource）">http://zhuqiuhui.space/Blogs/2017/04/spring-tx-3.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/spring-tx-3.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
                             <script>
                             var clipboard = new Clipboard('.copy-path');
                             </script>
@@ -260,10 +295,10 @@
                     <!--上一篇和下一篇地址-->
                     <nav id="article-nav">
                         <div id="article-nav-newer" class="article-nav-title">
-                            <a href="/Blogs/2017/04/sql-study.html">SQL学习总结</a>
+                            <a href="/Blogs/2017/04/spring-tx-2.html">Spring事务之二（JDBC连接数据库的四种方式）</a>
                         </div>
                         <div id="article-nav-older" class="article-nav-title">
-                            <a href="/Blogs/2017/04/spring-tx-1.html">Spring事务之一（JDBC简介）</a>
+                            <a href="/Blogs/2017/04/spring-tx-4.html">Spring事务之四（Spring声明式事务基本配置）</a>
                         </div>
                     </nav>
                     <! -- 添加捐赠图标 -->
@@ -308,13 +343,14 @@
                 <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
                 <!-- 网易云跟帖 end -->
                 <div class="scroll" id="post-nav-button">
-                    <a href="/Blogs/2017/04/sql-study.html" title="SQL学习总结">
+                    <!--上一篇-->
+                    <a href="/Blogs/2017/04/spring-tx-2.html" title="Spring事务之二（JDBC连接数据库的四种方式）">
                         <i class="fa fa-angle-left"></i>
                     </a>
                     <!--
                     <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>-->
                     <!--下一篇-->
-                    <a href="/Blogs/2017/04/spring-tx-1.html" title="Spring事务之一（JDBC简介）">
+                    <a href="/Blogs/2017/04/spring-tx-4.html" title="Spring事务之四（Spring声明式事务基本配置）">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 </div>
