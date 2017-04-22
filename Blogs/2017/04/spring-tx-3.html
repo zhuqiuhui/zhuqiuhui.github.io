@@ -32,6 +32,20 @@
     <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
     <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
     <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+    <!--代码高亮设置开始-->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/idea.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+    <script>
+    hljs.initHighlightingOnLoad();
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
+    });
+    </script>
+    <!--代码高亮设置结束-->
     <script>
     var yiliaConfig = {
         fancybox: true,
@@ -213,7 +227,7 @@
                             <p>
                                 org.springframework.jdbc.datasource.DriverManagerDataSource （实现了javax.sql.DataSource接口，Spring框架自带的数据源，不常用）：每个连接请求时都新建一个连接，DriverManagerDataSource提供的连接没有进行池管理，当连接数到达一定的大小会出现异常。参见DriverManagerDataSource源码：
                                 <pre>
-                                    <code class="java">
+                                    <code class="java hljs">
 public class DriverManagerDataSource extends AbstractDriverBasedDataSource {
     public DriverManagerDataSource() {
     }
@@ -262,11 +276,9 @@ public class DriverManagerDataSource extends AbstractDriverBasedDataSource {
     }
 }
                                     </code>
-                                </pre>
-                                下面是Spring中实现DataSource接口的类图：
-                                <img src="/post_images/images/2017/04/spring_datasource.jpeg" title="Spring中实现DataSource接口的类图">
-                                在Spring中的配置：
-                                        <pre><code>
+                                </pre> 下面是Spring中实现DataSource接口的类图：
+                                <img src="/post_images/images/2017/04/spring_datasource.jpeg" title="Spring中实现DataSource接口的类图"> 在Spring中的配置：
+                                <pre><code class="xml hljs">
     &lt;bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         &lt;property name="driverClassName" value="com.mysql.jdbc.Driver" />
         &lt;property name="url" value="jdbc:mysql://localhost:3306/mybatisTest" />
@@ -275,7 +287,6 @@ public class DriverManagerDataSource extends AbstractDriverBasedDataSource {
     &lt;/bean></code></pre>
                             </p>
                             <p><strong>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！</strong></p>
-                            
                         </div>
                     </div>
                     <div class="copyright">
