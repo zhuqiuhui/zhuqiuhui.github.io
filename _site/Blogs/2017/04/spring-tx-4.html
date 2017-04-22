@@ -4,22 +4,22 @@
 <head>
     <meta charset="utf-8">
     <!--!!!!!!!!!!!!!!-->
-    <title>Spring事务之二（JDBC连接数据库的四种方式） | 恋恋风尘的博客</title>
+    <title>Spring事务之四（Spring声明式事务基本配置） | 恋恋风尘的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <!--!!!!!!!!!!!!!!-->
-    <meta name="description" content="实质上，JDBC连接数据库的方式一般可以分为两种，一种采用java.sql.DriverManager类（即JDBC驱动程序管理器），另一种采用JDBC中提供的实现DataSource接口的类（数据源）。更多人喜欢使用数据源的方式，相对于DriverManager的优点有">
+    <meta name="description" content="Spring团队的建议是你在具体的类（或类的方法）上使用 @Transactional 注解，而不要使用在类所要实现的任何接口上。你当然可以在接口上使用 @Transactional 注解，但是这将只能当你设置了基于接口的代理时它才生效。因为注解是不能继承的，这就意味着如果你正在使用基于类的代理时，那么事务的设置将不能被基于类的代理所识别，而且对象也将不会被事务代理所包装（将被确认为严重的）。因此，请接受Spring团队的建议并且在具体的类上使用 @Transactional 注解">
     <meta property="og:type" content="article">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:title" content="Spring事务之二（JDBC连接数据库的四种方式）">
+    <meta property="og:title" content="Spring事务之四（Spring声明式事务基本配置）">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/spring-tx-2.html">
+    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/spring-tx-4.html">
     <meta property="og:site_name" content="恋恋风尘的博客">
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:description" content="实质上，JDBC连接数据库的方式一般可以分为两种，一种采用java.sql.DriverManager类（即JDBC驱动程序管理器），另一种采用JDBC中提供的实现DataSource接口的类（数据源）。更多人喜欢使用数据源的方式，相对于DriverManager的优点有">
+    <meta property="og:description" content="Spring团队的建议是你在具体的类（或类的方法）上使用 @Transactional 注解，而不要使用在类所要实现的任何接口上。你当然可以在接口上使用 @Transactional 注解，但是这将只能当你设置了基于接口的代理时它才生效。因为注解是不能继承的，这就意味着如果你正在使用基于类的代理时，那么事务的设置将不能被基于类的代理所识别，而且对象也将不会被事务代理所包装（将被确认为严重的）。因此，请接受Spring团队的建议并且在具体的类上使用 @Transactional 注解">
     <!--!!!!!!!!!!!!!!
     <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">-->
     <!--!!!!!!!!!!!!!!-->
-    <meta property="og:updated_time" content="2017-04-19T08:10:03.000Z">
+    <meta property="og:updated_time" content="2017-04-22T08:10:03.000Z">
     <link rel="icon" href="/favicon.ico">
     <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
     <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
@@ -32,6 +32,20 @@
     <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
     <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
     <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+    <!--代码高亮设置开始-->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/idea.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+    <script>
+    hljs.initHighlightingOnLoad();
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
+    });
+    </script>
+    <!--代码高亮设置结束-->
     <script>
     var yiliaConfig = {
         fancybox: true,
@@ -189,14 +203,14 @@
             <div class="body-wrap">
                 <!--文章开始-->
                 <!--!!!!!!!!!!!!!!-->
-                <article id="spring-tx-2" class="article article-type-post" itemscope itemprop="blogPost">
+                <article id="spring-tx-4" class="article article-type-post" itemscope itemprop="blogPost">
                     <div class="article-meta">
-                        <time datetime="2017-04-19T13:33:03.000Z" itemprop="datePublished">2017-04-19</time>
+                        <time datetime="2017-04-22T13:33:03.000Z" itemprop="datePublished">2017-04-22</time>
                     </div>
                     <div class="article-inner">
                         <input type="hidden" class="isFancy" />
                         <header class="article-header">
-                            <h1 class="article-title" itemprop="name">Spring事务之二（JDBC连接数据库的四种方式）</h1>
+                            <h1 class="article-title" itemprop="name">Spring事务之四（Spring声明式事务基本配置）</h1>
                         </header>
                         <div class="article-info article-info-post">
                             <div class="article-category tagcloud">
@@ -211,166 +225,160 @@
                         </div>
                         <div class="article-entry" itemprop="articleBody">
                             <p>
-                                <h1>一、概览</h1>
+                                <h1>一、基于XML的事务配置</h1>
                                 <p>
-                                    实质上，JDBC连接数据库的方式一般可以分为两种，一种采用java.sql.DriverManager类（即JDBC驱动程序管理器），另一种采用JDBC中提供的实现DataSource接口的类（数据源）。更多人喜欢使用数据源的方式，相对于DriverManager的优点有：
-                                    <ul>
-                                        <li>首先，程序不需要像使用DriverManager一样对加载的数据库驱动程序信息进行硬编码，程序员可以选择先在JNDI中注册这个数据源对象，然后在程序中使用一个逻辑名称来引用它，JNDI会自动根据你给出的名称找到与这个名称绑定的DataSource对象，然后就可以使用这个 DataSource对象来建立和具体数据库的连接了。</li>
-                                        <li>其次，使用实现了DataSource接口的类所具有的第二个优势体现在连接池和分布式事务上。连接池通过对连接的复用而不是新建一个物理连接来显著地提高程序的效率，从而适用于任务繁忙、负担繁重的企业级分布式事务。</li>
-                                    </ul>
-                                    通俗一点：
-                                    <ul>
-                                        <li>DataSource创建的connection既有基本实现，也有连接池实现（可以复用，DataSource帮我们实现了复用机制），而DriverManager创建的connection则不能复用（当然自己写连接池，自己来实现复用机制也是可以的），所以sun公司规定连接池技术需要实现DataSource接口。</li>
-                                        <li>DataSource中封装了DriverManager的使用，使用DataSource的一个好处是可以在外边配置（如C3P0直接修改xml文件，不用自己写配置文件db.properties）。</li>
-                                        <li>配置DataSource，由容器来获取Connection并结合连接池的应用比直接使用DriverManager操作JDBC效率高一些。</li>
-                                    </ul>
-                                </p>
-                                <h1>二、连接方式</h1>
-                                <p>
-                                    <h2>2.1 使用java.sql.DriverManager类（传统方式）</h2>
-                                    <p>
-                                        <pre>
-                                            <code class="java">
-//1.驱动注册程序  --内部执行了RegisterDriver 
-Class.forName("com.mysql.jdbc.Driver"); 
-   
-//2.获取连接对象 
-conn = DriverManager.getConnection(url, user, password); 
-   
-//3.创建Statement 
-stmt = conn.createStatement(); 
-   
-//4.准备sql 
-String sql = "sql语句"; 
-   
-//5.发送sql语句，执行sql语句,得到返回结果 
-int count = stmt.executeUpdate(sql); 
-   
-//6.输出 
-System.out.println("影响了"+count+"行！")
-                                            </code>
-                                        </pre>
-                                    </p>
-                                    <h2>2.2 实现javax.sql.DataSource接口的类</h2>
-                                    <p>
-                                        作为DriverManager设施的替代项，DataSource对象是获取连接的首选方法，实现 DataSource接口的对象通常在基于 JavaTM Naming and Directory Interface (JNDI) API的命名服务中注册。
-                                        <br>DataSource 接口由驱动程序供应商实现，共有三种类型的实现：
-                                        <ol>
-                                            <li>基本实现 - 生成标准 Connection 对象</li>
-                                            <li>连接池实现 - 生成自动参与连接池的 Connection 对象，此实现与中间层连接池管理器一起使用。</li>
-                                            <li>分布式事务实现 - 生成一个 Connection 对象，该对象可用于分布式事务，并且几乎始终参与连接池，此实现与中间层事务管理器一起使用，并且几乎始终与连接池管理器一起使用。</li>
-                                            <ol>注意的地方：
-                                                <li>DataSource是一个接口，而具体的实现是由驱动提供厂商来确定的，也就是说，是否实现连接池技术，也由厂商确定的。</li>
-                                                <li>通过 DataSource 对象访问的驱动程序不会向 DriverManager 注册。通过查找操作检索 DataSource 对象，然后使用该对象创建 Connection 对象。使用基本的实现，通过 DataSource 对象获取的连接与通过 DriverManager 设施获取的连接相同。</li>
-                                            </ol>
-                                        </ol>
-                                    </p>
-                                    <h2>2.3 DBCP连接池（实现了javax.sql.DataSource接口）</h2>
-                                    <p>
-                                        DBCP（Database Connection Pool）是一个依赖Jakarta commons-pool对象池机制的数据库连接池，J2EE 服务器启动时会建立一定数量的池连接，并一直维持不少于此数目的池连接。客户端程序需要连接时，池驱动程序会返回一个未使用的池连接并将其表记为忙。如果当前没有空闲连接，池驱动程序就新建一定数量的连接，新建连接的数量有配置参数决定。当使用的池连接调用完成后，池驱动程序将此连接表记为空闲，其他调用 就可以使用这个连接。 相当于是优化了DataSource的一种工具。
-                                        <br>
-                                        <br>核心类是：BasicDataSource，其实现了javax.sql.DataSource接口，还是看源码比较方便：
-                                        <pre>
-                                            <code class="java">
-public class BasicDataSource implements DataSource {
-     
-    static {
-        DriverManager.getDrivers();
-    }
-  
-    //有兴趣可以研究源码，这里不再列出......
-}
-                                            </code>
-                                        </pre> 在Spring中配置方式：
-                                        <!--
-                                        <figure class="highlight xml">
-                                            <table>
-                                                <tr>
-                                                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td>
-                                                    <td class="code"><pre><span class="line">&lt;bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"&gt;</span><span class="line">&lt;property name="driverClassName" value="com.mysql.jdbc.Driver"/&gt;</span><span class="line"></span><span class="line"></span><span class="line"></span></pre>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </figure>
-                                        <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"//cdn.com/foundation.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">background: url(//static.example.com/images/bg.jpg)</span><br></pre></td></tr></table></figure>
-                                        -->
-                                        <pre><code>
-    &lt;bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-        &lt;property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        &lt;property name="url" value="jdbc:mysql://localhost:3306/mybatisTest" />
-        &lt;property name="username" value="root" />
-        &lt;property name="password" value="123456" />
-    &lt;/bean></code></pre>
-                                    代码方式：
                                     <pre>
-                                        <code class="java">
-// DBCP连接池核心类 
-BasicDataSource dataSouce = new BasicDataSource(); 
-// 连接池参数配置：初始化连接数、最大连接数 / 连接字符串、驱动、用户、密码 
-dataSouce.setUrl("jdbc:mysql://localhost:3306/mybatisTest");
-dataSouce.setDriverClassName("com.mysql.jdbc.Driver");
-dataSouce.setUsername("root");                         
-dataSouce.setPassword("123456");                         
-dataSouce.setInitialSize(3);  // 初始化连接 
-dataSouce.setMaxActive(6);    // 最大连接 
-// 获取连接 
-Connection con = dataSouce.getConnection(); 
-con.prepareStatement("delete from admin where id=3").executeUpdate(); 
-// 关闭 
-con.close();
-                                        </code>
-                                    </pre>
-                                    </p>
-                                    <h2>2.4 使用C3P0连接池（Spring框架自带）</h2>
-                                    <p>在Spring中的配置方式：
-                                        <pre>
-                                            <code>
-&lt;bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-     &lt;property name="driverClass" value="${jdbc.driverClassName}" />
-     &lt;property name="jdbcUrl" value="${jdbc.url}" />
-     &lt;property name="user" value="${jdbc.username}" />
-     &lt;property name="password" value="${jdbc.password}" />
-     &lt;property name="checkoutTimeout" value="30000" />
-     &lt;property name="maxPoolSize" value="15" />
-     &lt;property name="idleConnectionTestPeriod" value="180" />
-     &lt;property name="maxIdleTime" value="180" />
+                                    <code class="xml hljs">
+&lt;bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    &lt;property name="dataSource" ref="dbcpDataSource" />
 &lt;/bean>
-                                            </code>
-                                        </pre>
-                                        代码方式：
-                                        <pre><code>
-ComboPooledDataSource dataSource = new ComboPooledDataSource(); 
-// 设置连接参数：url、驱动、用户密码、初始连接数、最大连接数 
-dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/jdbc_demo"); 
-dataSource.setDriverClass("com.mysql.jdbc.Driver"); 
-dataSource.setUser("root"); 
-dataSource.setPassword("root"); 
-dataSource.setInitialPoolSize(3); 
-dataSource.setMaxPoolSize(6); 
-dataSource.setMaxIdleTime(1000); 
-    
-Connection con = dataSource.getConnection(); 
-// 执行更新 
-con.prepareStatement("delete from admin where id=7").executeUpdate(); 
-// 关闭 
-con.close();
-                                        </code></pre>
+  
+&lt;tx:advice id="txAdvice" transaction-manager="txManager">
+  &lt;tx:attributes>
+    &lt;tx:method name="add*" propagation="REQUIRED" />
+    &lt;tx:method name="save*" propagation="REQUIRED" />
+    &lt;tx:method name="*" propagation="SUPPORTS" read-only="true"/>
+  &lt;/tx:attributes>
+&lt;/tx:advice>
+ 
+&lt;aop:config>
+  &lt;aop:advisor pointcut="execution(* *..SpitterService.*(..))" advice-ref="txAdvice" />
+&lt;/aop:config>
+                                    </code>
+                                </pre></p>
+                                <h1>二、基于注解的事务配置</h1>
+                                <p>
+                                    <pre><code class="xml hljs">
+&lt;bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    &lt;property name="dataSource" ref="dbcpDataSource" />
+&lt;/bean>
+  
+&lt;tx:annotation-driven transaction-manager="txManager"/></code></pre>
+                                    <pre>
+                                    <code class="java hljs">
+// 代码中示例
+@Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+public List<Spittle> getRecentSpittles(int count) {
+  List<Spittle> recentSpittles =
+      spitterDao.getRecentSpittle();
+   
+  reverse(recentSpittles);
+   
+  return recentSpittles.subList(0,
+          min(49, recentSpittles.size()));
+}
+                                    </code>
+                                </pre>
+                                </p>
+                                <h1>三、@Transactional属性介绍</h1>
+                                <p>
+                                    <table>
+                                        <tr>
+                                            <td>属性名</td>
+                                            <td>描述</td>
+                                        </tr>
+                                        <tr>
+                                            <td>timeout</td>
+                                            <td>该属性用于设置事务的超时秒数，默认值为-1表示永不超时</td>
+                                        </tr>
+                                        <tr>
+                                            <td>rollbackForClassName</td>
+                                            <td>该属性用于设置需要进行回滚的异常类名称数组，当方法中抛出指定异常名称数组中的异常时，则进行事务回滚。
+                                                <br>例如：指定单一异常类名称：@Transactional(rollbackForClassName="RuntimeException")，
+                                                <br>指定多个异常类名称：@Transactional(rollbackForClassName={"RuntimeException","Exception"})</td>
+                                        </tr>
+                                        <tr>
+                                            <td>rollbackFor</td>
+                                            <td>该属性用于设置需要进行回滚的异常类数组，当方法中抛出指定异常数组中的异常时，则进行事务回滚。
+                                                <br>例如：指定单一异常类：@Transactional(rollbackFor=RuntimeException.class)，
+                                                <br>指定多个异常类：@Transactional(rollbackFor={RuntimeException.class, Exception.class})</td>
+                                        </tr>
+                                        <tr>
+                                            <td>readOnly</td>
+                                            <td>该属性用于设置当前事务是否为只读事务，设置为true表示只读，false则表示可读写，默认值为false。
+                                                <br>例如：@Transactional(readOnly=true)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>propagation</td>
+                                            <td>该属性用于设置事务的传播行为。
+                                                <br>例如：@Transactional(propagation=Propagation.NOT_SUPPORTED,readOnly=true)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>noRollbackForClassName</td>
+                                            <td>该属性用于设置不需要进行回滚的异常类名称数组，当方法中抛出指定异常名称数组中的异常时，不进行事务回滚。
+                                                <br>例如：指定单一异常类名称：@Transactional(noRollbackForClassName="RuntimeException")，
+                                                <br>指定多个异常类名称：@Transactional(noRollbackForClassName={"RuntimeException","Exception"})</td>
+                                        </tr>
+                                        <tr>
+                                            <td>noRollbackFor</td>
+                                            <td>该属性用于设置不需要进行回滚的异常类数组，当方法中抛出指定异常数组中的异常时，不进行事务回滚。
+                                                <br>例如：指定单一异常类：@Transactional(noRollbackFor=RuntimeException.class)，
+                                                <br>指定多个异常类：@Transactional(noRollbackFor={RuntimeException.class, Exception.class})</td>
+                                        </tr>
+                                        <tr>
+                                            <td>isolation</td>
+                                            <td>该属性用于设置底层数据库的事务隔离级别，事务隔离级别用于处理多事务并发的情况，通常使用数据库的默认隔离级别即可，基本不需要进行设置。</td>
+                                        </tr>
+                                    </table>
+                                    <h2>3.1 propagation 属性</h2>
+                                    <p>
+                                        <ul>
+                                            <li>@Transactional(propagation=Propagation.REQUIRED) ：如果有事务, 那么加入事务, 没有的话新建一个(默认情况下)</li>
+                                            <li>@Transactional(propagation=Propagation.NOT_SUPPORTED) ：容器不为这个方法开启事务</li>
+                                            <li>@Transactional(propagation=Propagation.REQUIRES_NEW) ：不管是否存在事务,都创建一个新的事务,原来的挂起,新的执行完毕,继续执行老的事务</li>
+                                            <li>@Transactional(propagation=Propagation.MANDATORY) ：必须在一个已有的事务中执行,否则抛出异常</li>
+                                            <li>@Transactional(propagation=Propagation.NEVER) ：必须在一个没有的事务中执行,否则抛出异常(与Propagation.MANDATORY相反)</li>
+                                            <li>@Transactional(propagation=Propagation.SUPPORTS) ：如果其他bean调用这个方法,在其他bean中声明事务,那就用事务.如果其他bean没有声明事务,那就不用事务</li>
+                                            <li>@Transactional(propagation=Propagation.PROPAGATION_NESTED) ：如果当前存在事务，则创建一个事务作为当前事务的嵌套事务来运行；如果当前没有事务，则该取值等价于TransactionDefinition.PROPAGATION_REQUIRED</li>
+                                        </ul>
+                                    </p>
+                                    <h2>3.2 timeout属性</h2>
+                                    <p>@Transactional(timeout=30) //默认是30秒</p>
+                                    <h2>3.3 Isolation属性</h2>
+                                    <p>
+                                        <ul>
+                                            <li>@Transactional(isolation = Isolation.READ_UNCOMMITTED)：读取未提交数据(会出现脏读, 不可重复读) 基本不使用</li>
+                                            <li>@Transactional(isolation = Isolation.READ_COMMITTED)：读取已提交数据(会出现不可重复读和幻读)</li>
+                                            <li>@Transactional(isolation = Isolation.REPEATABLE_READ)：可重复读(会出现幻读)</li>
+                                            <li>@Transactional(isolation = Isolation.SERIALIZABLE)：串行化</li>
+                                            注意：
+                                            <ol>
+                                                <li>MYSQL: 默认为REPEATABLE_READ级别、SQLSERVER: 默认为READ_COMMITTED</li>
+                                                <li>
+                                                    <ul>
+                                                        <li>脏读 : 一个事务读取到另一事务未提交的更新数据</li>
+                                                        <li>不可重复读 : 在同一事务中, 多次读取同一数据返回的结果有所不同, 换句话说, 后续读取可以读到另一事务已提交的更新数据. 相反, "可重复读"在同一事务中多次读取数据时, 能够保证所读数据一样, 也就是后续读取不能读到另一事务已提交的更新数据</li>
+                                                        <li>幻读 : 一个事务读到另一个事务已提交的insert数据</li>
+                                                    </ul>
+                                                </li>
+                                            </ol>
+                                        </ul>
+                                    </p>
+                                    <h2>3.4 注意</h2>
+                                    <p>
+                                        <ul>
+                                            <li>@Transactional 只能被应用到public方法上，对于其它非public的方法，如果标记了@Transactional也不会报错，但方法没有事务功能。</li>
+
+                                            <li>用 spring 事务管理器，由spring来负责数据库的打开、提交、回滚。
+                                            <p>
+                                            默认遇到运行期异常(throw new RuntimeException("注释");)会回滚，即遇到不受检查（unchecked）的异常时回滚；而遇到需要捕获的异常(throw new Exception("注释");)不会回滚，即遇到受检查的异常（就是非运行时抛出的异常，编译器会检查到的异常叫受检查异常）时，需我们指定方式来让事务回滚要想所有异常都回滚,要加上 @Transactional( rollbackFor={Exception.class,其它异常}) 。如果让unchecked例外不回滚： @Transactional(notRollbackFor=RunTimeException.class)。</p></li>
+
+                                            <li>Spring团队的建议是你在具体的类（或类的方法）上使用 @Transactional 注解，而不要使用在类所要实现的任何接口上。你当然可以在接口上使用 @Transactional 注解，但是这将只能当你设置了基于接口的代理时它才生效。因为注解是不能继承的，这就意味着如果你正在使用基于类的代理时，那么事务的设置将不能被基于类的代理所识别，而且对象也将不会被事务代理所包装（将被确认为严重的）。因此，请接受Spring团队的建议并且在具体的类上使用 @Transactional 注解。</li>
+
+                                            <li>声明式事务唯一不足地方是，只能作用到方法级别，无法做到像编程式事务那样可以作用到代码块级别，可以将需要进行事务管理的代码块独立为方法等等。</li>
+                                        </ul>
                                     </p>
                                 </p>
                             </p>
                             <p><strong>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！</strong></p>
-                            <h1 id="参考">参考</h1>
-                            <ul>
-                                <li><a href="http://blog.csdn.net/cece_2012/article/details/7485482" target="_blank" rel="external">java连接数据库的四种方式</a></li>
-                            </ul>
                         </div>
                     </div>
                     <div class="copyright">
-                        <p><span>本文标题:</span>Spring事务之二（JDBC连接数据库的四种方式）</p>
-                        <p><span>最后更新:</span>2017-04-19, 17:10:03</p>
+                        <p><span>本文标题:</span>Spring事务之四（Spring声明式事务基本配置）</p>
+                        <p><span>最后更新:</span>2017-04-22, 17:10:03</p>
                         <p>
-                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/spring-tx-2.html" title="Spring事务之二（JDBC连接数据库的四种方式）">http://zhuqiuhui.space/Blogs/2017/04/spring-tx-2.html</a>
-                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/spring-tx-2.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/spring-tx-4.html" title="Spring事务之四（Spring声明式事务基本配置）">http://zhuqiuhui.space/Blogs/2017/04/spring-tx-4.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/spring-tx-4.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
                             <script>
                             var clipboard = new Clipboard('.copy-path');
                             </script>
@@ -382,10 +390,10 @@ con.close();
                     <!--上一篇和下一篇地址-->
                     <nav id="article-nav">
                         <div id="article-nav-newer" class="article-nav-title">
-                            <a href="/Blogs/2017/04/spring-tx-1.html">Spring事务之一（JDBC简介）</a>
+                            <a href="/Blogs/2017/04/spring-tx-3.html">Spring事务之三（DriverManagerDataSource）</a>
                         </div>
                         <div id="article-nav-older" class="article-nav-title">
-                            <a href="/Blogs/2017/04/spring-tx-3.html">Spring事务之三（DriverManagerDataSource）</a>
+                            <a href="/Blogs/2017/04/spring-tx-5.html">Spring事务之五（应用场景分析）</a>
                         </div>
                     </nav>
                     <! -- 添加捐赠图标 -->
@@ -431,13 +439,13 @@ con.close();
                 <!-- 网易云跟帖 end -->
                 <div class="scroll" id="post-nav-button">
                     <!--上一篇-->
-                    <a href="/Blogs/2017/04/spring-tx-1.html" title="Spring事务之一（JDBC简介）">
+                    <a href="/Blogs/2017/04/spring-tx-3.html" title="Spring事务之三（DriverManagerDataSource）">
                         <i class="fa fa-angle-left"></i>
                     </a>
                     <!--
                     <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>-->
                     <!--下一篇-->
-                    <a href="/Blogs/2017/04/spring-tx-3.html" title="Spring事务之三（DriverManagerDataSource）">
+                    <a href="/Blogs/2017/04/spring-tx-5.html" title="Spring事务之五（应用场景分析）">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 </div>

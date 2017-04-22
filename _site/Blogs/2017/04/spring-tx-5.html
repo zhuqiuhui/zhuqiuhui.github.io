@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+    <meta charset="utf-8">
+    <!--!!!!!!!!!!!!!!-->
+    <title>Spring事务之五（应用场景分析） | 恋恋风尘的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!--!!!!!!!!!!!!!!-->
+    <meta name="description" content="场景一 Exception回滚 场景二 propagation属性 场景三 业务场景">
+    <meta property="og:type" content="article">
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:title" content="Spring事务之五（应用场景分析）">
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:url" content="http://zhuqiuhui.space/Blogs/2017/04/spring-tx-5.html">
+    <meta property="og:site_name" content="恋恋风尘的博客">
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:description" content="场景一 Exception回滚 场景二 propagation属性 场景三 业务场景">
+    <!--!!!!!!!!!!!!!!
+    <meta property="og:image" content="https://zhuqiuhui.github.io/post_images/images/2017/03/blog_file_folder.png">-->
+    <!--!!!!!!!!!!!!!!-->
+    <meta property="og:updated_time" content="2017-04-22T08:10:03.000Z">
+    <link rel="icon" href="/favicon.ico">
+    <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css" rel="stylesheet">
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/iconfont.css">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+    <!--代码高亮设置开始-->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/idea.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+    <script>
+    hljs.initHighlightingOnLoad();
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
+    });
+    </script>
+    <!--代码高亮设置结束-->
+    <script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        open_in_new: true,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.0.9/scrollreveal.min.js"
+    }
+    </script>
+    <script>
+    (function() {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script>
+    <script>
+    yiliaConfig.rootUrl = "/";
+    </script>
+</head>
+
+<body>
+    <div id="container">
+        <!--首页左侧栏目-->
+        <div class="left-col">
+            <div class="overlay"></div>
+            <div class="intrude-less">
+                <header id="header" class="inner">
+                    <a href="/" class="profilepic">
+                        <img src="/post_images/resources/avatar.jpg" class="animated zoomIn">
+                    </a>
+                    <hgroup>
+                        <h1 class="header-author"><a href="/">Lil-hui</a></h1>
+                    </hgroup>
+                    <p class="header-subtitle">Java后台开发</p>
+                    <br>
+                    <p class="header-subtitle">你必须一路向前，因为人生不能后退！</p>
+                    <div id="switch-btn" class="switch-btn">
+                        <div class="icon">
+                            <div class="icon-ctn">
+                                <div class="icon-wrap icon-house" data-idx="0">
+                                    <div class="birdhouse"></div>
+                                    <div class="birdhouse_holes"></div>
+                                </div>
+                                <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                                    <div class="ribbon"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tips-box hide">
+                            <div class="tips-arrow"></div>
+                            <ul class="tips-inner">
+                                <li>菜单主页</li>
+                                <li>博客分类</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="switch-area" class="switch-area">
+                        <div class="switch-wrap">
+                            <section class="switch-part switch-part1">
+                                <nav class="header-menu">
+                                    <ul>
+                                        <li><a href="/">博客首页</a></li>
+                                        <li><a href="/archives">文章归档</a></li>
+                                        <li><a href="/tags">文章概览</a></li>
+                                        <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
+                                        <li><a href="/about">请你读我</a></li>
+                                        <li><a href="/search.html">搜索本站</a></li>
+                                    </ul>
+                                </nav>
+                                <nav class="header-nav">
+                                    <ul class="social">
+                                        <a class="fa QQ" target="_blank" href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1003505819" title="QQ"></a>
+                                        <a class="fa 微信" target="_blank" href="/need_html/weixin_friend.html" title="Wechat"></a>
+                                        <a class="fa GitHub" target="_blank" href="https://github.com/zhuqiuhui" title="GitHub"></a>
+                                        <a class="fa Email" target="_blank" href="mailto:zhuqiuhui@meituan.com" title="Email"></a>
+                                        <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/2453953883" title="新浪微博"></a>
+                                        <a class="fa CSDN" target="_blank" href="http://blog.csdn.net/zhuqiuhui" title="CSDN"></a>
+                                    </ul>
+                                </nav>
+                            </section>
+                            <section class="switch-part switch-part2">
+                                <nav class="header-menu">
+                                    <ul>
+                                        <li><a href="/categories/Java/">Java</a></li>
+                                        <li><a href="/categories/数据库/">数据库</a></li>
+                                        <li><a href="/categories/Linux/">Linux</a></li>
+                                        <li><a href="/categories/Web前端/">Web前端</a></li>
+                                        <li><a href="/categories/Python/">Python</a></li>
+                                        <li><a href="/categories/机器学习/">机器学习</a></li>
+                                        <li><a href="/categories/算法/">算法</a></li>
+                                        <li><a href="/categories/C系列/">C系列</a></li>
+                                        <li><a href="/categories/生活杂记/">生活杂记</a></li>
+                                        <li><a href="/categories/其他/">其他</a></li>
+                                    </ul>
+                                </nav>
+                            </section>
+                        </div>
+                    </div>
+                </header>
+            </div>
+        </div>
+        <div class="mid-col">
+            <!--手机端显示头部主页-->
+            <nav id="mobile-nav">
+                <!--手机显示侧边栏
+                <div class="overlay">
+                    <div class="slider-trigger"></div>
+                    <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">Lil-hui</a></h1>
+                </div>-->
+                <div class="intrude-less">
+                    <header id="header" class="inner">
+                        <a href="/" class="profilepic">
+                            <img src="/post_images/resources/avatar.jpg" class="animated zoomIn">
+                        </a>
+                        <hgroup>
+                            <h1 class="header-author"><a href="/" title="回到主页">Lil-hui</a></h1>
+                        </hgroup>
+                        <p class="header-subtitle">Java后台开发</p>
+                        <nav class="header-menu">
+                            <ul>
+                                <li><a href="/">博客首页</a></li>
+                                <li><a href="/archives">文章归档</a></li>
+                                <li><a href="/tags">文章概览</a></li>
+                                <li><a href="http://www.meipai.com/user/1028042523" target="_blank">我的美拍</a></li>
+                                <li><a href="/about">请你读我</a></li>
+                                <li><a href="/search.html">搜索本站</a></li>
+                            </ul>
+                        </nav>
+                        <nav class="header-nav">
+                            <ul class="social">
+                                <a class="fa QQ" target="_blank" href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1003505819" title="QQ"></a>
+                                <a class="fa 微信" target="_blank" href="/need_html/weixin_friend.html" title="Wechat"></a>
+                                <a class="fa GitHub" target="_blank" href="https://github.com/zhuqiuhui" title="GitHub"></a>
+                                <a class="fa Email" target="_blank" href="mailto:zhuqiuhui@meituan.com" title="Email"></a>
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/u/2453953883" title="新浪微博"></a>
+                                <a class="fa CSDN" target="_blank" href="http://blog.csdn.net/zhuqiuhui" title="CSDN"></a>
+                            </ul>
+                        </nav>
+                    </header>
+                </div>
+                <link class="menu-list" tags="标签" friends="友情链接" about="关于我" />
+            </nav>
+            <div class="body-wrap">
+                <!--文章开始-->
+                <!--!!!!!!!!!!!!!!-->
+                <article id="spring-tx-5" class="article article-type-post" itemscope itemprop="blogPost">
+                    <div class="article-meta">
+                        <time datetime="2017-04-22T13:33:03.000Z" itemprop="datePublished">2017-04-22</time>
+                    </div>
+                    <div class="article-inner">
+                        <input type="hidden" class="isFancy" />
+                        <header class="article-header">
+                            <h1 class="article-title" itemprop="name">Spring事务之五（应用场景分析）</h1>
+                        </header>
+                        <div class="article-info article-info-post">
+                            <div class="article-category tagcloud">
+                                <a class="article-category-link" href="/categories/Java/">Java</a>
+                            </div>
+                            <div class="article-tag tagcloud">
+                                <ul class="article-tag-list">
+                                    <li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li>
+                                </ul>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="article-entry" itemprop="articleBody">
+                            <p>
+                                <h1>场景一 Exception回滚</h1>
+                                <p>
+                                    <pre>
+                                    <code class="java hljs">
+//Case 1：插入操作回滚
+    @Transactional
+    public int insertUser(User user) {
+        int num = iUserDao.insertUser(user);
+        if (num > 0) {
+            throw new RuntimeException();
+        }
+        return num;
+    }
+  
+//Case 2: 插入操作不回滚
+    @Transactional
+    public int insertUser(User user) throws Exception{
+        int num = iUserDao.insertUser(user);
+        if (num > 0) {
+            throw new Exception();
+        }
+        return num;
+    }
+  
+//Case 3: 插入操作回滚
+    @Transactional(rollbackFor = Exception.class)
+    public int insertUser(User user) throws Exception{
+        int num = iUserDao.insertUser(user);
+        if (num > 0) {
+            throw new Exception();
+        }
+        return num;
+    }
+                                    </code>
+                                </pre></p>
+                                <h1>场景二 propagation属性</h1>
+                                <p>
+                                    <pre><code class="java hljs">
+Case 1: （1）调用insertUser的方法不在事务中，正常插入。
+        （2）调用insertUser的方法在事务中，不会插入。
+         解释： PROPAGATION_SUPPORTS表示：如果当前在事务中，即以事务的形式运行，如果当前不在一个事务中，那么就以非事务的形式运行。只读标志只在事务启动时应用。若调用该方法的方法不在事务中，则就执行成功（因为没有启动任何事务，所以只读标志被忽略）。若在事务中，会回滚插入操作。
+  
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public int insertUser(User user) {
+        int num = iUserDao.insertUser(user);
+        return num;
+    }
+  
+Case 2: 抛出异常：java.sql.SQLException: Connection is read-only. Queries leading to data modification are not allowed
+  
+   @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+   public int insertUser(User user) throws Exception{
+       int num = iUserDao.insertUser(user);
+       return num;
+   }
+  
+Case 3:(1)执行失败（2）执行失败  抛出异常java.lang.RuntimeException
+    (重要：此处三个函数在同一个类文件中，异常必须抛出，由Spring来捕捉)
+    @Transactional(propagation= Propagation.REQUIRED)
+    public void testModifyUser(User user) throws Exception {
+            insertUser(user); -------(1)
+            user.setId(13);
+            updateUser(user); -------(2)
+    }
+     
+    @Transactional(propagation= Propagation.REQUIRES_NEW)
+    public int insertUser(User user) throws Exception{
+        int num = iUserDao.insertUser(user);
+        return num;
+    }
+  
+    @Transactional(propagation= Propagation.REQUIRES_NEW)
+    public int updateUser(User user) throws Exception{
+        //更新语句......
+        throw new RuntimeException();    //运行时异常 ---------(3)
+    }
+注意：（3）处替换为“throw new FileNotFoundException();”或者“throw new Exception();”（非运行时异常），（1）（2）均执行成功，并抛出相应的异常！
+  
+Case 4:(1)执行失败（2）执行失败  抛出异常java.lang.RuntimeException
+    (重要：此处三个函数在同一个类文件中，异常必须抛出，由Spring来捕捉才能回滚)
+    @Transactional(propagation= Propagation.REQUIRED)
+    public void testModifyUser(User user) throws Exception {
+            insertUser(user); -------(1)
+            user.setId(13);
+            updateUser(user); -------(2)
+    }
+     
+    public int insertUser(User user) throws Exception{
+        int num = iUserDao.insertUser(user);
+        return num;
+    }
+ 
+    public int updateUser(User user) throws Exception{
+        //更新语句......
+        int cnt = iUserDao.updateUser(newvalue, conds);
+        if(cnt > 0) {
+            throw new RuntimeException(); ---------(3)
+        }
+    }
+  注意：（3）处替换为“throw new FileNotFoundException();”或者“throw new Exception();”，（1）（2）均执行成功，并抛出相应的异常！
+  
+                                    </code>
+                                </pre>
+                                </p>
+                                <h1>场景三 业务场景</h1>
+                                <p>
+                                    <pre><code class="java hljs">
+Case 1: （1）（2）都没有成功，并抛出java.lang.RuntimeException异常
+    (重要：此处四个函数在同一个类文件中，异常必须抛出，由Spring来捕捉才能回滚)
+    @Transactional
+    public void testModifyUser(User user) throws Exception {
+            insertUser(user); -------(1)
+            B(user);          -------(2)
+    }
+  
+    // 私有方法
+    private void B(User user) throws Exception {
+            user.setId(13);
+            updateUser(user);
+    }
+     
+    public int insertUser(User user) throws Exception{
+        int num = iUserDao.insertUser(user);
+        return num;
+    }
+     
+    @Transactional
+    public int updateUser(User user) throws Exception{
+        //更新语句......
+        int cnt = iUserDao.updateUser(newvalue, conds);
+        if(cnt > 0) {
+            throw new RuntimeException(); ---------(3)
+        }
+    }
+注意一：第（3）处替换为“throw new FileNotFoundException();”或者“throw new Exception();”，（1）（2）均执行成功，并抛出相应的异常！
+注意二：若在函数public int updateUser(User user) throws Exception加上“@Transactional(rollbackFor = Exception.class)”，执行结果同上，因为@Transactional默认的传播是：Propagation.REQUIRED，即表明当前如果有事务, 那么加入事务, 没有的话新建一个，当前是有事务的，不用新建，也即是说“@Transactional(rollbackFor = Exception.class)”不起任何作用。
+  
+  
+Case 2:（1）和（2）处均执行不成功，并抛出java.lang.RuntimeException异常
+类UserServiceImpl：
+public class UserServiceImpl implements IUserService {
+  
+    @Resource
+    IUser2Service iUser2Service;
+     
+    @Resource(name = "userDao")
+    IUserDao iUserDao;
+    @Transactional
+    public void testModifyUser(User user) throws Exception {
+            int num = iUserDao.insertUser(user);        -------(1)
+            System.out.println("effect " + num + " rows!");
+            B();                                        -------(2)
+    }
+  
+    // 私有方法
+    private void B() throws Exception {
+            iUser2Service.deleteUserById(25);
+    }
+     
+    //......
+}
+  
+类User2ServiceImpl:
+@Service
+public class User2ServiceImpl implements IUser2Service {
+ 
+    @Resource(name = "userDao")
+    IUserDao iUserDao;
+ 
+    @Transactional                     -------------------------（3）
+    public int deleteUserById(int id) throws Exception {
+        Map<String, Object> conds = Maps.newHashMap();
+        conds.put("id", id);
+        int cnt = iUserDao.deleteUserById(conds);
+        if(cnt > 0) {
+            throw new RuntimeException();   ---------------------(4)
+        }
+        return cnt;
+    }
+}
+  
+ 注意：情况一：第（4）处替换为“throw new FileNotFoundException();”或者“throw new Exception();”，（1）（2）均执行成功，并抛出相应的异常！
+      情况二：第（3）处去掉“@Transactional”，即不加事务，（1）和（2）处均执行不成功，并抛出java.lang.RuntimeException异常！
+      情况三：第（3）处去掉“@Transactional”，同时第（4）处替换为“throw new FileNotFoundException();”或者“throw new Exception();”，则（1）（2）均执行成功，并抛出相应的异常！
+      情况四：第（3）处替换为“@Transactional(rollbackFor = Exception.class)”，（1）和（2）处均执行不成功，并抛出java.lang.RuntimeException异常！
+      情况五：第（3）处替换为“@Transactional(rollbackFor = Exception.class)”，同时第（4）处替换为“throw new FileNotFoundException();”或者“throw new Exception();”，则（1）（2）均执行失败，并抛出相应的异常，同时抛出“org.springframework.transaction.UnexpectedRollbackException: Transaction rolled back because it has been marked as rollback-only”异常！
+                                    </code></pre>
+                                </p>
+                            </p>
+                            <p><strong>喜欢的或者不明白的请在下面留言（及时回复），谢谢大家！</strong></p>
+                        </div>
+                    </div>
+                    <div class="copyright">
+                        <p><span>本文标题:</span>Spring事务之五（应用场景分析）</p>
+                        <p><span>最后更新:</span>2017-04-22, 17:10:03</p>
+                        <p>
+                            <span>原始链接:</span><a class="post-url" href="/Blogs/2017/04/spring-tx-5.html" title="Spring事务之五（应用场景分析）">http://zhuqiuhui.space/Blogs/2017/04/spring-tx-5.html</a>
+                            <span class="copy-path" data-clipboard-text="原文: http://zhuqiuhui.space/Blogs/2017/04/spring-tx-5.html　　作者: Lil-hui" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+                            <script>
+                            var clipboard = new Clipboard('.copy-path');
+                            </script>
+                        </p>
+                        <p>
+                            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" title="CC BY-NC-SA 4.0 International" target="_blank">"署名-非商用-相同方式共享 4.0"</a> 请勿以任何形式转载文章完整正文
+                        </p>
+                    </div>
+                    <!--上一篇和下一篇地址-->
+                    <nav id="article-nav">
+                        <div id="article-nav-newer" class="article-nav-title">
+                            <a href="/Blogs/2017/04/spring-tx-4.html">Spring事务之四（Spring声明式事务基本配置）</a>
+                        </div>
+                        <div id="article-nav-older" class="article-nav-title">
+                            <a href="/Blogs/2017/04/spring-tx-6.html">Spring事务之六（JUnit单测事务回滚）</a>
+                        </div>
+                    </nav>
+                    <! -- 添加捐赠图标 -->
+                    <div class="post-donate">
+                        <div id="donate_board" class="donate_bar center">
+                            <a id="btn_donate" class="btn_donate" href="javascript:;" title="Donate 打赏"></a>
+                            <span class="donate_txt">
+           &uarr;<br>
+           
+            欣赏此文？赏份狗粮！
+                     
+        </span>
+                            <br>
+                        </div>
+                        <div id="donate_guide" class="donate_bar center hidden">
+                            <a href="/post_images/resources/alipay.png" title="支付宝打赏" class="fancybox" rel="article0" style="float:left;margin-left:25%;margin-right:2px;">
+                                <img src="/post_images/resources/alipay.png" title="支付宝打赏" height="164px" width="164px">
+                            </a>
+                            <a href="/post_images/resources/weixin.png" title="微信打赏" class="fancybox" rel="article0">
+                                <img src="/post_images/resources/weixin.png" title="微信打赏" height="164px" width="164px">
+                            </a>
+                        </div>
+                        <script type="text/javascript">
+                        document.getElementById('btn_donate').onclick = function() {
+                            $('#donate_board').addClass('hidden');
+                            $('#donate_guide').removeClass('hidden');
+                        }
+                        </script>
+                    </div>
+                    <! -- 添加捐赠图标 -->
+                </article>
+                <!-- 网易云跟帖 start -->
+                <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+                <script>
+                var cloudTieConfig = {
+                    url: document.location.href,
+                    sourceId: "",
+                    productKey: "b845cecf8b7548bc8f9b779bc10be038",
+                    target: "cloud-tie-wrapper"
+                };
+                </script>
+                <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+                <!-- 网易云跟帖 end -->
+                <div class="scroll" id="post-nav-button">
+                    <!--上一篇-->
+                    <a href="/Blogs/2017/04/spring-tx-4.html" title="Spring事务之四（Spring声明式事务基本配置）">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <!--
+                    <a title="所有文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>-->
+                    <!--下一篇-->
+                    <a href="/Blogs/2017/04/spring-tx-6.html" title="Spring事务之六（JUnit单测事务回滚）">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                </div>
+                <script>
+                </script>
+            </div>
+            <footer id="footer">
+                <div class="outer">
+                    <div id="footer-info">
+                        <div class="footer-left">
+                            <i class="fa fa-copyright"></i> 2017-至今 Lil-hui
+                        </div>
+                        <div class="footer-right">
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <script src="/js/GithubRepoWidget.js"></script>
+        <script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+        <script src="/js/search.js"></script>
+        <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({
+                    "background-color": bgColorList[bgColor],
+                    "background-size": "cover"
+                });
+            } else {
+                var backgroundnum = 10;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({
+                    "background": backgroundimg,
+                    "background-attachment": "fixed",
+                    "background-size": "cover"
+                });
+            }
+        })
+        </script>
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true, skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] } }); MathJax.Hub.Queue(function() { var all = MathJax.Hub.getAllJax(), i; for(i=0; i
+            < all.length; i +=1 ) { all[i].SourceElement().parentNode.className +=' has-jax' ; } }); </script>
+                <script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+                </script>
+                <div class="scroll" id="scroll">
+                    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+                    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+                    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+                </div>
+                <script src="//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js"></script>
+                <script type="text/javascript">
+                var search_path = "search.xml";
+                if (search_path.length == 0) {
+                    search_path = "search.xml";
+                }
+                var path = "/" + search_path;
+                searchFunc(path, 'local-search-input', 'local-search-result');
+                </script>
+        </script>
+    </div>
+</body>
+
+</html>
