@@ -32,6 +32,20 @@
     <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
     <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
     <script src="//cdn.bootcss.com/clipboard.js/1.5.9/clipboard.min.js"></script>
+    <!--代码高亮设置开始-->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/idea.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+    <script>
+    hljs.initHighlightingOnLoad();
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
+    });
+    </script>
+    <!--代码高亮设置结束-->
     <script>
     var yiliaConfig = {
         fancybox: true,
@@ -230,7 +244,7 @@
                                     <h2>2.1 使用java.sql.DriverManager类（传统方式）</h2>
                                     <p>
                                         <pre>
-                                            <code class="java">
+                                            <code class="java hljs">
 //1.驱动注册程序  --内部执行了RegisterDriver 
 Class.forName("com.mysql.jdbc.Driver"); 
    
@@ -271,7 +285,7 @@ System.out.println("影响了"+count+"行！")
                                         <br>
                                         <br>核心类是：BasicDataSource，其实现了javax.sql.DataSource接口，还是看源码比较方便：
                                         <pre>
-                                            <code class="java">
+                                            <code class="java hljs">
 public class BasicDataSource implements DataSource {
      
     static {
@@ -294,7 +308,7 @@ public class BasicDataSource implements DataSource {
                                         </figure>
                                         <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"//cdn.com/foundation.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">background: url(//static.example.com/images/bg.jpg)</span><br></pre></td></tr></table></figure>
                                         -->
-                                        <pre><code>
+                                        <pre><code class="xml hljs">
     &lt;bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
         &lt;property name="driverClassName" value="com.mysql.jdbc.Driver" />
         &lt;property name="url" value="jdbc:mysql://localhost:3306/mybatisTest" />
@@ -303,7 +317,7 @@ public class BasicDataSource implements DataSource {
     &lt;/bean></code></pre>
                                     代码方式：
                                     <pre>
-                                        <code class="java">
+                                        <code class="java hljs">
 // DBCP连接池核心类 
 BasicDataSource dataSouce = new BasicDataSource(); 
 // 连接池参数配置：初始化连接数、最大连接数 / 连接字符串、驱动、用户、密码 
@@ -324,7 +338,7 @@ con.close();
                                     <h2>2.4 使用C3P0连接池（Spring框架自带）</h2>
                                     <p>在Spring中的配置方式：
                                         <pre>
-                                            <code>
+                                            <code class="xml">
 &lt;bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
      &lt;property name="driverClass" value="${jdbc.driverClassName}" />
      &lt;property name="jdbcUrl" value="${jdbc.url}" />
@@ -338,7 +352,7 @@ con.close();
                                             </code>
                                         </pre>
                                         代码方式：
-                                        <pre><code>
+                                        <pre><code class="java hljs">
 ComboPooledDataSource dataSource = new ComboPooledDataSource(); 
 // 设置连接参数：url、驱动、用户密码、初始连接数、最大连接数 
 dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/jdbc_demo"); 
